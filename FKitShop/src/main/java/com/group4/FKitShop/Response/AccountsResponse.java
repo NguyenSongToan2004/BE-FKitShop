@@ -1,6 +1,6 @@
-package com.group4.FKitShop.Request;
+package com.group4.FKitShop.Response;
 
-import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,14 +11,13 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountsRequest {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class AccountsResponse {
     String accountID;
-    @Size(min = 6, message = "Password at least 6 characters")
     String password;
     String image;
     String fullName;
     int yob;
-    @Size(min = 10, message = "Phone number at least 10 digits")
     String phoneNumber;
     String email;
     int status;

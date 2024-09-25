@@ -1,41 +1,40 @@
 package com.group4.FKitShop.Service;
 
 import com.group4.FKitShop.Entity.Accounts;
+import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.AccountsRepository;
 import com.group4.FKitShop.Request.AccountsRequest;
+import com.group4.FKitShop.mapper.AccountsMapper;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class AccountsService {
-    @Autowired
-    private AccountsRepository accountsRepository;
 
-
-    public List<Accounts> allAccounts(){
-        return accountsRepository.findAll();
-    }
+    AccountsRepository accountsRepository;
+    AccountsMapper accountsMapper;
 
     public Accounts createAccount(AccountsRequest request){
-        Accounts accounts = new Accounts();
-
         if (accountsRepository.existsByemail(request.getEmail())){
             throw new RuntimeException("This email is already in use");
         }
-        accounts.setPassword(request.getPassword());
-        accounts.setImage(request.getImage());
-        accounts.setFullName(accounts.getFullName());
-        accounts.setYob(request.getYob());
-        accounts.setPhoneNumber(request.getPhoneNumber());
-        accounts.setEmail(request.getEmail());
-        accounts.setStatus(request.getStatus());
-        accounts.setRole(accounts.getRole());
-        accounts.setCreateDate(request.getCreateDate());
-
+        Accounts accounts = accountsMapper.toAccounts(request);
+        //su dung brcrypt de ma hoa password
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        accounts.setPassword(passwordEncoder.encode(request.getPassword()));
         return accountsRepository.save(accounts);
     }
+
+
 
 
 }

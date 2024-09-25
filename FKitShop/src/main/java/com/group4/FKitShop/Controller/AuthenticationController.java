@@ -1,11 +1,10 @@
 package com.group4.FKitShop.Controller;
 
-
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.AccountsRequest;
-import com.group4.FKitShop.Response.AccountsResponse;
-import com.group4.FKitShop.Service.AccountsService;
-import jakarta.validation.Valid;
+import com.group4.FKitShop.Request.AuthenticationRequest;
+import com.group4.FKitShop.Response.AuthenticationResponse;
+import com.group4.FKitShop.Service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -16,19 +15,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AccountsController {
-    AccountsService accountsService;
+public class AuthenticationController {
+    AuthenticationService authenticationService;
 
-    @PostMapping
-    public ResponseObject createAccounts(@RequestBody @Valid AccountsRequest request){
+
+    //map authenRequest then return to the ResponseObject
+    @PostMapping("/login")
+    ResponseObject loginAuthentication(@RequestBody AuthenticationRequest request) {
+        boolean result = authenticationService.authenticate(request);
         return ResponseObject.builder()
-                .status(1000)
-                .message("Create account successfully")
-                .data(accountsService.createAccount(request))
+                .data(AuthenticationResponse.builder()
+                        .isAutheticated(result)
+                        .build())
                 .build();
+
     }
 
 }
