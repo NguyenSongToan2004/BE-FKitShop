@@ -63,4 +63,6 @@ public class LabService {
         num = String.format("C%05d", max);
         return num;
     }
+
+
 }
