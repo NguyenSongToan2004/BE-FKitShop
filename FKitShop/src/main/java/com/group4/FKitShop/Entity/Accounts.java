@@ -29,8 +29,8 @@ public class Accounts {
     @Column(name = "fullName")
     String fullName;
 
-    @Column(name = "yob")
-    int yob;
+    @Column(name = "dob")
+    Date dob;
 
     @Column(name = "phoneNumber")
     String phoneNumber;

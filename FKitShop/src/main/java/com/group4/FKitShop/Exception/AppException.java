@@ -1,14 +1,16 @@
 package com.group4.FKitShop.Exception;
 
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Getter @Setter
-
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppException extends RuntimeException{
 
-    private ErrorCode errorCode;
+    ErrorCode errorCode;
 
     public AppException(ErrorCode errorCode){
         super(errorCode.getMessage());
