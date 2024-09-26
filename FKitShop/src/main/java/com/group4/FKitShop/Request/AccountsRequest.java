@@ -17,7 +17,7 @@ public class AccountsRequest {
     String password;
     String image;
     String fullName;
-    Date yob;
+    Date dob;
     @Size(min = 10, message = "Phone number at least 10 digits")
     String phoneNumber;
     String email;

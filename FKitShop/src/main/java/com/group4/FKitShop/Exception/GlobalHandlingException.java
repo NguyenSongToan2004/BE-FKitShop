@@ -31,14 +31,24 @@ public class GlobalHandlingException {
     }
 
     //validation
+//    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+//    ResponseEntity<ResponseObject> HandlingValidation(MethodArgumentNotValidException exception) {
+//        String enumKey =exception.getFieldError().getDefaultMessage();
+//        ErrorCode errorCode =ErrorCode.valueOf(enumKey);
+//        return ResponseEntity.badRequest().body(ResponseObject.builder()
+//                .status(errorCode.getCode())
+//                .message(errorCode.getMessage())
+//                .build());
+//    }
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ResponseObject> HandlingValidation(MethodArgumentNotValidException exception) {
-        String enumKey =exception.getFieldError().getDefaultMessage();
-        ErrorCode errorCode =ErrorCode.valueOf(enumKey);
-        return ResponseEntity.badRequest().body(ResponseObject.builder()
-                .status(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build());
+        String enumKey = exception.getFieldError().getDefaultMessage();
+        ErrorCode errorCode = ErrorCode.valueOf(enumKey);
+        ResponseObject response = new ResponseObject();
+        response.setStatus(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+
+        return ResponseEntity.badRequest().body(response);
     }
 
 
