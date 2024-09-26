@@ -13,5 +13,4 @@ public class LabRequest {
     String name;
     String description;
     String level;
-    String createDate;
 }
