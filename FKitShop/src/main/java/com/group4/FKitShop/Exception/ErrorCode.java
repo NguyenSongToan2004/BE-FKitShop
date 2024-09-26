@@ -1,25 +1,29 @@
 package com.group4.FKitShop.Exception;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCode {
-    UNCATEGORIZE(9999,"Uncategorized error"),
-    INVALID_KEY(102, "Invalid message key"),
-    LAB_NOTFOUND(101, "This lab is not exist !!"),
-    LAB_NAMEDUPLICATED(102, "This lab name has taken alredy !!")
+
+    Uncategorize_Exception(9999, "Uncategorized exception"),
+
+    TagName_DUPLICATED(1001, "This tag name has been taken"),
+    CategoryName_DUPLICATED(1001, "This category name has been taken"),
+
+    Tag_NOTFOUND(1002, "Tag not found"),
+    Category_NOTFOUND(1002, "Category not found"),
+
+
+
+
     ;
-    private int code = 100;
-    private String message;
 
-    ErrorCode(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
+    int code;
+    String message;
 
 }

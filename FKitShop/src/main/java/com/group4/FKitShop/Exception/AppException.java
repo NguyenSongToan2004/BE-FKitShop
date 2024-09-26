@@ -1,18 +1,19 @@
 package com.group4.FKitShop.Exception;
 
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppException extends RuntimeException{
-    private ErrorCode code;
 
-    public AppException(ErrorCode code) {
-        super(code.getMessage());
-        this.code = code;
+    public AppException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 
-    public ErrorCode getCode() {
-        return code;
-    }
+    ErrorCode errorCode;
 
-    public void setCode(ErrorCode code) {
-        this.code = code;
-    }
 }
