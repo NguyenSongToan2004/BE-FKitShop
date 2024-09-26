@@ -2,7 +2,9 @@ package com.group4.FKitShop.Controller;
 
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Entity.ResponseObject;
+import com.group4.FKitShop.Request.ProductRequest;
 import com.group4.FKitShop.Service.ProductService;
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +33,20 @@ public class ProductController {
             @RequestParam("type") String type,
             @RequestParam("image") MultipartFile image
     ) {
-        Product product = service.addProduct(name, description, publisher, quantity, price, discount, status, weight, material, dimension, type, image);
+        ProductRequest request = ProductRequest.builder()
+                .name(name)
+                .description(description)
+                .publisher(publisher)
+                .quantity(quantity)
+                .price(price)
+                .discount(discount)
+                .status(status)
+                .weight(weight)
+                .material(material)
+                .dimension(dimension)
+                .type(type)
+                .build();
+        Product product = service.addProduct(request, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ResponseObject(1000, "Create new product sucessfully !!", product)
         );
@@ -78,14 +93,14 @@ public class ProductController {
     }
 
     @GetMapping("/latest")
-    ResponseEntity<ResponseObject> getLatestProduct(){
+    ResponseEntity<ResponseObject> getLatestProduct() {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Successfully !!", service.getLastestProduct())
         );
     }
 
     @GetMapping("/aproducts")
-    ResponseEntity<ResponseObject> getActiveProducts(){
+    ResponseEntity<ResponseObject> getActiveProducts() {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get Products Successfully !!", service.getActiveProduct())
         );

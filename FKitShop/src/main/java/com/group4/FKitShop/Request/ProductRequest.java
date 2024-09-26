@@ -8,10 +8,10 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductRequest {
     String name;
-    String image;
     String description;
     String publisher;
     int quantity;

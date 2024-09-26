@@ -3,7 +3,9 @@ package com.group4.FKitShop.Service;
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Mapper.ProductMapper;
 import com.group4.FKitShop.Repository.ProductRepository;
+import com.group4.FKitShop.Request.ProductRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,34 +21,17 @@ public class ProductService {
 
     @Autowired
     private ProductRepository repository;
+    private ProductMapper mapper;
 
-    public Product addProduct(
-            String name, String description, String publisher,
-            int quantity, double price, int discount,
-            String status, double weight, String material,
-            String dimension, String type, MultipartFile image) {
-        if (repository.existsByName(name))
+    public Product addProduct(ProductRequest request, MultipartFile image) {
+        if (repository.existsByName(request.getName()))
             throw new AppException(ErrorCode.PRODUCT_NAMEDUPLICATED);
-        Product product = new Product();
-
+        Product product = mapper.toProduct(request);
         product.setProductID(generateID());
-        product.setName(name);
-        product.setMaterial(material);
-        product.setDiscount(discount);
-        product.setPrice(price);
-        product.setStatus(status);
-        product.setType(type);
-        product.setDimension(dimension);
-        product.setQuantity(quantity);
-        // Tạo ngày
         product.setCreateDate(new Date());
-        product.setPublisher(publisher);
-        product.setWeight(weight);
-        product.setDescription(description);
         product.setImage(uploadImage(image));
         return repository.save(product);
     }
-
 
     public Product getProduct(String id) {
         return repository.findById(id).orElseThrow(
