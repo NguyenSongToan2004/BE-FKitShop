@@ -17,7 +17,6 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Lab {
-
     @Id
     @NotNull
     String labID;

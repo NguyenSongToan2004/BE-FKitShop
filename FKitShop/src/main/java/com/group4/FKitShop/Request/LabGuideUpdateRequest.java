@@ -8,9 +8,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LabRequest {
-    String productID;
-    String name;
-    String description;
-    String level;
+public class LabGuideUpdateRequest {
+    String labID;
+    String stepDescription;
+    int stepNumber;
 }
