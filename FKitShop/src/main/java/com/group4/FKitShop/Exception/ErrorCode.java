@@ -7,7 +7,8 @@ public enum ErrorCode {
     LAB_NAMEDUPLICATED(102, "This lab name has taken alredy !!"),
     PRODUCT_NAMEDUPLICATED(103, "This product name has taken alredy !!"),
     PRODUCT_NOTFOUND(104, "This product is not exist !!"),
-    UPLOAD_FILE_FAILED(105, "Fail to upload this file!!")
+    UPLOAD_FILE_FAILED(105, "Fail to upload this file!!"),
+    USER_NOT_FOUND(106, "User is not exist !!")
 
     ;
     private int code = 100;

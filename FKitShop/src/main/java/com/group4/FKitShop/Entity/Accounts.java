@@ -32,6 +32,11 @@ public class Accounts {
     @NotNull
     String email;
 
+    Date dob;
+
+    @NotNull
+    String phoneNumber;
+
     @NotNull
     int status; // 0 : inactive ; 1: active
 
