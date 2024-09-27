@@ -21,15 +21,16 @@ public class ProductService {
 
     @Autowired
     private ProductRepository repository;
-    private ProductMapper mapper;
 
     public Product addProduct(ProductRequest request, MultipartFile image) {
         if (repository.existsByName(request.getName()))
             throw new AppException(ErrorCode.PRODUCT_NAMEDUPLICATED);
-        Product product = mapper.toProduct(request);
+        Product product = new Product();
         product.setProductID(generateID());
         product.setCreateDate(new Date());
         product.setImage(uploadImage(image));
+        ProductMapper.INSTANCE.toProduct(request, product);
+
         return repository.save(product);
     }
 
@@ -39,31 +40,16 @@ public class ProductService {
         );
     }
 
-    public Product updateProduct(String id,
-                                 String name, String description, String publisher,
-                                 int quantity, double price, int discount,
-                                 String status, double weight, String material,
-                                 String dimension, String type, MultipartFile image) {
+    public Product updateProduct(String id, ProductRequest request, MultipartFile image) {
 
         Product product = repository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
-
-        product.setName(name);
-        product.setMaterial(material);
-        product.setDiscount(discount);
-        product.setPrice(price);
-        product.setStatus(status);
-        product.setType(type);
-        product.setQuantity(quantity);
-        product.setDimension(dimension);
-        product.setPublisher(publisher);
-        product.setWeight(weight);
-        product.setDescription(description);
         String imageUrl = uploadImage(image);
         if(imageUrl != ""){
             product.setImage(imageUrl);
         }
+        ProductMapper.INSTANCE.toProduct(request,product);
         return repository.save(product);
     }
 

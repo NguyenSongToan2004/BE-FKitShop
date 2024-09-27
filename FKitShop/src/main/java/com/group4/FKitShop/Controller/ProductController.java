@@ -73,8 +73,22 @@ public class ProductController {
                                               @RequestParam("dimension") String dimension,
                                               @RequestParam("type") String type,
                                               @RequestParam("image") MultipartFile image) {
+        ProductRequest request = ProductRequest.builder()
+                .name(name)
+                .description(description)
+                .publisher(publisher)
+                .quantity(quantity)
+                .price(price)
+                .discount(discount)
+                .status(status)
+                .weight(weight)
+                .material(material)
+                .dimension(dimension)
+                .type(type)
+                .build();
+        Product product = service.updateProduct(id, request, image);
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Update Successfully !!", service.updateProduct(id, name, description, publisher, quantity, price, discount, status, weight, material, dimension, type, image))
+                new ResponseObject(1000, "Update Successfully !!", product)
         );
     }
 
