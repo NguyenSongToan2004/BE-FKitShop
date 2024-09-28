@@ -6,10 +6,14 @@ import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.AccountsRepository;
 import com.group4.FKitShop.Request.AuthenticationRequest;
+import com.group4.FKitShop.Request.IntrospectRequest;
 import com.group4.FKitShop.Response.AuthenticationResponse;
+import com.group4.FKitShop.Response.IntrospectResponse;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -57,6 +62,24 @@ public class AuthenticationService {
                 .isAutheticated(true)
                 .build();
 
+    }
+
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
+        var token = request.getToken();
+
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        //expired token or not
+        Date expiredTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        //token doesnt change => true, else false
+        var verified = signedJWT.verify(verifier);
+
+        return IntrospectResponse.builder()
+                .valid(verified && expiredTime.after(new Date()))
+                .build();
     }
 
     private String generateToken(String email, String accountID) {
