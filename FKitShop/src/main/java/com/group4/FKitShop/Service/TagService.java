@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -73,5 +74,7 @@ public class TagService {
             throw new AppException(ErrorCode.Tag_NOTFOUND);
         tagRepository.deleteById(id);
     }
+
+    
 
 }
