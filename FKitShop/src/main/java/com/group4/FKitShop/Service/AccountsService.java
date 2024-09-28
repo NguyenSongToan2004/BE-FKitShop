@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -49,7 +50,9 @@ public class AccountsService {
         return accountsRepository.findAll();
     }
 
-
+    public Optional<Accounts> AccountsByID(String id){
+        return accountsRepository.findById(id);
+    }
 
 
 
