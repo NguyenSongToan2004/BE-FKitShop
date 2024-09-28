@@ -1,6 +1,7 @@
 package com.group4.FKitShop.Service;
 
 
+import com.group4.FKitShop.Entity.Accounts;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.AccountsRepository;
@@ -47,7 +48,9 @@ public class AuthenticationService {
         if (!auth)
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        var token = generateToken(request.getEmail());
+        String accountID = String.valueOf(user.getAccountID());
+
+        var token = generateToken(request.getEmail(), accountID);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -56,7 +59,7 @@ public class AuthenticationService {
 
     }
 
-    private String generateToken(String email) {
+    private String generateToken(String email, String accountID) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         //build payload
@@ -64,10 +67,11 @@ public class AuthenticationService {
                 //user login
                 .subject(email)
                 //domain
-                .issuer("fkshop.com")
+                .issuer("fkshop.domain")
+                .claim("accountID", accountID)
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
-                .claim("customClaim", "Custom")
+
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
