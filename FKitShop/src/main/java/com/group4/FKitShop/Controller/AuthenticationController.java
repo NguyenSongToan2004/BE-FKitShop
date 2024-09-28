@@ -26,11 +26,9 @@ public class AuthenticationController {
     //map authenRequest then return to the ResponseObject
     @PostMapping("/login")
     ResponseObject loginAuthentication(@RequestBody AuthenticationRequest request) {
-        boolean result = authenticationService.authenticate(request);
+        var result = authenticationService.authenticate(request);
         return ResponseObject.builder()
-                .data(AuthenticationResponse.builder()
-                        .isAutheticated(result)
-                        .build())
+                .data(result)
                 .build();
 
     }
