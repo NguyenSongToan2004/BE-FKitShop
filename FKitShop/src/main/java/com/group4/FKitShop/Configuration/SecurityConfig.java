@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final String [] PUBLIC_API = {
+    private static final String [] POST_PUBLIC_API = {
             "/accounts/signup",
             "/auth/login",
             "/auth/introspect",
@@ -27,7 +27,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_API).permitAll()
+                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
                         .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
                         .anyRequest().authenticated()
         );
