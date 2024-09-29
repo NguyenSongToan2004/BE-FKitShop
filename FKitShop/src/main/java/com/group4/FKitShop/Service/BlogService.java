@@ -39,7 +39,7 @@ public class BlogService {
         return blog;
     }
 
-    private static final String UPLOAD_DIRECTORY = "uploads" + File.separator + "products";
+    private static final String UPLOAD_DIRECTORY = "uploads" + File.separator + "blogs";
 
     String uploadImage(MultipartFile file) {
         // Kiểm tra xem file có rỗng không
