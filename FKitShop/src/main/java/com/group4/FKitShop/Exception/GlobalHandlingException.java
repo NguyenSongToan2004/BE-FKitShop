@@ -23,7 +23,7 @@ public class GlobalHandlingException {
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ResponseObject> HandlingAppException(AppException exception) {
-        ErrorCode errorCode = exception.getErrorCode();
+        ErrorCode errorCode = exception.getCode();
         return ResponseEntity.badRequest().body(ResponseObject.builder()
                 .status(errorCode.getCode())
                 .message(errorCode.getMessage())

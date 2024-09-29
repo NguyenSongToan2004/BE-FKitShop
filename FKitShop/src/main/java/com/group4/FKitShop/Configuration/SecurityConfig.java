@@ -17,15 +17,18 @@ public class SecurityConfig {
             "/accounts/signup",
             "/auth/login",
             "/auth/introspect",
-
-
     };
-
+    private static final String [] GET_PUBLIC_API = {
+            "/product/latest",
+            "/product/{id}",
+            "/product/aproducts"
+    };
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_API).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
                         .anyRequest().authenticated()
         );
 
