@@ -1,4 +1,4 @@
-package com.group4.FKitShop.configuration;
+package com.group4.FKitShop.Configuration;
 
 
 import org.springframework.context.annotation.Bean;

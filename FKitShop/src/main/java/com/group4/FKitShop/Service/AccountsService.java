@@ -6,7 +6,7 @@ import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.AccountsRepository;
 import com.group4.FKitShop.Request.AccountsRequest;
-import com.group4.FKitShop.mapper.AccountsMapper;
+import com.group4.FKitShop.Mapper.AccountsMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
