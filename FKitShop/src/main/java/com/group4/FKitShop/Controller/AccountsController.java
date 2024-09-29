@@ -17,12 +17,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/accounts")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountsController {
     AccountsService accountsService;
 
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseObject createAccounts(@RequestBody @Valid AccountsRequest request){
         return ResponseObject.builder()
                 .status(1000)
