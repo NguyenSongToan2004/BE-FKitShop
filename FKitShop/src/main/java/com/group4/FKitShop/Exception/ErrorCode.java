@@ -1,5 +1,13 @@
 package com.group4.FKitShop.Exception;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception"),
     EMAIL_EXSITED(1001, "This email is already in use"),
@@ -16,22 +24,17 @@ public enum ErrorCode {
     PRODUCT_NOTFOUND(1010, "This product is not exist !!"),
     // File
     UPLOAD_FILE_FAILED(1011, "Fail to upload this file!!"),
+
+    TagName_DUPLICATED(1001, "This tag name has been taken"),
+    CategoryName_DUPLICATED(1001, "This category name has been taken"),
+    Blog_DUPLICATED(1001, "This blog name has been taken"),
+
+    Tag_NOTFOUND(1002, "Tag not found"),
+    Category_NOTFOUND(1002, "Category not found"),
+    Blog_NOTFOUND(1002, "Blog not found")
     ;
 
-    private int code = 100;
+    private int code = 1000;
     private String message;
-
-    ErrorCode(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
+    
 }
