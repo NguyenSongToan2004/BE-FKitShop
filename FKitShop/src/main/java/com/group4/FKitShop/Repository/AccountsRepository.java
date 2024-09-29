@@ -1,4 +1,15 @@
 package com.group4.FKitShop.Repository;
 
-public interface AccountsRepository {
+import com.group4.FKitShop.Entity.Accounts;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface AccountsRepository extends JpaRepository<Accounts, String> {
+    boolean existsByemail(String s);
+    boolean existsByphoneNumber(String s);
+
+    Optional<Accounts> findByemail(String email);
 }

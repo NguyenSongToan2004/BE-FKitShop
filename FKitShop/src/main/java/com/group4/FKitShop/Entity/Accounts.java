@@ -1,43 +1,55 @@
 package com.group4.FKitShop.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
 
+
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "Accounts")
 public class Accounts {
     @Id
-    @NotNull
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "accountID")
     String accountID;
 
-    @NotNull
+    @Column(name = "password")
     String password;
 
+    @Column(name = "image")
     String image;
 
-    @NotNull
+    @Column(name = "fullName")
     String fullName;
 
-    @NotNull
+    @Column(name = "dob")
+    Date dob;
+
+    @Column(name = "phoneNumber")
+    String phoneNumber;
+
+    @Column(name = "email")
     String email;
 
-    @NotNull
-    int status; // 0 : inactive ; 1: active
+    @Column(name = "status", columnDefinition = "integer default 1")
+    int status;
 
-    @NotNull
-    String role; // 0: admin ; 1: manager; 2: staff; 3: customer
+    @Column(name = "role", columnDefinition = "varchar default user")
+    String role;
 
-    @NotNull
+    @Column(name = "createDate")
+    @Temporal(TemporalType.DATE)
     Date createDate;
+
+    @Column(name = "managerID")
+    String managerId;
+
+
 }
