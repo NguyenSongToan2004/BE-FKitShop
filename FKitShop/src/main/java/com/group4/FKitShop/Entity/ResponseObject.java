@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseObject {
-    int status = 1;
+    int status = 1000;
     String message;
     Object data;
 }

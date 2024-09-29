@@ -38,9 +38,9 @@ public class TagController {
     @PostMapping()
     public ResponseObject createTag(@RequestBody @Valid TagRequest request ) {
         return ResponseObject.builder()
-                .code(1000)
+                .status(1000)
                 .message("Create tag successfully")
-                .o(tagService.createTag(request))
+                .data(tagService.createTag(request))
                 .build();
       }
 
@@ -48,9 +48,9 @@ public class TagController {
     @PutMapping("/{tagID}")
     public ResponseObject updateTag(@RequestBody @Valid TagRequest request, @PathVariable int tagID) {
         return ResponseObject.builder()
-                .code(1000)
+                .status(1000)
                 .message("Update tag successfully")
-                .o(tagService.updateTag(tagID, request))
+                .data(tagService.updateTag(tagID, request))
                 .build();
 
     }
@@ -59,7 +59,7 @@ public class TagController {
     public ResponseObject deleteTag(@PathVariable int tagID){
         tagService.deleteTag(tagID);
         return ResponseObject.builder()
-                .code(1000)
+                .status(1000)
                 .message("Delete tag successfully")
                 .build();
 

@@ -33,7 +33,6 @@ public class AuthenticationController {
                 .status(1000)
                 .data(result)
                 .build();
-
     }
 
     @PostMapping("/introspect")
@@ -43,7 +42,6 @@ public class AuthenticationController {
         return ResponseObject.builder()
                 .data(result)
                 .build();
-
     }
 
 }

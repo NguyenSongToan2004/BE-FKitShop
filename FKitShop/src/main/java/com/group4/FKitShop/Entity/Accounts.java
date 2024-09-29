@@ -51,5 +51,4 @@ public class Accounts {
     @Column(name = "managerID")
     String managerId;
 
-
 }

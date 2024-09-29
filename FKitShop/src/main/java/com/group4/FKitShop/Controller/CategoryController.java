@@ -36,18 +36,18 @@ public class CategoryController {
     @PostMapping()
     public ResponseObject createTag(@RequestBody @Valid CategoryRequest request ) {
         return ResponseObject.builder()
-                .code(1000)
+                .status(1000)
                 .message("Create category successfully")
-                .o(categoryService.createCategory(request))
+                .data(categoryService.createCategory(request))
                 .build();
     }
 
     @PutMapping("/{categoryID}")
     public  ResponseObject updateCategory(@RequestBody @Valid CategoryRequest request, @PathVariable String categoryID) {
         return ResponseObject.builder()
-                .code(1000)
+                .status(1000)
                 .message("Update tag successfully")
-                .o(categoryService.updateCategory(categoryID, request))
+                .data(categoryService.updateCategory(categoryID, request))
                 .build();
     }
 
@@ -55,7 +55,7 @@ public class CategoryController {
     public ResponseObject deleteCategory(@PathVariable String categoryID){
         categoryService.deleteTag(categoryID);
         return ResponseObject.builder()
-                .code(1000)
+                .status(1000)
                 .message("Delete tag successfully")
                 .build();
 

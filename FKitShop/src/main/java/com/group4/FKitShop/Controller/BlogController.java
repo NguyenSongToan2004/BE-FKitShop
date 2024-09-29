@@ -98,9 +98,8 @@ public class BlogController {
     public ResponseObject deleteTag(@PathVariable String blogID){
         blogService.deleteBlog(blogID);
         return ResponseObject.builder()
-                .code(1000)
+                .status(1000)
                 .message("Delete blog successfully")
                 .build();
-
     }
 }

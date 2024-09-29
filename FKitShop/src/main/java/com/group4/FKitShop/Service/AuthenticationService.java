@@ -43,8 +43,7 @@ public class AuthenticationService {
     @NonFinal
     //read yaml file
 //    @Value("${jwt.signerKey}")
-    protected static final String SIGNER_KEY =
-            "toM/m9xtJPF+QFijlzC6azr3XV7x9JExG8KR0gP7IU3gOf6mTqCAxve2dEWq6bQ7";
+    protected static final String SIGNER_KEY = "toM/m9xtJPF+QFijlzC6azr3XV7x9JExG8KR0gP7IU3gOf6mTqCAxve2dEWq6bQ7";
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -55,6 +54,7 @@ public class AuthenticationService {
 
         if (!auth)
             throw new AppException(ErrorCode.UNAUTHENTICATED);
+        // sai mật khẩu
 
         String accountID = String.valueOf(user.getAccountID());
 
@@ -64,7 +64,6 @@ public class AuthenticationService {
                 .token(token)
                 .isAutheticated(true)
                 .build();
-
     }
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
@@ -97,7 +96,6 @@ public class AuthenticationService {
                 .claim("accountID", accountID)
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
-
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -112,6 +110,5 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
     }
-
 
 }
