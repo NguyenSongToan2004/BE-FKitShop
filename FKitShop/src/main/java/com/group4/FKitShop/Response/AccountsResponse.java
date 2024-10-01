@@ -23,5 +23,5 @@ public class AccountsResponse {
     int status;
     String role;
     Date createDate;
-    String managerId;
+    String adminID;
 }

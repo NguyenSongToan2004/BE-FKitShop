@@ -5,8 +5,10 @@ import com.group4.FKitShop.Request.AccountsRequest;
 import com.group4.FKitShop.Request.AuthenticationRequest;
 import com.group4.FKitShop.Request.IntrospectRequest;
 import com.group4.FKitShop.Response.AuthenticationResponse;
+import com.group4.FKitShop.Service.AccountsService;
 import com.group4.FKitShop.Service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,17 @@ import java.text.ParseException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
+    AccountsService accountsService;
 
+    @PostMapping("/register")
+    public ResponseObject createAccounts(@RequestBody @Valid AccountsRequest request){
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Create account successfully")
+                .data(accountsService.createAccount(request))
+
+                .build();
+    }
 
     //map authenRequest then return to the ResponseObject
     @PostMapping("/login")

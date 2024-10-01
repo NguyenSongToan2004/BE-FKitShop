@@ -38,7 +38,7 @@ public class Accounts {
     @Column(name = "email")
     String email;
 
-    @Column(name = "status", columnDefinition = "integer default 1")
+    @Column(name = "status", columnDefinition = "integer default 0")
     int status;
 
     @Column(name = "role", columnDefinition = "varchar default user")
@@ -48,7 +48,7 @@ public class Accounts {
     @Temporal(TemporalType.DATE)
     Date createDate;
 
-    @Column(name = "managerID")
-    String managerId;
+    @Column(name = "adminID")
+    String adminID;
 
 }

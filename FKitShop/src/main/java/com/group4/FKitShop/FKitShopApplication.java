@@ -9,5 +9,4 @@ public class FKitShopApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FKitShopApplication.class, args);
 	}
-
 }

@@ -23,14 +23,16 @@ import java.util.Optional;
 public class AccountsController {
     AccountsService accountsService;
 
-    @PostMapping("/signup")
-    public ResponseObject createAccounts(@RequestBody @Valid AccountsRequest request){
-        return ResponseObject.builder()
-                .status(1000)
-                .message("Create account successfully")
-                .data(accountsService.createAccount(request))
-                .build();
-    }
+//    @PostMapping("/signup")
+//    public ResponseObject createAccounts(@RequestBody @Valid AccountsRequest request){
+//        return ResponseObject.builder()
+//
+//                .status(1000)
+//                .message("Create account successfully")
+//                .data(accountsService.createAccount(request))
+//
+//                .build();
+//    }
 
     @GetMapping
     public ResponseObject allAccounts(){

@@ -35,7 +35,7 @@ public class AccountsService {
             throw new AppException(ErrorCode.PHONE_EXISTED);
         }
         request.setRole("user");
-        request.setStatus(1);
+        request.setStatus(0);
         request.setCreateDate(new Date());
 
         Accounts accounts = accountsMapper.toAccounts(request);

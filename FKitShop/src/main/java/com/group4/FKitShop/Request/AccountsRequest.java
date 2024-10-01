@@ -24,5 +24,5 @@ public class AccountsRequest {
     int status;
     String role;
     Date createDate;
-    String managerId;
+    String adminID;
 }
