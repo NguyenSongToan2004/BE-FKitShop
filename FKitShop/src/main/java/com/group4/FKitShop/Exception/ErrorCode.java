@@ -8,7 +8,8 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCode {
-    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception"), EMAIL_EXSITED(1001, "This email is already in use"),
+    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception"),
+    EMAIL_EXSITED(1001, "This email is already in use"),
     USERNAME_INVALID(1002, "username at least 3 charaters"),
     PHONE_EXISTED(1003, "phone number is already in use"),
     USER_NOT_EXIST(1004, "User Not Found"),
@@ -30,7 +31,9 @@ public enum ErrorCode {
     CategoryName_DUPLICATED(1015, "This category name has been taken"),
     // Blog
     Blog_DUPLICATED(1016, "This blog name has been taken"),
-    Blog_NOTFOUND(1017, "Blog not found");
+    Blog_NOTFOUND(1017, "Blog not found"),
+
+    INVALID_TOKEN(1018, "Invalid token");
 
     private int code;
     private String message;

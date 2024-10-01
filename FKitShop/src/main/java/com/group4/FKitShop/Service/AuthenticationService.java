@@ -7,6 +7,7 @@ import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.AccountsRepository;
 import com.group4.FKitShop.Request.AuthenticationRequest;
 import com.group4.FKitShop.Request.IntrospectRequest;
+import com.group4.FKitShop.Response.AccountsResponse;
 import com.group4.FKitShop.Response.AuthenticationResponse;
 import com.group4.FKitShop.Response.IntrospectResponse;
 import com.nimbusds.jose.*;
@@ -29,6 +30,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 
 
 @Service
@@ -44,6 +46,7 @@ public class AuthenticationService {
     //read yaml file
 //    @Value("${jwt.signerKey}")
     protected static final String SIGNER_KEY = "toM/m9xtJPF+QFijlzC6azr3XV7x9JExG8KR0gP7IU3gOf6mTqCAxve2dEWq6bQ7";
+
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -87,13 +90,24 @@ public class AuthenticationService {
     private String generateToken(String email, String accountID) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
+        Optional<Accounts> a = accountsRepository.findById(accountID);
+
         //build payload
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 //user login
                 .subject(email)
                 //domain
-                .issuer("fkshop.domain")
+                .issuer("FKShop")
                 .claim("accountID", accountID)
+                .claim("image", a.get().getImage())
+                .claim("fullName", a.get().getFullName())
+                .claim("phoneNumber", a.get().getPhoneNumber())
+                .claim("email", a.get().getEmail())
+                .claim("dob",a.get().getDob())
+                .claim("status", a.get().getStatus())
+                .claim("role", a.get().getRole())
+                .claim("createDate", a.get().getCreateDate())
+                .claim("adminID", a.get().getAdminID())
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
                 .build();
@@ -110,5 +124,54 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
     }
+
+    public AccountsResponse tokenAccountResponse(String token) {
+
+        try {
+            // Parse the JWS token
+            JWSObject jwsObject = JWSObject.parse(token);
+
+            // Verify the signature using the secret key
+            if (jwsObject.verify(new MACVerifier(SIGNER_KEY.getBytes(StandardCharsets.UTF_8)))) {
+                log.info("Token signature is valid");
+
+                // Extract the payload
+                JWTClaimsSet claimsSet = JWTClaimsSet.parse(jwsObject.getPayload().toJSONObject());
+
+                // Extract token details (claims)
+                String accountID = claimsSet.getStringClaim("accountID");
+                String fullName = claimsSet.getStringClaim("fullName");
+                String image = claimsSet.getStringClaim("image");
+                String phoneNumber = claimsSet.getStringClaim("phoneNumber");
+                String email = claimsSet.getStringClaim("email");
+                Date dob = claimsSet.getDateClaim("dob");
+                int status = claimsSet.getIntegerClaim("status");
+                String role = claimsSet.getStringClaim("role");
+                Date createDate = claimsSet.getDateClaim("createDate");
+                String adminID = claimsSet.getStringClaim("adminID");
+
+                return AccountsResponse.builder()
+                        .accountID(accountID)
+                        .fullName(fullName)
+                        .image(image)
+                        .phoneNumber(phoneNumber)
+                        .status(status)
+                        .email(email)
+                        .dob(dob)
+                        .role(role)
+                        .createDate(createDate)
+                        .adminID(adminID)
+                        .build();
+            } else {
+                log.error("Invalid token signature");
+
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
+
+        } catch (ParseException | JOSEException e) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+    }
+
 
 }

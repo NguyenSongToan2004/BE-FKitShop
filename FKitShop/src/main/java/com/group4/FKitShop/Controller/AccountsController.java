@@ -4,8 +4,10 @@ package com.group4.FKitShop.Controller;
 import com.group4.FKitShop.Entity.Accounts;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.AccountsRequest;
+import com.group4.FKitShop.Request.TokenRequest;
 import com.group4.FKitShop.Response.AccountsResponse;
 import com.group4.FKitShop.Service.AccountsService;
+import com.group4.FKitShop.Service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,7 +24,7 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountsController {
     AccountsService accountsService;
-
+    AuthenticationService authenticationService;
 //    @PostMapping("/signup")
 //    public ResponseObject createAccounts(@RequestBody @Valid AccountsRequest request){
 //        return ResponseObject.builder()
@@ -46,6 +48,15 @@ public class AccountsController {
         Optional<Accounts> accounts = accountsService.AccountsByID(id);
         return ResponseObject.builder()
                 .data(accounts)
+                .build();
+    }
+
+    @PostMapping("/info")
+    public ResponseObject AccountsInfo(@RequestBody TokenRequest token){
+        String tokenrequest = token.getToken();
+        AccountsResponse accountsResponse = authenticationService.tokenAccountResponse(tokenrequest);
+        return ResponseObject.builder()
+                .data(accountsResponse)
                 .build();
     }
 

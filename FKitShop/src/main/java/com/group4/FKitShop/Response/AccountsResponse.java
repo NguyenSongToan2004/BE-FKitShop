@@ -17,7 +17,7 @@ public class AccountsResponse {
     String password;
     String image;
     String fullName;
-    int yob;
+    Date dob;
     String phoneNumber;
     String email;
     int status;
