@@ -23,11 +23,13 @@ public class SecurityConfig {
             "/auth/login",
             "/auth/introspect",
     };
+
     private static final String [] GET_PUBLIC_API = {
             "/product/latest",
             "/product/{id}",
             "/product/aproducts"
     };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
@@ -37,11 +39,8 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
                         .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
         );
-
-
-
         return httpSecurity.build();
     }
 
@@ -59,7 +58,4 @@ public class SecurityConfig {
 
         return new CorsFilter(url);
     }
-
-
-
 }

@@ -3,11 +3,17 @@ package com.group4.FKitShop.Mapper;
 
 import com.group4.FKitShop.Entity.Accounts;
 import com.group4.FKitShop.Request.AccountsRequest;
+import com.group4.FKitShop.Request.UpdateInfoCustomerRequest;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface AccountsMapper {
     Accounts toAccounts(AccountsRequest request);
 
+    void toAccounts(UpdateInfoCustomerRequest request, @MappingTarget Accounts accounts);
 
+    @Mapping(source = "managerID", target = "managerID")
+    void toAccounts(AccountsRequest request, @MappingTarget Accounts accounts);
 }

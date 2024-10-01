@@ -12,17 +12,16 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AccountsRequest {
-    String accountID;
+
     @Size(min = 6, message = "Password at least 6 characters")
     String password;
-    String image;
     String fullName;
     Date dob;
     @Size(min = 10, message = "Phone number at 10 digits")
     String phoneNumber;
     String email;
     int status;
-    String role;
-    Date createDate;
-    String managerId;
+    String role; // "user, staff, manager, admin
+    String managerID;
+
 }

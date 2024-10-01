@@ -33,6 +33,7 @@ public class ProductController {
             @RequestParam("type") String type,
             @RequestParam("image") MultipartFile image
     ) {
+        System.out.println("tới đây");
         ProductRequest request = ProductRequest.builder()
                 .name(name)
                 .description(description)
