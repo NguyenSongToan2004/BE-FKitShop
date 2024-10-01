@@ -51,7 +51,7 @@ public class AccountsController {
                 .build();
     }
 
-    @PostMapping("/info")
+    @GetMapping("/info")
     public ResponseObject AccountsInfo(@RequestBody TokenRequest token){
         String tokenrequest = token.getToken();
         AccountsResponse accountsResponse = authenticationService.tokenAccountResponse(tokenrequest);
