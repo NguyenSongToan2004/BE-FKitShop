@@ -48,11 +48,12 @@ public class CategoryService {
         if (categoryRepository.existsByCategoryName(request.getCategoryName()))
             throw new AppException(ErrorCode.CategoryName_DUPLICATED);
 
-        Category cate = categoryMapper.toCategory((request));
+      //  Category cate = categoryMapper.toCategory((request));
+        Category cate = new Category();
         cate.setCategoryID(generateUniqueCode());
-//        category.setTagID(tagID);
-//        category.setCategoryName(categoryName);
-//        category.setDescription(description);
+        cate.setTagID(request.getTagID());
+        cate.setCategoryName(request.getCategoryName());
+        cate.setDescription(request.getDescription());
 
 
         return categoryRepository.save(cate);

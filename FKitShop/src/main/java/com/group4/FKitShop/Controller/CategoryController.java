@@ -53,13 +53,10 @@ public class CategoryController {
 //    }
 
     @PostMapping()
-    public ResponseObject createCategory(@RequestBody @Valid CombineCateProductIDRequest request) {
+    public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request) {
 
-        CategoryRequest categoryRequest = request.getCategoryRequest();
-        ProductIDRequest productIDRequest = request.getProductIDRequest();
-
-        categoryService.createCategory(categoryRequest);
-        cateProductService.createCateProduct_Category(productIDRequest);
+        categoryService.createCategory(request);
+        cateProductService.createCateProduct_Category(request);
 
         return ResponseObject.builder()
                 .status(1000)

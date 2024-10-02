@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class CategoryRequest {
 
@@ -13,5 +15,6 @@ public class CategoryRequest {
     @Size(min = 5, max = 100, message = "Category name must not more than 100 characters")
     private String categoryName;
     private String description;
+    private List<String> productID;
 
 }
