@@ -3,11 +3,12 @@ package com.group4.FKitShop.Service;
 
 
 import com.group4.FKitShop.Entity.Blog;
+import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Mapper.BlogMapper;
 import com.group4.FKitShop.Repository.BlogRepository;
 import com.group4.FKitShop.Request.BlogRequest;
-import com.group4.FKitShop.mapper.BlogMapper;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -80,10 +81,6 @@ public class BlogService {
         if (blogRepository.existsByBlogName(request.getBlogName()))
             throw new AppException(ErrorCode.Blog_DUPLICATED);
 
-//        Tag tag = new Tag();
-//        tag.setTagName(tagName);
-//        tag.setDescription(description);
-
         Blog blog = blogMapper.toBlog(request);
         blog.setBlogID(generateUniqueCode());
         blog.setImage(uploadImage(image));
@@ -96,7 +93,12 @@ public class BlogService {
         if (!blogRepository.existsById(id))
             throw new AppException(ErrorCode.Blog_NOTFOUND);
 
+        Blog blogGetDate = blogRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.Blog_NOTFOUND));
+
         Blog blog = blogMapper.toBlog(request);
+        blog.setBlogID(id);
+        blog.setCreateDate(blogGetDate.getCreateDate());
         String imageUrl = uploadImage(image);
         if(imageUrl != ""){
             blog.setImage(imageUrl);

@@ -11,12 +11,11 @@ import lombok.*;
 @Builder
 public class BlogRequest {
 
-    private Integer tagID;
     @Size(min = 5, max = 100, message = "Blog name must not more than 100 characters")
     private String blogName;
     private String content;
     private String status;
-    private String image;
+    //private String image;
     private String accountID;
 
 }

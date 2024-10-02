@@ -1,7 +1,6 @@
 package com.group4.FKitShop.Controller;
 
 
-
 import com.group4.FKitShop.Entity.Blog;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.BlogRequest;
@@ -25,7 +24,7 @@ public class BlogController {
     BlogService blogService;
 
     @GetMapping()
-    public List<Blog> allBlog(){
+    public List<Blog> allBlog() {
         return blogService.allBlog();
     }
 
@@ -39,15 +38,14 @@ public class BlogController {
 
 
     @PostMapping()
-    ResponseEntity<ResponseObject> createBlog(@RequestParam("tagID") Integer tagID,
-                                     @RequestParam("blogName") String blogName,
-                                     @RequestParam("content") String content,
-                                     @RequestParam("status") String status,
-                                     @RequestParam("accountID") String accountID,
-                                     @RequestParam("image") MultipartFile image
+    ResponseEntity<ResponseObject> createBlog(
+            @RequestParam("blogName") String blogName,
+            @RequestParam("content") String content,
+            @RequestParam("status") String status,
+            @RequestParam("accountID") String accountID,
+            @RequestParam("image") MultipartFile image
     ) {
         BlogRequest request = BlogRequest.builder()
-                .tagID(tagID)
                 .blogName(blogName)
                 .content(content)
                 .status(status)
@@ -61,7 +59,6 @@ public class BlogController {
 
     @PutMapping("/{blogID}")
     ResponseEntity<ResponseObject> updateBlog(@PathVariable String blogID,
-                                              @RequestParam("tagID") Integer tagID,
                                               @RequestParam("blogName") String blogName,
                                               @RequestParam("content") String content,
                                               @RequestParam("status") String status,
@@ -69,7 +66,7 @@ public class BlogController {
                                               @RequestParam("image") MultipartFile image
     ) {
         BlogRequest request = BlogRequest.builder()
-                .tagID(tagID)
+
                 .blogName(blogName)
                 .content(content)
                 .status(status)
@@ -95,7 +92,7 @@ public class BlogController {
 //    }
 
     @DeleteMapping("/{blogID}")
-    public ResponseObject deleteTag(@PathVariable String blogID){
+    public ResponseObject deleteTag(@PathVariable String blogID) {
         blogService.deleteBlog(blogID);
         return ResponseObject.builder()
                 .status(1000)

@@ -25,8 +25,6 @@ public class Blog {
     @Column(name = "blogName")
     String blogName;
 
-    @Column(name = "tagID")
-    Integer tagID;
 
     @Column(name = "content")
     String content;
