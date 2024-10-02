@@ -17,6 +17,9 @@ public enum ErrorCode {
     // Lab
     LAB_NOTFOUND(1007, "This lab is not exist !!"),
     LAB_NAMEDUPLICATED(1008, "This lab name has taken alredy !!"),
+    LAB_UPLOAD_FAILED(1018, "Upload failed"),
+    LAB_UNSUPPORTED_FILENAME(1019, "Unsupported filename !!"),
+    LAB_DOWNLOAD_FAILED(1020, "Download failed"),
     // Product
     PRODUCT_NAMEDUPLICATED(1009, "This product name has taken alredy !!"),
     PRODUCT_NOTFOUND(1010, "This product is not exist !!"),
@@ -32,6 +35,7 @@ public enum ErrorCode {
     Blog_DUPLICATED(1016, "This blog name has been taken"),
     Blog_NOTFOUND(1017, "Blog not found");
 
+    // max = 18
     private int code;
     private String message;
 

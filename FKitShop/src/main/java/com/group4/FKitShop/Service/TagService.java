@@ -6,7 +6,7 @@ import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.TagRepository;
 import com.group4.FKitShop.Request.TagRequest;
-import com.group4.FKitShop.mapper.TagMapper;
+import com.group4.FKitShop.Mapper.TagMapper;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

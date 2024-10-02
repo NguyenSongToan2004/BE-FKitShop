@@ -1,4 +1,4 @@
-package com.group4.FKitShop.mapper;
+package com.group4.FKitShop.Mapper;
 
 
 import com.group4.FKitShop.Entity.Category;

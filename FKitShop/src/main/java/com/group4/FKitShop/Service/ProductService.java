@@ -85,6 +85,7 @@ public class ProductService {
         try {
             // Lấy đường dẫn tương đối đến thư mục uploads (có thể thay đổi tùy môi trường)
             String uploadDir = System.getProperty("user.dir") + File.separator + UPLOAD_DIRECTORY;
+            System.out.println("upload dir : "+ uploadDir);
             // System.getProperty("user.dir") : lấy ra đường dẫn đến thư mục hiện tại
             // Tạo thư mục nếu chưa tồn tại
             File directory = new File(uploadDir);

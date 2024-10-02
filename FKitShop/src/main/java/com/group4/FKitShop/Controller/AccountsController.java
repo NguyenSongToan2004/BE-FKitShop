@@ -25,9 +25,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountsController {
+
     AccountsService accountsService;
 
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public ResponseObject signUp(@RequestBody @Valid AccountsRequest request) {
         return ResponseObject.builder()
                 .status(1000)

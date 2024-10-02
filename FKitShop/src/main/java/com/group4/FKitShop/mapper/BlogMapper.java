@@ -1,13 +1,16 @@
-package com.group4.FKitShop.mapper;
+package com.group4.FKitShop.Mapper;
 
 
 
 import com.group4.FKitShop.Entity.Blog;
 import com.group4.FKitShop.Request.BlogRequest;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "Spring")
 public interface BlogMapper {
 
+    @Mapping(source = "tagID", target = "tagID", ignore = true)
     Blog toBlog(BlogRequest request);
+
 }
