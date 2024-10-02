@@ -32,8 +32,12 @@ public enum ErrorCode {
     // Blog
     Blog_DUPLICATED(1016, "This blog name has been taken"),
     Blog_NOTFOUND(1017, "Blog not found"),
-
-    INVALID_TOKEN(1018, "Invalid token");
+    //token
+    INVALID_TOKEN(1018, "Invalid token"),
+    //sql
+    EXECUTED_FAILED(1111, "Executed failed"),
+    //orders
+    ORDERS_NOTFOUND(1019, "Orders not found");
 
     private int code;
     private String message;
