@@ -46,8 +46,7 @@ public class CategoryService {
 
     public Category createCategory(CategoryRequest request){
         if (categoryRepository.existsByCategoryName(request.getCategoryName()))
-            throw new AppException(ErrorCode.TagName_DUPLICATED);
-
+            throw new AppException(ErrorCode.CategoryName_DUPLICATED);
 
         Category cate = categoryMapper.toCategory((request));
         cate.setCategoryID(generateUniqueCode());

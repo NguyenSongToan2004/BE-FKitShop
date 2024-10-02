@@ -2,7 +2,11 @@ package com.group4.FKitShop.Controller;
 
 import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Entity.ResponseObject;
+import com.group4.FKitShop.Repository.CategoryRepository;
 import com.group4.FKitShop.Request.CategoryRequest;
+import com.group4.FKitShop.Request.CombineCateProductIDRequest;
+import com.group4.FKitShop.Request.ProductIDRequest;
+import com.group4.FKitShop.Service.CateProductService;
 import com.group4.FKitShop.Service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -20,6 +24,7 @@ import java.util.List;
 public class CategoryController {
 
     CategoryService categoryService;
+    CateProductService cateProductService;
 
     @GetMapping()
     public List<Category> allCategory(){
@@ -33,12 +38,32 @@ public class CategoryController {
         );
     }
 
+//    @PostMapping()
+//    public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request,
+//                                         @RequestBody ProductIDRequest productIDRequest) {
+//
+//
+//
+//        return ResponseObject.builder()
+//                .status(1000)
+//                .message("Create category successfully")
+//                .data(categoryService.createCategory(request))
+//                .data(cateProductService.createCateProduct_Category(productIDRequest))
+//                .build();
+//    }
+
     @PostMapping()
-    public ResponseObject createTag(@RequestBody @Valid CategoryRequest request ) {
+    public ResponseObject createCategory(@RequestBody @Valid CombineCateProductIDRequest request) {
+
+        CategoryRequest categoryRequest = request.getCategoryRequest();
+        ProductIDRequest productIDRequest = request.getProductIDRequest();
+
+        categoryService.createCategory(categoryRequest);
+        cateProductService.createCateProduct_Category(productIDRequest);
+
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create category successfully")
-                .data(categoryService.createCategory(request))
                 .build();
     }
 
