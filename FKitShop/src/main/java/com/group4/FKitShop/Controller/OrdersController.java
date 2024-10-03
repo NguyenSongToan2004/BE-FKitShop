@@ -4,6 +4,7 @@ package com.group4.FKitShop.Controller;
 import com.group4.FKitShop.Entity.Orders;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.OrdersRequest;
+import com.group4.FKitShop.Service.OrderDetailsService;
 import com.group4.FKitShop.Service.OrdersService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -21,16 +22,23 @@ import java.util.List;
 public class OrdersController {
 
     OrdersService ordersService;
+    OrderDetailsService orderDetailsService;
 
-    @PostMapping("/checkout")
+    //bussiness flow
+    @PostMapping("/info")
     public ResponseObject checkout(@RequestBody @Valid OrdersRequest request) {
         return ResponseObject.builder()
                 .status(1000)
-                .message("Checkout successful")
+                .message("Create Order Infomation successfully")
                 .data(ordersService.createOrder(request))
                 .build();
 
     }
+
+
+
+
+
 
     @GetMapping("/allorders")
     public ResponseObject allOrders() {

@@ -37,7 +37,9 @@ public enum ErrorCode {
     //sql
     EXECUTED_FAILED(1111, "Executed failed"),
     //orders
-    ORDERS_NOTFOUND(1019, "Orders not found");
+    ORDERS_NOTFOUND(1019, "Orders not found"),
+    //orderdetails
+    ORDERDETAILS_NOTFOUND(1020, "Order details not found");
 
     private int code;
     private String message;

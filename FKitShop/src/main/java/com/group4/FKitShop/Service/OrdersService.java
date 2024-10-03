@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -39,7 +38,7 @@ public class OrdersService {
             Orders orders = ordersMapper.toOrders(request);
             orders.setOrdersID(generateUniqueCode());
             //total price auto tinh, gio test truoc
-            orders.setTotalPrice(1000000.0);
+           // orders.setTotalPrice(1000000.0);
             orders.setStatus("Pending");
             orders.setOrderDate(new Date());
             return ordersRepository.save(orders);
