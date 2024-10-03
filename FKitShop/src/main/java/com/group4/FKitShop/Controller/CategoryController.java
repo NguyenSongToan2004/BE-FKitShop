@@ -2,10 +2,8 @@ package com.group4.FKitShop.Controller;
 
 import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Entity.ResponseObject;
-import com.group4.FKitShop.Repository.CategoryRepository;
 import com.group4.FKitShop.Request.CategoryRequest;
-import com.group4.FKitShop.Request.CombineCateProductIDRequest;
-import com.group4.FKitShop.Request.ProductIDRequest;
+import com.group4.FKitShop.Response.StringRespone;
 import com.group4.FKitShop.Service.CateProductService;
 import com.group4.FKitShop.Service.CategoryService;
 import jakarta.validation.Valid;
@@ -38,48 +36,42 @@ public class CategoryController {
         );
     }
 
-//    @PostMapping()
-//    public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request,
-//                                         @RequestBody ProductIDRequest productIDRequest) {
-//
-//
-//
-//        return ResponseObject.builder()
-//                .status(1000)
-//                .message("Create category successfully")
-//                .data(categoryService.createCategory(request))
-//                .data(cateProductService.createCateProduct_Category(productIDRequest))
-//                .build();
-//    }
+    // get list category by productID
+    @GetMapping("/byProductID/{productID}")
+    ResponseEntity<StringRespone> getCategoryByProductID(@PathVariable String productID) {
+        return ResponseEntity.ok(
+                new StringRespone(1000, "Found successfully", categoryService.getCategoryIDList(productID))
+        );
+    }
 
     @PostMapping()
     public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request) {
-
-        categoryService.createCategory(request);
-        cateProductService.createCateProduct_Category(request);
-
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create category successfully")
+                .data(categoryService.createCategory(request))
+                .data(cateProductService.createCateProduct_Category(request))
                 .build();
     }
 
     @PutMapping("/{categoryID}")
     public  ResponseObject updateCategory(@RequestBody @Valid CategoryRequest request, @PathVariable String categoryID) {
+        cateProductService.deleteCateProduct_Category(categoryID);
         return ResponseObject.builder()
                 .status(1000)
-                .message("Update tag successfully")
+                .message("Update category successfully")
                 .data(categoryService.updateCategory(categoryID, request))
+                .data(cateProductService.createCateProduct_Category(request))
                 .build();
     }
 
-    @DeleteMapping("/{tagID}")
+    @DeleteMapping("/{categoryID}")
     public ResponseObject deleteCategory(@PathVariable String categoryID){
-        categoryService.deleteTag(categoryID);
+        categoryService.deleteCategory(categoryID);
+        cateProductService.deleteCateProduct_Category(categoryID);
         return ResponseObject.builder()
                 .status(1000)
-                .message("Delete tag successfully")
+                .message("Delete category successfully")
                 .build();
-
     }
 }

@@ -104,4 +104,10 @@ public class ProductService {
     public List<Product> getActiveProduct(){
         return repository.getActiveProducts();
     }
+
+
+    // get lis product by categoryID
+    public List<String> getProductIDList(String id){
+        return repository.getProductIDList(id);
+    }
 }

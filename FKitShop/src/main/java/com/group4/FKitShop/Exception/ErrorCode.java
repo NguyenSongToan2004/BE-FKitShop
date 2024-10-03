@@ -33,7 +33,9 @@ public enum ErrorCode {
     Blog_DUPLICATED(1016, "This blog name has been taken"),
     Blog_NOTFOUND(1017, "Blog not found"),
 
-    INVALID_TOKEN(1018, "Invalid token");
+    INVALID_TOKEN(1018, "Invalid token"),
+
+    CateProduct_NOTFOUND(1019, "This relationship not found");
 
     private int code;
     private String message;

@@ -1,9 +1,11 @@
 package com.group4.FKitShop.Service;
 
 
+import com.group4.FKitShop.Entity.CateProduct;
 import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Repository.CateProductRepository;
 import com.group4.FKitShop.Repository.CategoryRepository;
 import com.group4.FKitShop.Request.CategoryRequest;
 import com.group4.FKitShop.mapper.CategoryMapper;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +24,7 @@ import java.util.List;
 public class CategoryService {
 
     CategoryRepository categoryRepository;
+    CateProductRepository cateProductRepository;
     CategoryMapper categoryMapper;
 
     public List<Category> allCategory(){
@@ -31,6 +35,16 @@ public class CategoryService {
         Category cate = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.Category_NOTFOUND));
         return cate;
+    }
+
+    public List<Category> getCategoryByProductID(String productID){
+        List<CateProduct> cateProductList  = cateProductRepository.findByProductID(productID);
+        List<Category> categoryList = new ArrayList<>();
+        for( CateProduct cateProduct : cateProductList ){
+            Category category = getCategoryByID(cateProduct.getCategoryID());
+            categoryList.add(category);
+        }
+        return categoryList;
     }
 
     public String generateUniqueCode() {
@@ -63,22 +77,6 @@ public class CategoryService {
         Category cate = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.Category_NOTFOUND));
 
-//        if(request.getTagID() != getCategoryByID(id).getTagID()) {
-//            cate.setTagID(request.getTagID());
-//        }
-//
-//        if(request.getCategoryName() == null){
-//            cate.setCategoryName(getCategoryByID(id).getCategoryName());
-//        }else{
-//            cate.setCategoryName(request.getCategoryName());
-//        }
-//
-//        if(request.getDescription() == null){
-//            cate.setDescription(getCategoryByID(id).getDescription());
-//        }else{
-//            cate.setDescription(request.getDescription());
-//        }
-
         cate.setTagID(request.getTagID());
         cate.setCategoryName(request.getCategoryName());
         cate.setDescription(request.getDescription());
@@ -86,10 +84,14 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteTag(String id) {
+    public void deleteCategory(String id) {
         if (!categoryRepository.existsById(id))
             throw new AppException(ErrorCode.Category_NOTFOUND);
         categoryRepository.deleteById(id);
+    }
+
+    public List<String> getCategoryIDList(String id){
+        return categoryRepository.getCategoryIDList(id);
     }
 
 
