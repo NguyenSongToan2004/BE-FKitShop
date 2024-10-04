@@ -30,5 +30,6 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
             "and productID = :productID",nativeQuery = true)
     void deletebyAccountIDAndProductID(@Param("accountID") String accountID, @Param("productID") String productID);
 
+    Optional<Cart> findByproductID(String productID);
 
 }

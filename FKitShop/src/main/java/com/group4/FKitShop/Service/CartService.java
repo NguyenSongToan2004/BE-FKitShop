@@ -3,6 +3,7 @@ package com.group4.FKitShop.Service;
 
 import com.group4.FKitShop.Entity.Cart;
 import com.group4.FKitShop.Entity.Orders;
+import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.CartRepository;
@@ -78,22 +79,48 @@ public class CartService {
         }
     }
 
-//    public CartResponse updateCartByProductID(String accountID, String productID) {
-//        Map<String, Integer> tmp = new HashMap<>();
-//        List<Cart> cartlist = cartRepository.findByaccountID(accountID);
-//        for (Cart cart : cartlist) {
-//            tmp.put(cart.getProductID(), cart.getQuantity());
-//        }
-//        tmp.remove(productID);
-//        for (Cart cart : cartlist) {
-//            cart.setQuantity(tmp.get(cart.getProductID()));
-//            cartRepository.save(cart);
-//        }
-//        return CartResponse.builder()
-//                .accountID(accountID)
-//                .productQuantity(tmp)
-//                .build();
-//    }
+    //update all cart quantity
+    public CartResponse updateAllQuantityCart(String accountID, Map<String, Integer> productQuantity) {
+        try {
+            Map<String, Integer> tmp = new HashMap<>();
+            List<Cart> cartlist = cartRepository.findByaccountID(accountID);
+            for (Cart cart : cartlist) {
+                tmp.put(cart.getProductID(), cart.getQuantity());
+            }
+            for (Cart cart : cartlist) {
+                for (Map.Entry<String, Integer> entry : productQuantity.entrySet()) {
+                    if (cart.getProductID().equals(entry.getKey())) {
+                        cart.setQuantity(entry.getValue());
+                        cartRepository.save(cart);
+                    }
+                }
+            }
+            return CartResponse.builder()
+                    .accountID(accountID)
+                    .productQuantity(productQuantity)
+                    .build();
+        } catch (DataIntegrityViolationException e) {
+            // Catch DataIntegrityViolationException and rethrow as AppException
+            //e.getMostSpecificCause().getMessage()
+            throw new AppException(ErrorCode.EXECUTED_FAILED);
+        }
+    }
+
+    //update 1 product quantity
+    public Cart updateCartByProductID(String accountID, String productID, int quantity) {
+        try {
+            Cart cart = cartRepository.findByproductID(productID).
+                    orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+
+            cart.setQuantity(quantity);
+            cartRepository.save(cart);
+            return cart;
+        } catch (DataIntegrityViolationException e) {
+            // Catch DataIntegrityViolationException and rethrow as AppException
+            //e.getMostSpecificCause().getMessage()
+            throw new AppException(ErrorCode.EXECUTED_FAILED);
+        }
+    }
 
     public CartResponse deleteCartByProductID(String accountID, String productID) {
         try {
