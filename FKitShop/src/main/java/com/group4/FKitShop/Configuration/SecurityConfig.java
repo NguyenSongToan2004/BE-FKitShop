@@ -40,9 +40,6 @@ public class SecurityConfig {
 //                        .anyRequest().authenticated()
                         request.anyRequest().permitAll()
         );
-
-
-
         return httpSecurity.build();
     }
 
