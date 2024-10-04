@@ -8,6 +8,7 @@ import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.ProductRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -75,8 +76,9 @@ public class ProductService {
         return num;
     }
 
-    private static final String UPLOAD_DIRECTORY = "uploads" + File.separator + "products";
-
+    //private static final String UPLOAD_DIRECTORY = "FKitShop" +File.separator+ "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"uploads";
+    @Value("${upload.directory}")
+    private String UPLOAD_DIRECTORY;
     String uploadImage(MultipartFile file) {
         // Kiểm tra xem file có rỗng không
         if (file.isEmpty()) {
@@ -84,9 +86,9 @@ public class ProductService {
         }
         try {
             // Lấy đường dẫn tương đối đến thư mục uploads (có thể thay đổi tùy môi trường)
-            String uploadDir = System.getProperty("user.dir") + File.separator + UPLOAD_DIRECTORY;
-            // System.getProperty("user.dir") : lấy ra đường dẫn đến thư mục hiện tại
-            // Tạo thư mục nếu chưa tồn tại
+            String uploadDir = System.getProperty("user.dir") + File.separator + UPLOAD_DIRECTORY + File.separator+ "products";
+            // lấy ra đường dẫn đến thư mục hiện tại
+            System.out.println(System.getProperty("user.dir"));// Tạo thư mục nếu chưa tồn tại
             File directory = new File(uploadDir);
             if (!directory.exists()) {
                 directory.mkdir();

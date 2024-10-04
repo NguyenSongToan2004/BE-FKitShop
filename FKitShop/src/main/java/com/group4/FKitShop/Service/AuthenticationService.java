@@ -64,6 +64,7 @@ public class AuthenticationService {
         var token = generateToken(request.getEmail(), accountID);
 
         return AuthenticationResponse.builder()
+                .accounts(user)
                 .token(token)
                 .isAutheticated(true)
                 .build();

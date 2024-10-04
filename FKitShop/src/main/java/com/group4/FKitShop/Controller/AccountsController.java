@@ -52,7 +52,7 @@ public class AccountsController {
     }
 
     @GetMapping("/info")
-    public ResponseObject AccountsInfo(@RequestBody TokenRequest token){
+    public ResponseObject AccountsInfo(@RequestHeader TokenRequest token){
         String tokenrequest = token.getToken();
         AccountsResponse accountsResponse = authenticationService.tokenAccountResponse(tokenrequest);
         return ResponseObject.builder()

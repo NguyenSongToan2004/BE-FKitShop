@@ -2,6 +2,8 @@ server:
   port: 8080
   servlet:
     context-path: /fkshop
+upload:
+  directory: FKitShop/src/main/resources/static/uploads
 spring:
   datasource:
     url: "jdbc:mysql://localhost:3360/FKShop"
@@ -16,6 +18,8 @@ spring:
       enabled: true         # Bật hỗ trợ upload file
       max-file-size: 5MB    # Kích thước tối đa cho mỗi file
       max-request-size: 5MB # Kích thước tối đa cho toàn bộ request
+
+
 
 # secretKey
 # jwt:
