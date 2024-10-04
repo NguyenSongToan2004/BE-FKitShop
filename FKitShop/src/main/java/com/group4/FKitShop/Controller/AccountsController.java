@@ -52,9 +52,10 @@ public class AccountsController {
     }
 
     @GetMapping("/info")
-    public ResponseObject AccountsInfo(@RequestHeader TokenRequest token){
-        String tokenrequest = token.getToken();
-        AccountsResponse accountsResponse = authenticationService.tokenAccountResponse(tokenrequest);
+    public ResponseObject AccountsInfo(@RequestHeader("Authorization") String authorization) {
+        String token = authorization.replace("Bearer ", ""); // Lấy token từ header
+        AccountsResponse accountsResponse = authenticationService.tokenAccountResponse(token);
+
         return ResponseObject.builder()
                 .data(accountsResponse)
                 .build();
