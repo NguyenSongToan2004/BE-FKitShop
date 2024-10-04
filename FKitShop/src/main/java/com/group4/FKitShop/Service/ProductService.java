@@ -24,8 +24,14 @@ public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    @Value("${upload.directory-upload.product}")
+//    @Value("${upload.directory-upload.product}")
+//    private String uploadDirectory;
+
+    @Value("${amazonProperties.folder.Product}")
     private String uploadDirectory;
+
+    @Autowired
+    private AmazonClient amazonClient;
 
     public Product addProduct(ProductRequest request, MultipartFile image) {
         if (repository.existsByName(request.getName()))
@@ -33,7 +39,7 @@ public class ProductService {
         Product product = new Product();
         product.setProductID(generateID());
         product.setCreateDate(new Date());
-        product.setImage(FileManagement.uploadImage(image, uploadDirectory));
+        product.setImage(amazonClient.uploadFile(image, uploadDirectory));
         ProductMapper.INSTANCE.toProduct(request, product);
 
         return repository.save(product);
@@ -50,7 +56,7 @@ public class ProductService {
         Product product = repository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
-        String imageUrl = FileManagement.uploadImage(image, uploadDirectory);
+        String imageUrl = amazonClient.uploadFile(image, uploadDirectory);
         if(imageUrl != ""){
             product.setImage(imageUrl);
         }
@@ -75,6 +81,9 @@ public class ProductService {
 
     String generateID() {
         String num = repository.getNumberProduct();
+        if(num == null){
+            return String.format("P%05d", 1);
+        }
         int max = Integer.parseInt(num.substring(1, 6)) + 1;
         num = String.format("P%05d", max);
         return num;

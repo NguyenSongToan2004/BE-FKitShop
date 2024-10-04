@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/storage/")
 public class BucketController {
-
+    
     private AmazonClient amazonClient;
 
     @Autowired
@@ -27,4 +27,5 @@ public class BucketController {
                              @RequestParam(value = "folderName") String folderName) { // Add folderName parameter
         return this.amazonClient.uploadFile(file, folderName); // Pass folderName to the service
     }
+
 }

@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.group4.FKitShop.Exception.AppException;
+import com.group4.FKitShop.Exception.ErrorCode;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,9 @@ public class AmazonClient {
     }
 
     public String uploadFile(MultipartFile multipartFile, String folderName) { // Add folderName parameter
+        if(multipartFile.isEmpty()) {
+            return "";
+        }
         String fileUrl = "";
         try {
             File file = convertMultiPartToFile(multipartFile);
@@ -66,7 +71,6 @@ public class AmazonClient {
         }
         return fileUrl;
     }
-
 
     //convert MultipartFile -> File
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
