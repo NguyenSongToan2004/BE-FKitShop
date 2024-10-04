@@ -27,6 +27,7 @@ public class ProductController {
     @Autowired
     CategoryService categoryService;
 
+    // create product & cateProduct relation tuong ung
     @PostMapping("/")
     ResponseEntity<ResponseObject> addProduct(
             @RequestParam("name") String name,
@@ -108,6 +109,7 @@ public class ProductController {
         );
     }
 
+    // delete product & cateProduct relation tuong ung
     @DeleteMapping("/{productID}")
     ResponseEntity<ResponseObject> deleteProduct(@PathVariable String productID) {
         cateProductService.deleteCateProduct_Product(productID);

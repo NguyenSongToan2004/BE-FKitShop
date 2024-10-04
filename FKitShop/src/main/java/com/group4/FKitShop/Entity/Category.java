@@ -25,14 +25,4 @@ public class Category {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "tagID", insertable = false, updatable = false)
-    private Tag tag;
-
-    public Category(String categoryID, int tagID, String categoryName, String description) {
-        this.categoryID = categoryID;
-        this.tagID = tagID;
-        this.categoryName = categoryName;
-        this.description = description;
-    }
 }

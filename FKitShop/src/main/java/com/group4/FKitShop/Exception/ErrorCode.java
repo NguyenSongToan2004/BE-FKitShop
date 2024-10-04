@@ -35,7 +35,11 @@ public enum ErrorCode {
 
     INVALID_TOKEN(1018, "Invalid token"),
 
-    CateProduct_NOTFOUND(1019, "This relationship not found");
+    CateProduct_NOTFOUND(1019, "This relationship not found"),
+
+    Question_NOTFOUND(1020, "Question not found"),
+
+    Feedback_NOTFOUND(1021, "Feedback not found");
 
     private int code;
     private String message;

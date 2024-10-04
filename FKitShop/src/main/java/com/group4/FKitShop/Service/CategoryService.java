@@ -8,7 +8,7 @@ import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.CateProductRepository;
 import com.group4.FKitShop.Repository.CategoryRepository;
 import com.group4.FKitShop.Request.CategoryRequest;
-import com.group4.FKitShop.mapper.CategoryMapper;
+import com.group4.FKitShop.Mapper.CategoryMapper;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -90,8 +90,14 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
-    public List<String> getCategoryIDList(String id){
-        return categoryRepository.getCategoryIDList(id);
+    // list cate by productID
+    public List<Category> getCategoryList(String id){
+        return categoryRepository.getCategoryList(id);
+    }
+
+    // list cate by tagID
+    public List<Category> getCategoryByTag(String id){
+        return categoryRepository.getCategoryByTagID(id);
     }
 
 

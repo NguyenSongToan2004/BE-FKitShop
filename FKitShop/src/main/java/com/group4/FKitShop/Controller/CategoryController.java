@@ -24,11 +24,14 @@ public class CategoryController {
     CategoryService categoryService;
     CateProductService cateProductService;
 
+    // get all cate
     @GetMapping()
     public List<Category> allCategory(){
         return categoryService.allCategory();
     }
 
+
+    // get cate by ID
     @GetMapping("/{categoryID}")
     ResponseEntity<ResponseObject> getCategoryByID(@PathVariable() String categoryID) {
         return ResponseEntity.ok(
@@ -38,12 +41,21 @@ public class CategoryController {
 
     // get list category by productID
     @GetMapping("/byProductID/{productID}")
-    ResponseEntity<StringRespone> getCategoryByProductID(@PathVariable String productID) {
+    ResponseEntity<ResponseObject> getCategoryByProductID(@PathVariable String productID) {
         return ResponseEntity.ok(
-                new StringRespone(1000, "Found successfully", categoryService.getCategoryIDList(productID))
+                new ResponseObject(1000, "Found successfully", categoryService.getCategoryList(productID))
         );
     }
 
+    // get cate by tagID
+    @GetMapping("/bytagID/{tagID}")
+    ResponseEntity<ResponseObject> getCategoryByTag(@PathVariable String tagID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", categoryService.getCategoryByTag(tagID))
+        );
+    }
+
+    // create cate & create cateProduct relationship tuong ung
     @PostMapping()
     public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request) {
         return ResponseObject.builder()
@@ -65,6 +77,7 @@ public class CategoryController {
                 .build();
     }
 
+    // delete category & delete cateProduct tuong ung
     @DeleteMapping("/{categoryID}")
     public ResponseObject deleteCategory(@PathVariable String categoryID){
         categoryService.deleteCategory(categoryID);

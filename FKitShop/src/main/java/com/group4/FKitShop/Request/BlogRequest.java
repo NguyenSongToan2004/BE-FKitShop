@@ -3,6 +3,8 @@ package com.group4.FKitShop.Request;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -15,8 +17,10 @@ public class BlogRequest {
     private String blogName;
     private String content;
     private String status;
-    //private String image;
     private String accountID;
+
+    // in order to crud BlogTag table
+    List<Integer> tagID;
 
 }
 

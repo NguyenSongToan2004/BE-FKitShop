@@ -3,6 +3,7 @@ package com.group4.FKitShop.Service;
 
 
 import com.group4.FKitShop.Entity.Blog;
+import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.BlogMapper;
@@ -105,12 +106,25 @@ public class BlogService {
         return blogRepository.save(blog);
     }
 
-
-
     @Transactional
     public void deleteBlog(String id) {
         if (!blogRepository.existsById(id))
             throw new AppException(ErrorCode.Blog_NOTFOUND);
         blogRepository.deleteById(id);
     }
+
+    // get blog by tagID
+    public List<Blog> getBlogByTag(int id){
+        return blogRepository.getBlogList(id);
+    }
+
+    // filter by date
+    public List<Blog> getBlogDateDesc(){
+        return blogRepository.getBlogListDesc();
+    }
+    public List<Blog> getBlogDateAsc(){
+        return blogRepository.getBlogListAsc();
+    }
+
+
 }

@@ -1,12 +1,13 @@
 package com.group4.FKitShop.Service;
 
 
+import com.group4.FKitShop.Entity.Blog;
 import com.group4.FKitShop.Entity.Tag;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.TagRepository;
 import com.group4.FKitShop.Request.TagRequest;
-import com.group4.FKitShop.mapper.TagMapper;
+import com.group4.FKitShop.Mapper.TagMapper;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +39,6 @@ public class TagService {
         if (tagRepository.existsByTagName(request.getTagName()))
             throw new AppException(ErrorCode.TagName_DUPLICATED);
 
-//        Tag tag = new Tag();
-//        tag.setTagName(tagName);
-//        tag.setDescription(description);
-
         Tag tag = tagMapper.toTag(request);
         return tagRepository.save(tag);
     }
@@ -50,23 +47,10 @@ public class TagService {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow( () -> new AppException(ErrorCode.Tag_NOTFOUND));
 
-//        if(request.getTagName() == null){
-//            tag.setTagName(getTagByID(id).getTagName());
-//        }else{
-//            tag.setTagName(request.getTagName());
-//        }
-//
-//        if(request.getDescription() == null){
-//            tag.setDescription(getTagByID(id).getDescription());
-//        }else{
-//            tag.setDescription(request.getDescription());
-//        }
-
         tag.setTagName(request.getTagName());
         tag.setDescription(request.getDescription());
         return tagRepository.save(tag);
     }
-
 
     @Transactional
     public void deleteTag(int id) {
@@ -75,6 +59,9 @@ public class TagService {
         tagRepository.deleteById(id);
     }
 
-    
+    // get tag by blogID
+    public List<Tag> getTagByBlog(String id){
+        return tagRepository.getTagList(id);
+    }
 
 }
