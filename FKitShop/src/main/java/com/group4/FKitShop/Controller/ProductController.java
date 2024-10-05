@@ -31,7 +31,7 @@ public class ProductController {
             @RequestParam("material") String material,
             @RequestParam("dimension") String dimension,
             @RequestParam("type") String type,
-            @RequestParam("image") MultipartFile image
+            @RequestParam("images") MultipartFile[] image
     ) {
         ProductRequest request = ProductRequest.builder()
                 .name(name)
@@ -71,8 +71,8 @@ public class ProductController {
                                               @RequestParam("weight") double weight,
                                               @RequestParam("material") String material,
                                               @RequestParam("dimension") String dimension,
-                                              @RequestParam("type") String type,
-                                              @RequestParam("image") MultipartFile image) {
+                                              @RequestParam("type") String type
+                                              ) {
         ProductRequest request = ProductRequest.builder()
                 .name(name)
                 .description(description)
@@ -86,9 +86,16 @@ public class ProductController {
                 .dimension(dimension)
                 .type(type)
                 .build();
-        Product product = service.updateProduct(id, request, image);
+        Product product = service.updateProduct(id, request);
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Update Successfully !!", product)
+        );
+    }
+
+    @PutMapping("/image/{productID}/{imageID}")
+    ResponseEntity<ResponseObject> updateImage(@RequestParam("image") MultipartFile image, @PathVariable String productID, @PathVariable int imageID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Update image successfully !!", service.updateImage(image, productID, imageID) + " row affeted")
         );
     }
 

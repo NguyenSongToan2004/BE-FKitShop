@@ -1,10 +1,12 @@
 package com.group4.FKitShop.Service;
 
+import com.group4.FKitShop.Entity.Image;
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.File.FileManagement;
 import com.group4.FKitShop.Mapper.ProductMapper;
+import com.group4.FKitShop.Repository.ImageRepository;
 import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.ProductRequest;
 import jakarta.transaction.Transactional;
@@ -15,31 +17,41 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class ProductService {
-
+    //    @Value("${upload.directory-upload.product}")
+    //    private String uploadDirectory;
     @Autowired
     private ProductRepository repository;
-
-//    @Value("${upload.directory-upload.product}")
-//    private String uploadDirectory;
-
     @Value("${amazonProperties.folder.Product}")
     private String uploadDirectory;
-
     @Autowired
     private AmazonClient amazonClient;
+    @Autowired
+    private ImageRepository imageRepository;
 
-    public Product addProduct(ProductRequest request, MultipartFile image) {
+    public Product addProduct(ProductRequest request, MultipartFile[] images) {
         if (repository.existsByName(request.getName()))
             throw new AppException(ErrorCode.PRODUCT_NAMEDUPLICATED);
         Product product = new Product();
         product.setProductID(generateID());
         product.setCreateDate(new Date());
-        product.setImage(amazonClient.uploadFile(image, uploadDirectory));
+        product.setImages(new ArrayList<Image>());
+        for (MultipartFile file : images) {
+            Image image = new Image();
+            image.setName(file.getOriginalFilename());
+            String imgUrl = existFileName(file.getOriginalFilename());
+            if (imgUrl != null)
+                image.setUrl(imgUrl);
+            else
+                image.setUrl(amazonClient.uploadFile((MultipartFile) file, uploadDirectory));
+            image.setProduct(product);
+            product.getImages().add(image);
+        }
         ProductMapper.INSTANCE.toProduct(request, product);
 
         return repository.save(product);
@@ -51,17 +63,36 @@ public class ProductService {
         );
     }
 
-    public Product updateProduct(String id, ProductRequest request, MultipartFile image) {
+    public Product updateProduct(String id, ProductRequest request) {
 
         Product product = repository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
-        String imageUrl = amazonClient.uploadFile(image, uploadDirectory);
-        if(imageUrl != ""){
-            product.setImage(imageUrl);
-        }
-        ProductMapper.INSTANCE.toProduct(request,product);
+
+        ProductMapper.INSTANCE.toProduct(request, product);
         return repository.save(product);
+    }
+
+    public String updateImage(MultipartFile image, String productID, int imageID) {
+        if (image.isEmpty()) {
+            throw new AppException(ErrorCode.UPLOAD_FILE_FAILED);
+        }
+        Product product = repository.findById(productID).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+        );
+        for (Image i : product.getImages()) {
+            if (i.getId() == imageID) {
+                String url = existFileName(image.getOriginalFilename());
+                if (url == null)
+                    i.setUrl(amazonClient.uploadFile(image, uploadDirectory));
+                else
+                    i.setUrl(url);
+                i.setName(image.getOriginalFilename());
+                repository.save(product);
+                break;
+            }
+        }
+        return image.getOriginalFilename();
     }
 
     @Transactional
@@ -75,13 +106,13 @@ public class ProductService {
         return repository.findAll();
     }
 
-    public List<Product> getLastestProduct(){
+    public List<Product> getLastestProduct() {
         return repository.getLatestProduct();
     }
 
     String generateID() {
         String num = repository.getNumberProduct();
-        if(num == null){
+        if (num == null) {
             return String.format("P%05d", 1);
         }
         int max = Integer.parseInt(num.substring(1, 6)) + 1;
@@ -89,7 +120,17 @@ public class ProductService {
         return num;
     }
 
-//    //private static final String UPLOAD_DIRECTORY = "FKitShop" +File.separator+ "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"uploads";
+    private String existFileName(String fileName) {
+        String imgUrl = imageRepository.existFileName("%" + fileName + "%");
+        return imgUrl;
+    }
+
+    public List<Product> getActiveProduct() {
+        return repository.getActiveProducts();
+    }
+
+
+    //    //private static final String UPLOAD_DIRECTORY = "FKitShop" +File.separator+ "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"uploads";
 //    @Value("${upload.directory}")
 //    private String UPLOAD_DIRECTORY;
 //
@@ -117,7 +158,20 @@ public class ProductService {
 //        }
 //    }
 
-    public List<Product> getActiveProduct(){
-        return repository.getActiveProducts();
-    }
+    //    public Product updateProduct(String id, ProductRequest request, MultipartFile[] image) {
+//
+//        Product product = repository.findById(id).orElseThrow(
+//                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+//        );
+//
+//        for (Image imageProduct : product.getImages()){
+//            String imageUrl = amazonClient.uploadFile(image, uploadDirectory);
+//            if(imageUrl != ""){
+//                product.setImage(imageUrl);
+//            }
+//        }
+//
+//        ProductMapper.INSTANCE.toProduct(request,product);
+//        return repository.save(product);
+//    }
 }

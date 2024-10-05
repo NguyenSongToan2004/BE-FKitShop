@@ -22,5 +22,4 @@ public class ProductRequest {
     String material;
     String dimension;
     String type;
-    // ko có ngày tạo vì sẽ tự tạo
 }

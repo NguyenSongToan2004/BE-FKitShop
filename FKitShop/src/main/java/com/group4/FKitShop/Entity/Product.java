@@ -1,17 +1,17 @@
 package com.group4.FKitShop.Entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,7 +28,7 @@ public class Product {
     @NotNull
     @Length(min = 1, max = 100, message = "Product name has length from 1 to 100 characters")
     String name;
-    String image;
+
     String description;
     @Length(max = 100, message = "Content Description has less than 101 characters")
     String publisher;
@@ -54,4 +54,7 @@ public class Product {
     String dimension;
     @NotNull
     Date createDate;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Image> images;
 }
