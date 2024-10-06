@@ -74,6 +74,13 @@ public class OrdersService {
         return ordersRepository.save(orders);
     }
 
+    public Orders updateTotalPrice(Double totalPrice, String ordersID) {
+        Orders orders = ordersRepository.findById(ordersID)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDERS_NOTFOUND));
+        orders.setTotalPrice(totalPrice);
+        return ordersRepository.save(orders);
+    }
+
 
 
 }

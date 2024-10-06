@@ -1,9 +1,15 @@
 package com.group4.FKitShop.Controller;
 
 
+import com.group4.FKitShop.Entity.OrderDetails;
 import com.group4.FKitShop.Entity.Orders;
 import com.group4.FKitShop.Entity.ResponseObject;
+import com.group4.FKitShop.Exception.AppException;
+import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Request.CheckoutRequest;
+import com.group4.FKitShop.Request.OrderDetailsRequest;
 import com.group4.FKitShop.Request.OrdersRequest;
+import com.group4.FKitShop.Response.CheckoutResponse;
 import com.group4.FKitShop.Service.OrderDetailsService;
 import com.group4.FKitShop.Service.OrdersService;
 import jakarta.validation.Valid;
@@ -12,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,12 +32,28 @@ public class OrdersController {
     OrderDetailsService orderDetailsService;
 
     //bussiness flow
-    @PostMapping("/info")
-    public ResponseObject checkout(@RequestBody @Valid OrdersRequest request) {
+    @PostMapping("/checkout")
+    public ResponseObject checkout(@RequestBody @Valid CheckoutRequest request) {
+        //create order
+        Orders orders = ordersService.createOrder(request.getOrdersRequest());
+        if (orders == null) {
+            throw new AppException(ErrorCode.ORDER_CREATION_FAILED);
+        }
+        //create order details by orderid
+        String ordersID = orders.getOrdersID();
+        List<OrderDetails> details = orderDetailsService.createOrderDetails(request.getOrderDetailsRequest(), ordersID);
+        //update totalPrice in order
+        double totalPrice = 0;
+        for (OrderDetails detail : details) {
+            totalPrice += detail.getPrice();
+        }
+        orders = ordersService.updateTotalPrice(totalPrice, orders.getOrdersID());
+
+
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create Order Infomation successfully")
-                .data(ordersService.createOrder(request))
+                .data(new CheckoutResponse(orders, details))
                 .build();
 
     }

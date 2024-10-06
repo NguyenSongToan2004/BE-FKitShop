@@ -1,9 +1,12 @@
 package com.group4.FKitShop.Request;
 
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -11,8 +14,5 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderDetailsRequest {
-    String productID;
-    String ordersID;
-    @Size(min = 1)
-    int quantity;
+    Map<String,@Min(value = 1, message = "Quantity must be greater than 0") Integer> productQuantity;
 }

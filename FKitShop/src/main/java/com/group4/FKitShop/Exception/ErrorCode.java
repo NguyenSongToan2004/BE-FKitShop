@@ -38,8 +38,10 @@ public enum ErrorCode {
     EXECUTED_FAILED(1111, "Executed failed"),
     //orders
     ORDERS_NOTFOUND(1019, "Orders not found"),
+    ORDER_CREATION_FAILED(1020, "Order creation failed"),
     //orderdetails
-    ORDERDETAILS_NOTFOUND(1020, "Order details not found");
+    ORDERDETAILS_NOTFOUND(1021, "Order details not found");
+
 
     private int code;
     private String message;

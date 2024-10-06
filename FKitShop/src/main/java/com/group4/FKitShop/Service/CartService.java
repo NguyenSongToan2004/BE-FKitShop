@@ -107,20 +107,20 @@ public class CartService {
     }
 
     //update 1 product quantity
-    public Cart updateCartByProductID(String accountID, String productID, int quantity) {
-        try {
-            Cart cart = cartRepository.findByproductID(productID).
-                    orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
-
-            cart.setQuantity(quantity);
-            cartRepository.save(cart);
-            return cart;
-        } catch (DataIntegrityViolationException e) {
-            // Catch DataIntegrityViolationException and rethrow as AppException
-            //e.getMostSpecificCause().getMessage()
-            throw new AppException(ErrorCode.EXECUTED_FAILED);
-        }
-    }
+//    public Cart updateCartByProductID(CartRequest request) {
+//        try {
+//            List<Cart> cartlist = cartRepository.findByaccountID(request.getAccountID());
+//            Cart cart = cartRepository.findByproductID(String.valueOf(request.getProductQuantity().keySet());
+//
+//            cart.setQuantity(request.getProductQuantity());
+//            cartRepository.save(cart);
+//            return cart;
+//        } catch (DataIntegrityViolationException e) {
+//            // Catch DataIntegrityViolationException and rethrow as AppException
+//            //e.getMostSpecificCause().getMessage()
+//            throw new AppException(ErrorCode.EXECUTED_FAILED);
+//        }
+//    }
 
     public CartResponse deleteCartByProductID(String accountID, String productID) {
         try {

@@ -18,7 +18,6 @@ import java.util.Date;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrdersRequest {
-
     String accountID;
     String address;
     String payingMethod;

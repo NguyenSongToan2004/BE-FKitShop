@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/carts")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -47,6 +49,20 @@ public class CartController {
                 .build();
     }
 
+    @PutMapping()
+    public ResponseObject updateCart(@RequestBody @Valid CartRequest request) {
+        Map<String, Integer> cart = request.getProductQuantity();
+        for (Map.Entry<String, Integer> entry : cart.entrySet()) {
+            String productID = entry.getKey();
+            Integer quantity = entry.getValue();
+            cartService.updateAllQuantityCart(request.getAccountID(), request.getProductQuantity());
+        }
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Update Cart successfully")
+                .data(cart)
+                .build();
+    }
 
 
 
