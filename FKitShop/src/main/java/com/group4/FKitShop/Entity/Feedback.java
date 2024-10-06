@@ -1,17 +1,17 @@
 package com.group4.FKitShop.Entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Date;
 
 @Entity
 @Data // @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 @Table(name = "Feedback")
 public class Feedback {
 
@@ -32,5 +32,9 @@ public class Feedback {
     @Column(name = "rate")
     int rate;
     // 1-> 5 star
+
+    @Column(name = "createDate")
+    Date createDate;
+
 
 }

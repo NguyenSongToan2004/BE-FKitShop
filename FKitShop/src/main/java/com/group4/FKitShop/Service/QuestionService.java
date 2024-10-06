@@ -60,5 +60,4 @@ public class QuestionService {
             throw new AppException(ErrorCode.Feedback_NOTFOUND);
         questionRepository.deleteById(id);
     }
-
 }

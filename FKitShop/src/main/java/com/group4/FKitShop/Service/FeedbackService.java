@@ -1,5 +1,6 @@
 package com.group4.FKitShop.Service;
 
+import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Entity.Feedback;
 import com.group4.FKitShop.Entity.Tag;
 import com.group4.FKitShop.Exception.AppException;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -36,14 +38,17 @@ public class FeedbackService {
 
     public Feedback createFeedback(FeedbackRequest request) {
         Feedback feedback = feedbackMapper.toFeedback(request);
+        feedback.setCreateDate(new Date());
         return feedbackRepository.save(feedback);
     }
 
     public Feedback updateFeedback(int id, FeedbackRequest request){
         Feedback feedback = feedbackRepository.findById(id)
                 .orElseThrow( () -> new AppException(ErrorCode.Feedback_NOTFOUND));
-
+        feedback.setAccountID(request.getAccountID());
+        feedback.setProductID(request.getProductID());
         feedback.setDescription(request.getDescription());
+        feedback.setRate(request.getRate());
         return feedbackRepository.save(feedback);
     }
 
@@ -54,4 +59,11 @@ public class FeedbackService {
         feedbackRepository.deleteById(id);
     }
 
+    public List<Feedback> getFeedbackByAccountID(String id){
+        return feedbackRepository.getFeedbackByAccountID(id);
+    }
+
+    public List<Feedback> getFeedbackByProductID(String id){
+        return feedbackRepository.getFeedbackByProductID(id);
+    }
 }

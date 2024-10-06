@@ -48,8 +48,8 @@ public class CategoryController {
     }
 
     // get cate by tagID
-    @GetMapping("/bytagID/{tagID}")
-    ResponseEntity<ResponseObject> getCategoryByTag(@PathVariable String tagID) {
+    @GetMapping("/byTagID/{tagID}")
+    ResponseEntity<ResponseObject> getCategoryByTag(@PathVariable int tagID) {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Found successfully", categoryService.getCategoryByTag(tagID))
         );

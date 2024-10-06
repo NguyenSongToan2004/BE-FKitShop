@@ -8,9 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class FeedbackRequest {
-
     private String accountID;
     private String productID;
     private String description;
-    private String rate;
+    private int rate;
+
 }
