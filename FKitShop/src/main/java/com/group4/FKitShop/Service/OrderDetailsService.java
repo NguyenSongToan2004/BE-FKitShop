@@ -68,7 +68,7 @@ public class OrderDetailsService {
         return orderDetailsRepository.findAll();
     }
 
-    public List<OrderDetails> getOrderDetailsByOrderID(String orderID) {
+    public List<OrderDetails> findByOrderID(String orderID) {
         return orderDetailsRepository.findAllByordersID(orderID);
     }
 

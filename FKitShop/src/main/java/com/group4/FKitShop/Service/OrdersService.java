@@ -54,7 +54,7 @@ public class OrdersService {
         return ordersRepository.findAll();
     }
 
-    public List<Orders> getOrdersByAccountID(String accountid) {
+    public List<Orders> findByAccountID(String accountid) {
          return ordersRepository.findAllByaccountID(accountid);
     }
 

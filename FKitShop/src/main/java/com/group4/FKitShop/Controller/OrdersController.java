@@ -74,9 +74,18 @@ public class OrdersController {
 
     @GetMapping("/find/{accountID}")
     public ResponseObject getOrdersByAccountID(@PathVariable String accountID) {
+        List<Orders> ordersList = ordersService.findByAccountID(accountID);
+        List<CheckoutResponse> checkoutResponses = new ArrayList<>();
+        for (Orders orders : ordersList) {
+            CheckoutResponse checkout = new CheckoutResponse();
+            checkout.setOrders(orders);
+            List<OrderDetails> orderDetails = orderDetailsService.findByOrderID(orders.getOrdersID());
+            checkout.setOrderDetails(orderDetails);
+            checkoutResponses.add(checkout);
+        }
         return ResponseObject.builder()
                 .status(1000)
-                .data(ordersService.getOrdersByAccountID(accountID))
+                .data(checkoutResponses)
                 .build();
     }
 
