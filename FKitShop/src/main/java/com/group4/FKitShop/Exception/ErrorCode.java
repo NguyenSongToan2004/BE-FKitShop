@@ -35,8 +35,16 @@ public enum ErrorCode {
     // Blog
     Blog_DUPLICATED(1016, "This blog name has been taken"),
     Blog_NOTFOUND(1017, "Blog not found"),
+    //token
+    INVALID_TOKEN(1018, "Invalid token"),
+    //sql
+    EXECUTED_FAILED(1111, "Executed failed"),
+    //orders
+    ORDERS_NOTFOUND(1019, "Orders not found"),
+    ORDER_CREATION_FAILED(1020, "Order creation failed"),
+    //orderdetails
+    ORDERDETAILS_NOTFOUND(1021, "Order details not found");
 
-    INVALID_TOKEN(1018, "Invalid token");
 
     // max = 18
     private int code;
