@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BlogMapper {
 
-    @Mapping(target = "image", ignore = true)
+    @Mapping(source = "tagID", target = "tagID", ignore = true)
     Blog toBlog(BlogRequest request);
+
 }

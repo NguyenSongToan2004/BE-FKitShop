@@ -1,0 +1,33 @@
+All API
+--------------------------------------------------------------------------------------------
+Entity 			Method		URL
+--------------------------------------------------------------------------------------------						
+Product			get		http://localhost:8080/fkshop/product/latest
+Product 		get		http://localhost:8080/fkshop/product/products
+Product			get		http://localhost:8080/fkshop/product/{id}
+Product			get		http://localhost:8080/fkshop/product/aproducts
+Product 		post		http://localhost:8080/fkshop/product/
+Product			put		http://localhost:8080/fkshop/product/{id}
+Product			delete		http://localhost:8080/fkshop/product/{id}
+															Description
+
+Account			get		http://localhost:8080/fkshop/accounts/{id}				Lấy 1 customer theo id
+--			get		http://localhost:8080/fkshop/accounts/listAccounts				lấy danh sách customer có status active
+--			get		http://localhost:8080/fkshop/accounts/allAccounts				lấy danh sách all customer gồm inactive	
+--			post		http://localhost:8080/fkshop/accounts/register					thêm 1 customer
+-- 			post		http://localhost:8080/fkshop/accounts/avatar/{id}				cập nhật avt	
+--			put 		http://localhost:8080/fkshop/accounts/customer/updateinfo/{id}			cập nhật thông tin 
+--			put		http://localhost:8080/fkshop/accounts/password/{id}				đổi password
+-- 			delete		http://localhost:8080/fkshop/accounts/{id}					xóa account
+--			post		http://localhost:8080/fkshop/accounts/createAccount				admin add 1 account 
+-- 			put		http://localhost:8080/fkshop/accounts/updateAccount/{id}			admin update 1 update
+
+
+Lab 			post 		http://localhost:8080/fkshop/lab/addLab						Thêm 1 bài lab
+--			post		http://localhost:8080/fkshop/lab/{id}						lấy ra bài lab theo ID
+-- 			put		http://localhost:8080/fkshop/lab/{id}						cập nhật bài lab theo ID
+-- 			delete		http://localhost:8080/fkshop/lab/{id}						Xóa bài lab
+-- 			get		http://localhost:8080/fkshop/lab/labs						lấy tất cả bài lap
+-- 			post		http://localhost:8080/fkshop/lab/upload-lab/{labID}				upload file Lab PDF
+-- 			get		http://localhost:8080/fkshop/lab/download/{fileName}				download bài lab theo fileNamePDF				
+

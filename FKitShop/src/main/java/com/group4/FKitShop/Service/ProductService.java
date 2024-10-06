@@ -124,6 +124,33 @@ public class ProductService {
         String imgUrl = imageRepository.existFileName("%" + fileName + "%");
         return imgUrl;
     }
+    
+    private static final String UPLOAD_DIRECTORY = "uploads" + File.separator + "products";
+
+    String uploadImage(MultipartFile file) {
+        // Kiểm tra xem file có rỗng không
+        if (file.isEmpty()) {
+            return "";
+        }
+        try {
+            // Lấy đường dẫn tương đối đến thư mục uploads (có thể thay đổi tùy môi trường)
+            String uploadDir = System.getProperty("user.dir") + File.separator + UPLOAD_DIRECTORY;
+            System.out.println("upload dir : "+ uploadDir);
+            // System.getProperty("user.dir") : lấy ra đường dẫn đến thư mục hiện tại
+            // Tạo thư mục nếu chưa tồn tại
+            File directory = new File(uploadDir);
+            if (!directory.exists()) {
+                directory.mkdir();
+            }
+            // Lưu file vào thư mục
+            String filePath = uploadDir + File.separator + file.getOriginalFilename();
+            file.transferTo(new File(filePath));
+            return UPLOAD_DIRECTORY + File.separator + file.getOriginalFilename();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new AppException(ErrorCode.UPLOAD_FILE_FAILED);
+        }
+    }
 
     public List<Product> getActiveProduct() {
         return repository.getActiveProducts();

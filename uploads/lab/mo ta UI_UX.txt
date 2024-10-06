@@ -1,0 +1,36 @@
+- User : 
+	+ Home page
+	+ Login page
+	+ sign up page	
+	+ Forget password
+	+ Profile page
+ 	+ Update profile page
+ 	+ View product details page\
+	+ Activated Labs page (có chứa nút download lab pdf) 
+ 	+ Cart page
+	+ Wishlist Page
+ 	+ View history (có lịch sử đơn hàng, trạng thái đơn hàng hiện tại, đơn hàng)
+ 	+ Check out modal
+ 	+ Feedback modal (Description, rating)
+ 
+
+- Staff : Dashboard
+ 	+ View Support History page:  
+		~ theo dõi số lần hỗ trợ trực tiếp trên mỗi lab
+ 		~ theo dõi số lần hỗ trợ online trên mỗi lab 
+ 	+ On-going order page: 
+ 		~ Xem đơn hàng hiện tại : cập nhật giao thành công, thì kích hoạt lab cho Kit
+
+
+- Manager : Dashboard
+ 	+ Manage Kit Page (CRUD) : mỗi hàng tượng trưng cho 1 kit (sẽ có thêm icon update lab, bấm zô -> đẩy tới trang show ra thông tin Lab) 
+ 	+ Manage Lab detail Page (CRUD) : muốn tạo mới 1 lab (của kit cụ thể) thì phải xóa lab (của kit đó) vì 1 Kit - 1 Lab
+ 	+ Manage Deliver Kit (quản lí quá trình giao nhận kit) :
+	  	~ Đơn chưa giao xong : 
+ 		~ Đơn đã giao thành công : nằm dưới của đơn chưa giao xong
+	+ Report page  : 
+ 		~ Xem doanh số bán hàng (Xem và xuất báo cáo excel)
+ 		~ Lịch sử hỗ trợ (Xem và xuất báo cáo excel)
+ 		~  Hoạt động giao nhận (Xem và xuất báo cáo excel)
+
+ 		

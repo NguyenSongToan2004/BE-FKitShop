@@ -1,0 +1,9 @@
+@RequestBody : chỉ nhận body của request, dưới dạng json hoặc xml, KO THỂ ĐÍNH KÈM FILE (Binary data), Json cũng không hỗ trợ kiểu nhị phân.
+
+Controller : Routing, Binding, Validation, Authentication, Aruthorization, JobDispather
+
+Service : Business Logic
+Repository : handle logic about data
+
+docker file : định nghĩa môi trường cho từng môi trường
+docker-compose : định nghĩa cho toàn dự án

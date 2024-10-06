@@ -15,6 +15,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "Accounts")
 public class Accounts {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "accountID")

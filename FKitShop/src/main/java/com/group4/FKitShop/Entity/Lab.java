@@ -16,6 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class Lab {
     @Id
     @NotNull
@@ -37,4 +38,5 @@ public class Lab {
     @NotNull
     Date createDate;
 
+    String fileNamePDF;
 }
