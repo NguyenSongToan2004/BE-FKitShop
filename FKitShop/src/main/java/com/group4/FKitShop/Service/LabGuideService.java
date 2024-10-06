@@ -1,16 +1,11 @@
 package com.group4.FKitShop.Service;
 
 import com.group4.FKitShop.Entity.LabGuide;
-import com.group4.FKitShop.Entity.ResponseObject;
-import com.group4.FKitShop.Exception.AppException;
-import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.LabGuideRepository;
 import com.group4.FKitShop.Request.LabGuideRequest;
 import com.group4.FKitShop.Request.LabGuideUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;

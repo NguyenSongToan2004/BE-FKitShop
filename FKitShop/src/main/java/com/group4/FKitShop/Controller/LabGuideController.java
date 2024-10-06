@@ -4,7 +4,6 @@ import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.LabGuideRequest;
 import com.group4.FKitShop.Request.LabGuideUpdateRequest;
 import com.group4.FKitShop.Service.LabGuideService;
-import jakarta.servlet.annotation.MultipartConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

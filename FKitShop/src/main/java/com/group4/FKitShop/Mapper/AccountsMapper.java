@@ -14,6 +14,6 @@ public interface AccountsMapper {
 
     void toAccounts(UpdateInfoCustomerRequest request, @MappingTarget Accounts accounts);
 
-    @Mapping(source = "managerID", target = "managerID")
+    @Mapping(source = "adminID", target = "adminID")
     void toAccounts(AccountsRequest request, @MappingTarget Accounts accounts);
 }

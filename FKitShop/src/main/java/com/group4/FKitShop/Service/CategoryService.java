@@ -44,7 +44,8 @@ public class CategoryService {
         return code;
     }
 
-    public Category createCategory(CategoryRequest request){
+    public Category createCategory(CategoryRequest
+                                           request){
         if (categoryRepository.existsByCategoryName(request.getCategoryName()))
             throw new AppException(ErrorCode.TagName_DUPLICATED);
 

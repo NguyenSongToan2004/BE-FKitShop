@@ -1,6 +1,5 @@
 package com.group4.FKitShop.Response;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,3 +11,4 @@ import lombok.experimental.FieldDefaults;
 public class IntrospectResponse {
     boolean valid;
 }
+

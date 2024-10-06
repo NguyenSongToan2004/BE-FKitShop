@@ -4,7 +4,6 @@ import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.AccountsRequest;
 import com.group4.FKitShop.Request.AuthenticationRequest;
 import com.group4.FKitShop.Request.IntrospectRequest;
-import com.group4.FKitShop.Response.AuthenticationResponse;
 import com.group4.FKitShop.Service.AccountsService;
 import com.group4.FKitShop.Service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;

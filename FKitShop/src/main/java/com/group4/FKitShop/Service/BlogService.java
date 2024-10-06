@@ -3,7 +3,6 @@ package com.group4.FKitShop.Service;
 
 
 import com.group4.FKitShop.Entity.Blog;
-import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.BlogMapper;
@@ -13,7 +12,6 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

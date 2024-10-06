@@ -4,7 +4,6 @@ import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.ProductRequest;
 import com.group4.FKitShop.Service.ProductService;
-import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

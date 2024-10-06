@@ -1,6 +1,5 @@
 package com.group4.FKitShop.Request;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,3 +11,4 @@ import lombok.experimental.FieldDefaults;
 public class IntrospectRequest {
     String token;
 }
+

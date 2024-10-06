@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BlogMapper {
 
-    @Mapping(source = "tagID", target = "tagID", ignore = true)
     Blog toBlog(BlogRequest request);
 
 }

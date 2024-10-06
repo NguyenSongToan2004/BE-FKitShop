@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Category {
 
     @Id
-  //  @GeneratedValue(strategy = GenerationType.UUID)
+    //  @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "categoryID")
     private String categoryID;
 

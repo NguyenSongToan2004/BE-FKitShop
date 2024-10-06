@@ -22,6 +22,6 @@ public class AccountsRequest {
     String email;
     int status;
     String role; // "user, staff, manager, admin
-    String managerID;
+    String adminID;
 
 }

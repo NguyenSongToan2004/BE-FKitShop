@@ -32,7 +32,7 @@ public class AccountsService {
     AccountsMapper accountsMapper;
 
 
-    public Accounts signUp(AccountsRequest request) {
+    public Accounts register(AccountsRequest request) {
         if (accountsRepository.existsByemail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXSITED);
         }
@@ -80,6 +80,13 @@ public class AccountsService {
         Accounts accounts = accountsRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
+        if (accountsRepository.existsByemail(request.getEmail()) && !request.getEmail().equals(accounts.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXSITED);
+        }
+
+        if (accountsRepository.existsByphoneNumber(request.getPhoneNumber()) && !request.getPhoneNumber().equals(accounts.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_EXISTED);
+        }
         accountsMapper.toAccounts(request, accounts);
         return accountsRepository.save(accounts);
     }
