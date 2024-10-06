@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/tags")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@CrossOrigin(origins = "http://localhost:5173")
 public class TagController {
 
     TagService tagService;

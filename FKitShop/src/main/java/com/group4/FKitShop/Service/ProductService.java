@@ -95,6 +95,30 @@ public class ProductService {
         return image.getOriginalFilename();
     }
 
+    public Product addImages(MultipartFile[] images, String productID) {
+        if (images.length == 0) {
+            throw new AppException(ErrorCode.UPLOAD_FILE_FAILED);
+        }
+        Product product = repository.findById(productID).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+        );
+
+        for (MultipartFile file : images) {
+            if(repository.existsByUrl(productID, "%"+file.getOriginalFilename()) == null){
+                String url = existFileName(file.getOriginalFilename());
+                Image image = new Image();
+                if(url == null)
+                    image.setUrl(amazonClient.uploadFile(file, uploadDirectory));
+                else
+                    image.setUrl(url);
+                image.setName(file.getOriginalFilename());
+                image.setProduct(product);
+                product.getImages().add(image);
+            }
+        }
+        return repository.save(product);
+    }
+
     @Transactional
     public int deleteProduct(String id) {
         if (!repository.existsById(id))
@@ -124,7 +148,19 @@ public class ProductService {
         String imgUrl = imageRepository.existFileName("%" + fileName + "%");
         return imgUrl;
     }
-    
+
+    public List<Product> getHotProduct(){
+        return repository.getHotProducts();
+    }
+
+    public List<Product> getPriceAscProducts() {
+        return repository.getPriceAscProducts();
+    }
+
+    public List<Product> getPriceDescProducts() {
+        return repository.getPriceDescProducts();
+    }
+
     private static final String UPLOAD_DIRECTORY = "uploads" + File.separator + "products";
 
     String uploadImage(MultipartFile file) {

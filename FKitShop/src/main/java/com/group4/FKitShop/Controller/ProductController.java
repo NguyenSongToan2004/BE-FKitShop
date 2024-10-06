@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/product")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProductController {
 
     @Autowired
@@ -124,6 +125,34 @@ public class ProductController {
     ResponseEntity<ResponseObject> getActiveProducts() {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get Products Successfully !!", service.getActiveProduct())
+        );
+    }
+
+    @GetMapping("/hot")
+    ResponseEntity<ResponseObject> getHotProducts() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Hot Products Successfully !!", service.getHotProduct())
+        );
+    }
+
+    @GetMapping("/price-asc")
+    ResponseEntity<ResponseObject> getPriceAscProducts() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get products by asc price successfully !!", service.getPriceAscProducts())
+        );
+    }
+
+    @GetMapping("/price-desc")
+    ResponseEntity<ResponseObject> getPriceDescProducts(){
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get products by asc price successfully !!", service.getPriceDescProducts())
+        );
+    }
+
+    @PutMapping("/add-images/{productID}")
+    ResponseEntity<ResponseObject> addImages(@RequestParam("images") MultipartFile[] images, @PathVariable("productID") String productID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Upload images successully !!", service.addImages(images, productID))
         );
     }
 }

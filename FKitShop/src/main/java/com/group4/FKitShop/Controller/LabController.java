@@ -20,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/lab")
+@CrossOrigin(origins = "http://localhost:5173")
 public class LabController {
     @Autowired
     private LabService labService;

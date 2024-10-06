@@ -44,4 +44,25 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "where status = 'active'", nativeQuery = true)
     List<Product> getActiveProducts();
 
+    @Query(value = "select *\n" +
+            "from StemProduct\n" +
+            "order by unitOnOrder desc\n" +
+            "limit 8", nativeQuery = true)
+    List<Product> getHotProducts();
+
+    @Query(value = "select *\n" +
+            "from StemProduct\n" +
+            "order by price asc", nativeQuery = true)
+    List<Product> getPriceAscProducts();
+
+    @Query(value = "select *\n" +
+            "from StemProduct\n" +
+            "order by price desc", nativeQuery = true)
+    List<Product> getPriceDescProducts();
+
+    @Query(value = "select true\n" +
+            "from StemProduct s left join Image i on s.productID = i.productID\n" +
+            "where s.productID = :productID and i.url like :url", nativeQuery = true
+    )
+    String existsByUrl(@Param("productID") String productID, @Param("url") String url);
 }

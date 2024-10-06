@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/labguide")
+@CrossOrigin(origins = "http://localhost:5173")
 public class LabGuideController {
 
     @Autowired

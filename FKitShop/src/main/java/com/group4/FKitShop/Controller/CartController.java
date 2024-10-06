@@ -28,7 +28,6 @@ public class CartController {
                 .message("Create Cart successfully")
                 .data(cartService.createCart(request))
                 .build();
-
     }
 
     @GetMapping("/view/{accountID}")
@@ -63,7 +62,5 @@ public class CartController {
                 .data(cart)
                 .build();
     }
-
-
 
 }
