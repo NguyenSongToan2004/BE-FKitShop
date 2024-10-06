@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="HttpClientEndpointsTabState">
-    <option name="requestToText" value="&lt;CachedHttpClientTabRequests&gt;&#10;  &lt;entry key=&quot;9e321f7a5f9014e7bc23e8075a3c533312f3f27c&quot; value=&quot;###&amp;#10;GET http://localhost:8080/fkshop/accounts/allAccounts&quot; /&gt;&#10;&lt;/CachedHttpClientTabRequests&gt;" />
+    <option name="requestToText" value="&lt;CachedHttpClientTabRequests&gt;&#10;  &lt;entry key=&quot;8b8ae3f0f6e2df18199d5d90f64d878ef7e681fd&quot; value=&quot;###&amp;#10;POST http://localhost:8080/fkshop/lab/upload-lab/{{labID}}?&amp;#10;    file={{$random.alphanumeric(8)}}&quot; /&gt;&#10;  &lt;entry key=&quot;9e321f7a5f9014e7bc23e8075a3c533312f3f27c&quot; value=&quot;###&amp;#10;GET http://localhost:8080/fkshop/accounts/allAccounts&quot; /&gt;&#10;  &lt;entry key=&quot;8e5eb95083e18e7bccc66152daa7404d13de7e7f&quot; value=&quot;###&amp;#10;GET http://localhost:8080/fkshop/lab/{{id}}&quot; /&gt;&#10;  &lt;entry key=&quot;2a8bba26cbf2d5e435e85520034597edc6c41c9c&quot; value=&quot;###&amp;#10;GET http://localhost:8080/fkshop/lab/download/{{fileName}}&quot; /&gt;&#10;&lt;/CachedHttpClientTabRequests&gt;" />
   </component>
 </project>

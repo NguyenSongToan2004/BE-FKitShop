@@ -90,8 +90,8 @@ public class LabController {
         }
     }
 
-    @GetMapping("/download/{fileName}")
-    ResponseEntity<Resource> downloadLab(@PathVariable String fileName) {
+    @GetMapping("/download")
+    ResponseEntity<Resource> downloadLab(@RequestParam String fileName) {
         try {
             var fileToDownload = labService.downloadFilePDF(fileName);
             return ResponseEntity.ok()
