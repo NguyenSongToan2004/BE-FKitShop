@@ -19,6 +19,7 @@ public class OrdersResponse {
     String address;
     String payingMethod;
     String phoneNumber;
+    Double shippingPrice;
     Double totalPrice;
     String status;
     Date orderDate;

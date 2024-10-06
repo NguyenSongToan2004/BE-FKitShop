@@ -31,6 +31,9 @@ public class Orders {
     @Column(name = "phoneNumber")
     String phoneNumber;
 
+    @Column(name = "shippingPrice")
+    Double shippingPrice;
+
     @Column(name = "totalPrice")
     Double totalPrice;
 

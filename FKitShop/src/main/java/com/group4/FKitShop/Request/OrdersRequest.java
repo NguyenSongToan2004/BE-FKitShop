@@ -23,5 +23,6 @@ public class OrdersRequest {
     String payingMethod;
     @Size(min = 10, message = "Phone number at 10 digits")
     String phoneNumber;
+    Double shippingPrice;
 
 }

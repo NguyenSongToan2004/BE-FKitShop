@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -34,33 +35,37 @@ public class OrdersController {
     //bussiness flow
     @PostMapping("/checkout")
     public ResponseObject checkout(@RequestBody @Valid CheckoutRequest request) {
-        //create order
-        Orders orders = ordersService.createOrder(request.getOrdersRequest());
-        if (orders == null) {
-            throw new AppException(ErrorCode.ORDER_CREATION_FAILED);
+        try {
+            //create order
+            Orders orders = ordersService.createOrder(request.getOrdersRequest());
+            if (orders == null) {
+                throw new AppException(ErrorCode.ORDER_CREATION_FAILED);
+            }
+            //create order details by orderid
+            String ordersID = orders.getOrdersID();
+            List<OrderDetails> details = orderDetailsService.createOrderDetails(request.getOrderDetailsRequest(), ordersID);
+            //update totalPrice in order
+            //including shipping price
+            double totalPrice = orders.getShippingPrice();
+            
+            for (OrderDetails detail : details) {
+                totalPrice += detail.getPrice() * detail.getQuantity();
+            }
+            //update totalprice
+            orders = ordersService.updateTotalPrice(totalPrice, orders.getOrdersID());
+            return ResponseObject.builder()
+                    .status(1000)
+                    .message("Create Order successfully")
+                    .data(new CheckoutResponse(orders, details))
+                    .build();
+        } catch (DataIntegrityViolationException e) {
+            // Catch DataIntegrityViolationException and rethrow as AppException
+            //e.getMostSpecificCause().getMessage()
+            throw new AppException(ErrorCode.EXECUTED_FAILED);
         }
-        //create order details by orderid
-        String ordersID = orders.getOrdersID();
-        List<OrderDetails> details = orderDetailsService.createOrderDetails(request.getOrderDetailsRequest(), ordersID);
-        //update totalPrice in order
-        double totalPrice = 0;
-        for (OrderDetails detail : details) {
-            totalPrice += detail.getPrice();
-        }
-        orders = ordersService.updateTotalPrice(totalPrice, orders.getOrdersID());
 
-
-        return ResponseObject.builder()
-                .status(1000)
-                .message("Create Order Infomation successfully")
-                .data(new CheckoutResponse(orders, details))
-                .build();
 
     }
-
-
-
-
 
 
     @GetMapping("/allorders")
@@ -74,19 +79,25 @@ public class OrdersController {
 
     @GetMapping("/find/{accountID}")
     public ResponseObject getOrdersByAccountID(@PathVariable String accountID) {
-        List<Orders> ordersList = ordersService.findByAccountID(accountID);
-        List<CheckoutResponse> checkoutResponses = new ArrayList<>();
-        for (Orders orders : ordersList) {
-            CheckoutResponse checkout = new CheckoutResponse();
-            checkout.setOrders(orders);
-            List<OrderDetails> orderDetails = orderDetailsService.findByOrderID(orders.getOrdersID());
-            checkout.setOrderDetails(orderDetails);
-            checkoutResponses.add(checkout);
+        try {
+            List<Orders> ordersList = ordersService.findByAccountID(accountID);
+            List<CheckoutResponse> checkoutResponses = new ArrayList<>();
+            for (Orders orders : ordersList) {
+                CheckoutResponse checkout = new CheckoutResponse();
+                checkout.setOrders(orders);
+                List<OrderDetails> orderDetails = orderDetailsService.findByOrderID(orders.getOrdersID());
+                checkout.setOrderDetails(orderDetails);
+                checkoutResponses.add(checkout);
+            }
+            return ResponseObject.builder()
+                    .status(1000)
+                    .data(checkoutResponses)
+                    .build();
+        } catch (DataIntegrityViolationException e) {
+            // Catch DataIntegrityViolationException and rethrow as AppException
+            //e.getMostSpecificCause().getMessage()
+            throw new AppException(ErrorCode.EXECUTED_FAILED);
         }
-        return ResponseObject.builder()
-                .status(1000)
-                .data(checkoutResponses)
-                .build();
     }
 
     @PutMapping("/update/{ordersID}")
@@ -106,7 +117,6 @@ public class OrdersController {
                 .data(ordersService.updateOrderStatus(ordersID, status))
                 .build();
     }
-
 
 
 }

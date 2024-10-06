@@ -39,6 +39,7 @@ public class OrdersService {
             orders.setOrdersID(generateUniqueCode());
             //total price auto tinh, gio test truoc
            // orders.setTotalPrice(1000000.0);
+            orders.setShippingPrice(request.getShippingPrice());
             orders.setStatus("Pending");
             orders.setOrderDate(new Date());
             return ordersRepository.save(orders);
@@ -64,6 +65,7 @@ public class OrdersService {
         orders.setAddress(request.getAddress());
         orders.setPayingMethod(request.getPayingMethod());
         orders.setPhoneNumber(request.getPhoneNumber());
+        orders.setShippingPrice(request.getShippingPrice());
         return ordersRepository.save(orders);
     }
 
