@@ -1,7 +1,6 @@
 package com.group4.FKitShop.Repository;
 
 import com.group4.FKitShop.Entity.Feedback;
-import com.group4.FKitShop.Entity.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

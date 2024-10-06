@@ -120,9 +120,9 @@ public class ProductController {
 
     // get list product by categoryID
     @GetMapping("/byCategoryID/{categoryID}")
-    ResponseEntity<StringRespone> getProductByCategoryID(@PathVariable String categoryID) {
+    ResponseEntity<ResponseObject> getProductByCategoryID(@PathVariable String categoryID) {
         return ResponseEntity.ok(
-                new StringRespone(1000, "Found successfully", service.getProductIDList(categoryID))
+                new ResponseObject(1000, "Found successfully", service.getProductIDList(categoryID))
         );
     }
 

@@ -39,7 +39,10 @@ public enum ErrorCode {
 
     Question_NOTFOUND(1020, "Question not found"),
 
-    Feedback_NOTFOUND(1021, "Feedback not found");
+    Feedback_NOTFOUND(1021, "Feedback not found"),
+
+    Wishlist_NOTFOUND(1022, "Wishlist not found"),
+    Wishlist_EXIST(1023, "This product is already added to Wishlist");
 
     private int code;
     private String message;

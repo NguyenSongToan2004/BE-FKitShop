@@ -22,7 +22,7 @@ public class FeedbackController {
 
     // get all feedback
     @GetMapping()
-    public List<Feedback> allFeedback() {
+    public List<Feedback> allFeedbacks() {
         return feedbackService.allFeedbacks();
     }
 
@@ -45,7 +45,7 @@ public class FeedbackController {
 
     // get list feedback by accountID
     @GetMapping("/byAccountID/{accountID}")
-    ResponseEntity<ResponseObject> getFeedbakcByAccountID(@PathVariable String accountID) {
+    ResponseEntity<ResponseObject> getFeedbackByAccountID(@PathVariable String accountID) {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Found successfully", feedbackService.getFeedbackByAccountID(accountID))
         );
@@ -70,7 +70,7 @@ public class FeedbackController {
                 .build();
     }
 
-    // delete category & delete cateProduct tuong ung
+    // delete feedback
     @DeleteMapping("/{feedbackID}")
     public ResponseObject deleteFeedback(@PathVariable int feedbackID) {
         feedbackService.deleteFeedback(feedbackID);

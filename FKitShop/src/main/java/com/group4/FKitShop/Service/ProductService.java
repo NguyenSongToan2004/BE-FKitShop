@@ -107,7 +107,7 @@ public class ProductService {
 
 
     // get lis product by categoryID
-    public List<String> getProductIDList(String id){
+    public List<Product> getProductIDList(String id){
         return repository.getProductIDList(id);
     }
 }

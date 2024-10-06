@@ -1,15 +1,11 @@
 package com.group4.FKitShop.Service;
 
-import com.group4.FKitShop.Entity.Feedback;
+
 import com.group4.FKitShop.Entity.Question;
-import com.group4.FKitShop.Entity.Tag;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
-import com.group4.FKitShop.Mapper.FeedbackMapper;
 import com.group4.FKitShop.Mapper.QuestionMapper;
 import com.group4.FKitShop.Repository.QuestionRepository;
-import com.group4.FKitShop.Repository.TagRepository;
-import com.group4.FKitShop.Request.FeedbackRequest;
 import com.group4.FKitShop.Request.QuestionRequest;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -41,16 +37,25 @@ public class QuestionService {
     public Question createQuestion(QuestionRequest request) {
         Question question = questionMapper.toQuestion(request);
         question.setStatus(0);
+        question.setPostDate(new Date());
         return questionRepository.save(question);
     }
 
     public Question updateQuestion(int id, QuestionRequest request){
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.Question_NOTFOUND));
-
+        question.setAccountID(request.getAccountID());
+        question.setLabID(request.getLabID());
+        question.setDescription(request.getDescription());
         question.setResponse(request.getResponse());
-        question.setResponseDate(new Date());
-        question.setStatus(1);
+        //question.setStatus(request.getStatus());
+        if(!request.getResponse().isEmpty()){
+            question.setResponseDate(new Date());
+            question.setStatus(1);
+        }else{
+            question.setStatus(0);
+            question.setResponseDate(null);
+        }
         return questionRepository.save(question);
     }
 
@@ -60,4 +65,15 @@ public class QuestionService {
             throw new AppException(ErrorCode.Feedback_NOTFOUND);
         questionRepository.deleteById(id);
     }
+
+    public List<Question> getQuestionByAccountID(String id){
+        return questionRepository.getQuestionByAccountID(id);
+    }
+
+    public List<Question> getQuestionByLabID(String id){
+        return questionRepository.getQuestionByLabID(id);
+    }
+
 }
+
+

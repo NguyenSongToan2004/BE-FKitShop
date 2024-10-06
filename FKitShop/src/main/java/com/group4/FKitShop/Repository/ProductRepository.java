@@ -44,9 +44,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "where status = 'active'", nativeQuery = true)
     List<Product> getActiveProducts();
 
-    @Query(value = "select st.productID from StemProduct st\n" +
+    @Query(value = "select st.* from StemProduct st\n" +
             "    join CateProduct cp on cp.productID = st.productID\n" +
             "    join Category c on c.categoryID = cp.categoryID\n" +
             "    where c.categoryID = :id", nativeQuery = true)
-    List<String> getProductIDList(@Param("id") String id);
+    List<Product> getProductIDList(@Param("id") String id);
 }
