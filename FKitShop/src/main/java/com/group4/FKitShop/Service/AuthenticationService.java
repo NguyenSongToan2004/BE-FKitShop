@@ -54,14 +54,12 @@ public class AuthenticationService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean auth = passwordEncoder.matches(request.getPassword(), user.getPassword());
-
+        // sai mật khẩu
         if (!auth)
             throw new AppException(ErrorCode.UNAUTHENTICATED);
-        // sai mật khẩu
 
-        String accountID = String.valueOf(user.getAccountID());
 
-        var token = generateToken(request.getEmail(), accountID);
+        var token = generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -87,28 +85,27 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String generateToken(String email, String accountID) {
+    private String generateToken(Accounts a) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
-        Optional<Accounts> a = accountsRepository.findById(accountID);
 
         //build payload
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 //user login
-                .subject(email)
+                .subject(a.getEmail())
                 //domain
                 .issuer("FKShop")
-                .claim("accountID", accountID)
-                .claim("image", a.get().getImage())
-                .claim("fullName", a.get().getFullName())
-                .claim("phoneNumber", a.get().getPhoneNumber())
-                .claim("email", a.get().getEmail())
-                .claim("dob",a.get().getDob())
-                .claim("status", a.get().getStatus())
+                .claim("accountID", a.getAccountID())
+                .claim("image", a.getImage())
+                .claim("fullName", a.getFullName())
+                .claim("phoneNumber", a.getPhoneNumber())
+                .claim("email", a.getEmail())
+                .claim("dob",a.getDob())
+                .claim("status", a.getStatus())
                 //account role: scope
-                .claim("scope", a.get().getRole())
-                .claim("createDate", a.get().getCreateDate())
-                .claim("adminID", a.get().getAdminID())
+                .claim("scope", buildScope(a))
+                .claim("createDate", a.getCreateDate())
+                .claim("adminID", a.getAdminID())
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
                 .build();

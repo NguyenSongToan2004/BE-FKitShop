@@ -13,10 +13,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/accounts")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -28,6 +31,15 @@ public class AccountsController {
 
     @GetMapping
     public ResponseObject allAccounts(){
+        //manager & admin moi dc truy cap trang nay
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        //lay thong tin nguoi dang nhap
+        log.info("AccountID: {}", authentication.getName());
+        //role
+        authentication.getAuthorities().forEach(grantedAuthority
+                -> log.info(grantedAuthority.getAuthority()));
+
+
         return ResponseObject.builder()
                 .data(accountsService.allAccounts())
                 .build();

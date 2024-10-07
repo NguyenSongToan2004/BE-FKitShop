@@ -21,8 +21,8 @@ public class AccountsRequest {
     @Size(min = 10, message = "Phone number at 10 digits")
     String phoneNumber;
     String email;
-    //int status;
-    //String role;
-    //Date createDate;
-    //String adminID;
+    int status;
+    String role;
+    Date createDate;
+    String adminID;
 }
