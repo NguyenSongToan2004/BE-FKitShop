@@ -15,6 +15,7 @@ public class CategoryRequest {
     @Size(min = 5, max = 100, message = "Category name must not more than 100 characters")
     private String categoryName;
     private String description;
+    private int status;
 
     // crud CateProduct table
     private List<String> productID;

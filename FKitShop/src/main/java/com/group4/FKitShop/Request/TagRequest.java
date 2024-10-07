@@ -14,6 +14,7 @@ public class TagRequest {
     @Size(min = 5, max = 100, message = "Tag name must not more than 100 characters")
     private String tagName;
     private String description;
+    private int status;
 
     // crud blogtag
     List<String> blogID;

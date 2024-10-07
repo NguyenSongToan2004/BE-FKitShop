@@ -18,6 +18,8 @@ public class BlogRequest {
     private String content;
     private String status;
     private String accountID;
+    private int toDelete;
+
 
     // in order to crud BlogTag table
     List<Integer> tagID;

@@ -37,6 +37,7 @@ public class CategoryService {
         return cate;
     }
 
+    // get cate by productid
     public List<Category> getCategoryByProductID(String productID){
         List<CateProduct> cateProductList  = cateProductRepository.findByProductID(productID);
         List<Category> categoryList = new ArrayList<>();
@@ -45,6 +46,21 @@ public class CategoryService {
             categoryList.add(category);
         }
         return categoryList;
+    }
+
+    // get cate by name contain
+    public List<Category> getCategoryByName(String name){
+        return categoryRepository.getCategoryByName("%"+name+"%");
+    }
+
+    // list cate by productID
+    public List<Category> getCategoryList(String id){
+        return categoryRepository.getCategoryList(id);
+    }
+
+    // list cate by tagID
+    public List<Category> getCategoryByTag(int id){
+        return categoryRepository.getCategoryByTagID(id);
     }
 
     public String generateUniqueCode() {
@@ -62,12 +78,13 @@ public class CategoryService {
         if (categoryRepository.existsByCategoryName(request.getCategoryName()))
             throw new AppException(ErrorCode.CategoryName_DUPLICATED);
 
-      //  Category cate = categoryMapper.toCategory((request));
-        Category cate = new Category();
+        Category cate = categoryMapper.toCategory((request));
+      //  Category cate = new Category();
         cate.setCategoryID(generateUniqueCode());
-        cate.setTagID(request.getTagID());
-        cate.setCategoryName(request.getCategoryName());
-        cate.setDescription(request.getDescription());
+        cate.setStatus(request.getStatus());
+//        cate.setTagID(request.getTagID());
+//        cate.setCategoryName(request.getCategoryName());
+//        cate.setDescription(request.getDescription());
 
 
         return categoryRepository.save(cate);
@@ -80,25 +97,15 @@ public class CategoryService {
         cate.setTagID(request.getTagID());
         cate.setCategoryName(request.getCategoryName());
         cate.setDescription(request.getDescription());
+        cate.setStatus(request.getStatus());
         return categoryRepository.save(cate);
     }
 
     @Transactional
-    public void deleteCategory(String id) {
+    public int deleteCategory(String id) {
         if (!categoryRepository.existsById(id))
             throw new AppException(ErrorCode.Category_NOTFOUND);
-        categoryRepository.deleteById(id);
+        return categoryRepository.deleteStatus(id);
     }
-
-    // list cate by productID
-    public List<Category> getCategoryList(String id){
-        return categoryRepository.getCategoryList(id);
-    }
-
-    // list cate by tagID
-    public List<Category> getCategoryByTag(int id){
-        return categoryRepository.getCategoryByTagID(id);
-    }
-
 
 }

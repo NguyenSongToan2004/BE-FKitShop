@@ -42,7 +42,21 @@ public enum ErrorCode {
     Feedback_NOTFOUND(1021, "Feedback not found"),
 
     Wishlist_NOTFOUND(1022, "Wishlist not found"),
-    Wishlist_EXIST(1023, "This product is already added to Wishlist");
+    Wishlist_EXIST(1023, "This product has been added to Wishlist"),
+
+    //orderstatus
+    OrderStatus_NOTFOUND(1024, "OrderStatus not found"),
+    OrderStatus_EXIST(1025, "This orderStatus has existed"),
+
+    //sql
+    EXECUTED_FAILED(1111, "Executed failed"),
+    //orders
+    ORDERS_NOTFOUND(1019, "Orders not found"),
+    ORDER_CREATION_FAILED(1020, "Order creation failed"),
+    //orderdetails
+    ORDERDETAILS_NOTFOUND(1021, "Order details not found"),
+
+    ORDER_FAILED(1234, "Order failed");
 
     private int code;
     private String message;

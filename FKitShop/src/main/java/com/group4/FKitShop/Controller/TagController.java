@@ -36,6 +36,22 @@ public class TagController {
         );
     }
 
+    // get tag by blogID
+    @GetMapping("/byBlogID/{blogID}")
+    ResponseEntity<ResponseObject> getTagByBlogID(@PathVariable String blogID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", tagService.getTagByBlog(blogID))
+        );
+    }
+
+    // get tag by blogID
+    @GetMapping("/byName/{name}")
+    ResponseEntity<ResponseObject> getTagByName(@PathVariable String name) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", tagService.getTagByName(name))
+        );
+    }
+
     // create tag
     @PostMapping()
     public ResponseObject createTag(@RequestBody @Valid TagRequest request ) {
@@ -59,19 +75,9 @@ public class TagController {
 
     // delete tag by ID
     @DeleteMapping("/{tagID}")
-    public ResponseObject deleteTag(@PathVariable int tagID){
-        tagService.deleteTag(tagID);
-        return ResponseObject.builder()
-                .status(1000)
-                .message("Delete tag successfully")
-                .build();
-    }
-
-    // get tag by blogID
-    @GetMapping("/byBlogID/{blogID}")
-    ResponseEntity<ResponseObject> getTagByBlogID(@PathVariable String blogID) {
+    ResponseEntity<ResponseObject> deleteTag(@PathVariable int tagID){
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Found successfully", tagService.getTagByBlog(blogID))
+                new ResponseObject(1000, "Delete Successfully !!",  tagService.deleteTag(tagID) + " row affeted")
         );
     }
 }

@@ -55,6 +55,14 @@ public class CategoryController {
         );
     }
 
+    // get cate by name contain
+    @GetMapping("/byName/{name}")
+    ResponseEntity<ResponseObject> getCategoryByName(@PathVariable String name) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", categoryService.getCategoryByName(name))
+        );
+    }
+
     // create cate & create cateProduct relationship tuong ung
     @PostMapping()
     public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request) {
@@ -77,14 +85,12 @@ public class CategoryController {
                 .build();
     }
 
-    // delete category & delete cateProduct tuong ung
+    // delete category
     @DeleteMapping("/{categoryID}")
-    public ResponseObject deleteCategory(@PathVariable String categoryID){
-        categoryService.deleteCategory(categoryID);
-        cateProductService.deleteCateProduct_Category(categoryID);
-        return ResponseObject.builder()
-                .status(1000)
-                .message("Delete category successfully")
-                .build();
+    ResponseEntity <ResponseObject> deleteCategory(@PathVariable String categoryID){
+        //cateProductService.deleteCateProduct_Category(categoryID);
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Delete Successfully !!",  categoryService.deleteCategory(categoryID) + " row affeted")
+        );
     }
 }

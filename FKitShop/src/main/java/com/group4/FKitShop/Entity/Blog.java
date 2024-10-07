@@ -41,4 +41,7 @@ public class Blog {
     @Column(name = "createDate")
     Date createDate;
 
+    @Column(name = "toDelete")
+    int toDelete;
+
 }

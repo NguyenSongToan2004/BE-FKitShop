@@ -31,37 +31,41 @@ public class TagService {
     public Tag getTagByID(int id){
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.Tag_NOTFOUND));
-
         return tag;
     }
 
-    public Tag createTag(TagRequest request) {
-        if (tagRepository.existsByTagName(request.getTagName()))
-            throw new AppException(ErrorCode.TagName_DUPLICATED);
-
-        Tag tag = tagMapper.toTag(request);
-        return tagRepository.save(tag);
-    }
-
-    public Tag updateTag(int id, TagRequest request){
-        Tag tag = tagRepository.findById(id)
-                .orElseThrow( () -> new AppException(ErrorCode.Tag_NOTFOUND));
-
-        tag.setTagName(request.getTagName());
-        tag.setDescription(request.getDescription());
-        return tagRepository.save(tag);
-    }
-
-    @Transactional
-    public void deleteTag(int id) {
-        if (!tagRepository.existsById(id))
-            throw new AppException(ErrorCode.Tag_NOTFOUND);
-        tagRepository.deleteById(id);
+    public List<Tag> getTagByName(String name){
+        return tagRepository.getTagByName("%"+name+"%");
     }
 
     // get tag by blogID
     public List<Tag> getTagByBlog(String id){
         return tagRepository.getTagList(id);
     }
+
+    public Tag createTag(TagRequest request) {
+        if (tagRepository.existsByTagName(request.getTagName()))
+            throw new AppException(ErrorCode.TagName_DUPLICATED);
+        Tag tag = tagMapper.toTag(request);
+        tag.setStatus(1);
+        return tagRepository.save(tag);
+    }
+
+    public Tag updateTag(int id, TagRequest request){
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow( () -> new AppException(ErrorCode.Tag_NOTFOUND));
+        tag.setTagName(request.getTagName());
+        tag.setDescription(request.getDescription());
+        tag.setStatus(request.getStatus());
+        return tagRepository.save(tag);
+    }
+
+    @Transactional
+    public int deleteTag(int id) {
+        if (!tagRepository.existsById(id))
+            throw new AppException(ErrorCode.Tag_NOTFOUND);
+        return tagRepository.deleteStatus(id);
+    }
+
 
 }

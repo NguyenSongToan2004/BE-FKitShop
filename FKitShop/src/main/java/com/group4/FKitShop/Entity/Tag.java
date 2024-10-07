@@ -26,5 +26,7 @@ public class Tag {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "status")
+    int status;
 
 }
