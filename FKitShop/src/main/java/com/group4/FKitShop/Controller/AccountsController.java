@@ -4,6 +4,7 @@ package com.group4.FKitShop.Controller;
 import com.group4.FKitShop.Entity.Accounts;
 
 import com.group4.FKitShop.Entity.ResponseObject;
+import com.group4.FKitShop.Request.AccountCustomerRequest;
 import com.group4.FKitShop.Request.AccountsRequest;
 import com.group4.FKitShop.Request.UpdateInfoCustomerRequest;
 import com.group4.FKitShop.Request.UpdatePassword;
@@ -31,7 +32,7 @@ public class AccountsController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseObject signUp(@RequestBody @Valid AccountsRequest request) {
+    public ResponseObject signUp(@RequestBody @Valid AccountCustomerRequest request) {
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create account successfully")

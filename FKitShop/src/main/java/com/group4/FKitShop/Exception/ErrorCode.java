@@ -8,13 +8,14 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCode {
+
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception"),
     EMAIL_EXSITED(1001, "This email is already in use"),
     USERNAME_INVALID(1002, "username at least 3 charaters"),
     PHONE_EXISTED(1003, "phone number is already in use"),
     USER_NOT_EXIST(1004, "User Not Found"),
     PHONE_INVALID(1005, "Wrong format for phone number"),
-    UNAUTHENTICATED(1006, "User not existed"),
+    UNAUTHENTICATED(1006, "Email or Password is incorrect"),
     // Lab
     LAB_NOTFOUND(1007, "This lab is not exist !!"),
     LAB_NAMEDUPLICATED(1008, "This lab name has taken alredy !!"),

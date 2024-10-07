@@ -6,12 +6,13 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
 
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountsRequest {
+public class AccountCustomerRequest {
 
     @Size(min = 6, message = "Password at least 6 characters")
     String password;
@@ -20,8 +21,5 @@ public class AccountsRequest {
     @Size(min = 10, message = "Phone number at 10 digits")
     String phoneNumber;
     String email;
-     int status;
-     String role; // "user, staff, manager, admin
-     String adminID;
-
+    
 }

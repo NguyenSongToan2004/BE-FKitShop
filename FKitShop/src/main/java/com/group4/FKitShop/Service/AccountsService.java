@@ -4,6 +4,7 @@ import com.group4.FKitShop.Entity.Accounts;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.AccountsRepository;
+import com.group4.FKitShop.Request.AccountCustomerRequest;
 import com.group4.FKitShop.Request.AccountsRequest;
 import com.group4.FKitShop.Mapper.AccountsMapper;
 import com.group4.FKitShop.Request.UpdateInfoCustomerRequest;
@@ -32,7 +33,7 @@ public class AccountsService {
     AccountsMapper accountsMapper;
 
 
-    public Accounts register(AccountsRequest request) {
+    public Accounts register(AccountCustomerRequest request) {
         if (accountsRepository.existsByemail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_EXSITED);
         }
@@ -40,9 +41,9 @@ public class AccountsService {
             throw new AppException(ErrorCode.PHONE_EXISTED);
         }
 
-        request.setRole("user");
-        request.setStatus(1);
         Accounts accounts = accountsMapper.toAccounts(request);
+        accounts.setRole("user");
+        accounts.setStatus(1);
         accounts.setCreateDate(new Date());
         //su dung brcrypt de ma hoa password
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
