@@ -47,7 +47,7 @@ public class OrdersController {
             //update totalPrice in order
             //including shipping price
             double totalPrice = orders.getShippingPrice();
-            
+
             for (OrderDetails detail : details) {
                 totalPrice += detail.getPrice() * detail.getQuantity();
             }
@@ -61,7 +61,7 @@ public class OrdersController {
         } catch (DataIntegrityViolationException e) {
             // Catch DataIntegrityViolationException and rethrow as AppException
             //e.getMostSpecificCause().getMessage()
-            throw new AppException(ErrorCode.EXECUTED_FAILED);
+            throw new AppException(ErrorCode.ORDER_FAILED);
         }
 
 

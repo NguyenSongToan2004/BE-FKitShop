@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,6 +30,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 
 @Service
@@ -105,7 +105,8 @@ public class AuthenticationService {
                 .claim("email", a.get().getEmail())
                 .claim("dob",a.get().getDob())
                 .claim("status", a.get().getStatus())
-                .claim("role", a.get().getRole())
+                //account role: scope
+                .claim("scope", a.get().getRole())
                 .claim("createDate", a.get().getCreateDate())
                 .claim("adminID", a.get().getAdminID())
                 .issueTime(new Date())
@@ -123,6 +124,14 @@ public class AuthenticationService {
             log.error("Cannot create token",e);
             throw new RuntimeException(e);
         }
+    }
+
+    private String buildScope(Accounts accounts) {
+        StringJoiner stringJoiner = new StringJoiner(" ");
+        if (!accounts.getRole().isEmpty()) {
+            accounts.getRole(); 
+        }
+        return stringJoiner.toString();
     }
 
 

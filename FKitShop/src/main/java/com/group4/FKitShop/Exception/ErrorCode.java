@@ -40,7 +40,10 @@ public enum ErrorCode {
     ORDERS_NOTFOUND(1019, "Orders not found"),
     ORDER_CREATION_FAILED(1020, "Order creation failed"),
     //orderdetails
-    ORDERDETAILS_NOTFOUND(1021, "Order details not found");
+    ORDERDETAILS_NOTFOUND(1021, "Order details not found"),
+
+    ORDER_FAILED(1234, "Order failed");
+
 
 
     private int code;
