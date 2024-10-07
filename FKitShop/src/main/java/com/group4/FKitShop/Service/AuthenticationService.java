@@ -128,11 +128,13 @@ public class AuthenticationService {
 
     private String buildScope(Accounts accounts) {
         StringJoiner stringJoiner = new StringJoiner(" ");
-        if (!accounts.getRole().isEmpty()) {
-            accounts.getRole(); 
+        if (accounts.getRole() != null && !accounts.getRole().isEmpty()) {
+            // Add the role to the StringJoiner
+            stringJoiner.add(accounts.getRole());
         }
         return stringJoiner.toString();
     }
+
 
 
     public AccountsResponse tokenAccountResponse(String token) {
