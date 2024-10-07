@@ -21,6 +21,17 @@ spring:
       enabled: true         # Bật hỗ trợ upload file
       max-file-size: 5MB    # Kích thước tối đa cho mỗi file
       max-request-size: 5MB # Kích thước tối đa cho toàn bộ request
+  mail: # Cấu hình gamil
+    host: smtp.gmail.com
+    port: 587
+    username: blackpro2k4@gmail.com
+    password: ywld jrnf chvw upwt
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 amazonProperties:
   endpointUrl: https://s3.ap-southeast-2.amazonaws.com
