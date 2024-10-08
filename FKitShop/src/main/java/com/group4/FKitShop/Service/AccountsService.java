@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +44,8 @@ public class AccountsService {
         Accounts accounts = accountsMapper.toAccounts(request);
         accounts.setRole("user");
         accounts.setStatus(1);
-        accounts.setCreateDate(new Date());
+        // accounts.setCreateDate(new D);
+        accounts.setCreateDate(new Date(System.currentTimeMillis()));
         //su dung brcrypt de ma hoa password
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         accounts.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -124,7 +125,7 @@ public class AccountsService {
 
         request.setStatus(1);
         Accounts accounts = accountsMapper.toAccounts(request);
-        accounts.setCreateDate(new Date());
+        accounts.setCreateDate(new Date(System.currentTimeMillis()));
         //su dung brcrypt de ma hoa password
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         accounts.setPassword(passwordEncoder.encode(request.getPassword()));

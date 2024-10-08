@@ -12,6 +12,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface AccountsMapper {
 
+    @Mapping(source = "dob", target = "dob")
     Accounts toAccounts(AccountCustomerRequest request);
 
     Accounts toAccounts(AccountsRequest request);

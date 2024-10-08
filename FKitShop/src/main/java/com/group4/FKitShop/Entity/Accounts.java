@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.sql.Date;
 
 
 @Entity
@@ -31,6 +31,7 @@ public class Accounts {
     String fullName;
 
     @Column(name = "dob")
+    @Temporal(TemporalType.DATE)
     Date dob;
 
     @Column(name = "phoneNumber")

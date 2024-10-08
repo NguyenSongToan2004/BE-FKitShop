@@ -1,9 +1,12 @@
 package com.group4.FKitShop.Request;
 
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.sql.Date;
+
 
 @Getter
 @Setter
@@ -13,6 +16,7 @@ import java.util.Date;
 public class UpdateInfoCustomerRequest {
 
     String fullName;
+    @Temporal(TemporalType.DATE)
     Date dob;
     String phoneNumber;
     String email;
