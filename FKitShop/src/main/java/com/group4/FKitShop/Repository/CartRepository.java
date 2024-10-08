@@ -16,9 +16,9 @@ import java.util.Optional;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Integer> {
 
-    @Query(value = "SELECT cartID, accountID, productID, quantity FROM Cart\n" +
+    @Query(value = "SELECT cartID, accountID, productID, quantity, status FROM Cart\n" +
             "where accountID = :accountID and productID = :ProductID", nativeQuery = true)
-    Optional<Cart> findByaccountIDAndproductQuantity(@Param("accountID") String accountID, @Param("ProductID") String ProductID);
+    Optional<Cart> findByaccountIDAndproductID(@Param("accountID") String accountID, @Param("ProductID") String ProductID);
 
 
     List<Cart> findByaccountID(String accountID);

@@ -49,11 +49,11 @@ public class SecurityConfig {
         httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
 
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
-                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
-                        .anyRequest().authenticated()
-                        //request.anyRequest().permitAll()
+//                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+//                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+//                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
+//                        .anyRequest().authenticated()
+                        request.anyRequest().permitAll()
         );
 
 //        //register authentication provider supporting jwt token

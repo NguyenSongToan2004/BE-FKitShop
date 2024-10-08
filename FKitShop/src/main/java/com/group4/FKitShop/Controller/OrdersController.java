@@ -50,9 +50,11 @@ public class OrdersController {
 
             for (OrderDetails detail : details) {
                 totalPrice += detail.getPrice() * detail.getQuantity();
+
             }
             //update totalprice
             orders = ordersService.updateTotalPrice(totalPrice, orders.getOrdersID());
+
             return ResponseObject.builder()
                     .status(1000)
                     .message("Create Order successfully")

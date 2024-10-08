@@ -37,6 +37,8 @@ public enum ErrorCode {
     INVALID_TOKEN(1018, "Invalid token"),
     //sql
     EXECUTED_FAILED(1111, "Executed failed"),
+    //cart
+    CART_NOTFOUND(1100, "Cart not found"),
     //orders
     ORDERS_NOTFOUND(1019, "Orders not found"),
     ORDER_CREATION_FAILED(1020, "Order creation failed"),

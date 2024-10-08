@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/BE-FKitShop.iml" filepath="$PROJECT_DIR$/.idea/BE-FKitShop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FKitShop/FKitShop.iml" filepath="$PROJECT_DIR$/FKitShop/FKitShop.iml" />
     </modules>
   </component>
 </project>
