@@ -34,11 +34,11 @@ public class SecurityConfig {
     private static final String[] GET_PUBLIC_API = {
             "/product/latest",
             "/product/{id}",
-            "/product/aproducts"
+            "/product/aproducts",
     };
 //    //secretkey
-//    @Value("${jwt.signerKey}")
-//    private String signerKey;
+    @Value("${jwt.signerKey}")
+    private String signerKey;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -47,29 +47,30 @@ public class SecurityConfig {
         httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
 
         httpSecurity.authorizeHttpRequests(request ->
-//                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
-//                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-//                        .anyRequest().authenticated()
-                        request.anyRequest().permitAll()
+                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
+                        .anyRequest().authenticated()
+                        //request.anyRequest().permitAll()
         );
 
 //        //register authentication provider supporting jwt token
-//        httpSecurity.oauth2ResourceServer(oauth2 ->
-//                //jwt decoder: decode jwt truyen vao
-//                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder())
-//        );
+        httpSecurity.oauth2ResourceServer(oauth2 ->
+                //jwt decoder: decode jwt truyen vao
+                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+        );
         return httpSecurity.build();
     }
     //jwt decoder interface
-//    @Bean
-//    JwtDecoder jwtDecoder() {
-//        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-//        return NimbusJwtDecoder
-//                .withSecretKey(secretKeySpec)
-//                .macAlgorithm(MacAlgorithm.HS512)
-//                .build();
-//
-//    }
+    @Bean
+    JwtDecoder jwtDecoder() {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
+        return NimbusJwtDecoder
+                .withSecretKey(secretKeySpec)
+                .macAlgorithm(MacAlgorithm.HS512)
+                .build();
+
+    }
 
     @Bean
     PasswordEncoder passwordEncoder() {

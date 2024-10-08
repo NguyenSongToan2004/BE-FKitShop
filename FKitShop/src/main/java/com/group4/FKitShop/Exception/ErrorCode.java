@@ -21,6 +21,7 @@ public enum ErrorCode {
     // Product
     PRODUCT_NAMEDUPLICATED(1009, "This product name has taken alredy !!"),
     PRODUCT_NOTFOUND(1010, "This product is not exist !!"),
+    PRODUCT_UNAVAILABLE(1234, "This product is out of stock"),
     // File
     UPLOAD_FILE_FAILED(1011, "Fail to upload this file!!"),
     // Tag

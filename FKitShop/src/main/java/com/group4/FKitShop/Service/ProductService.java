@@ -104,4 +104,13 @@ public class ProductService {
     public List<Product> getActiveProduct(){
         return repository.getActiveProducts();
     }
+
+    public Product updateQuantity(Integer quantity, String id) {
+        Product product = repository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+        );
+        product.setQuantity(quantity);
+        return repository.save(product);
+    }
+
 }

@@ -3,10 +3,12 @@ package com.group4.FKitShop.Service;
 
 import com.group4.FKitShop.Entity.Cart;
 import com.group4.FKitShop.Entity.Orders;
+import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.CartRepository;
+import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.CartRequest;
 import com.group4.FKitShop.Response.CartResponse;
 import lombok.AccessLevel;
@@ -23,26 +25,39 @@ import java.util.*;
 public class CartService {
 
     CartRepository cartRepository;
+    ProductRepository productRepository;
+
+    ProductService productService;
 
     public CartResponse createCart(CartRequest cartRequest) {
         try {
             Map<String, Integer> productQuantity = cartRequest.getProductQuantity();
 
             for (String productID : productQuantity.keySet()) {
-                int quantity = productQuantity.get(productID);
+                int requestQuantity = productQuantity.get(productID);
                 // Check if the product is already in the cart
                 Optional<Cart> carttmp = cartRepository.findByaccountIDAndproductQuantity(cartRequest.getAccountID(), productID);
+                Product product = productRepository.findById(productID).orElseThrow(
+                        () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+                );
+                int pQuantity = product.getQuantity() - requestQuantity;
                 if (carttmp.isEmpty()) {
                     Cart cart = new Cart();
                     cart.setAccountID(cartRequest.getAccountID());
                     cart.setProductID(productID);
-                    cart.setQuantity(quantity);
+                    cart.setQuantity(requestQuantity);
+                    //update product requestQuantity
+                    // add cart => - product quantity
+                    cart.setStatus("available");
                     cartRepository.save(cart);
+                    productService.updateQuantity(pQuantity, productID);
                     // If the product exists, update its quantity
                 } else {
                     Cart cart = carttmp.get();
-                    cart.setQuantity(quantity + carttmp.get().getQuantity());
+                    int cQuantity = carttmp.get().getQuantity();
+                    cart.setQuantity(requestQuantity + carttmp.get().getQuantity());
                     cartRepository.save(cart);
+                    productService.updateQuantity(pQuantity, productID);
                 }
             }
             Map<String, Integer> tmp = new HashMap<>();
@@ -82,16 +97,31 @@ public class CartService {
     //update all cart quantity
     public CartResponse updateAllQuantityCart(String accountID, Map<String, Integer> productQuantity) {
         try {
-            Map<String, Integer> tmp = new HashMap<>();
             List<Cart> cartlist = cartRepository.findByaccountID(accountID);
             for (Cart cart : cartlist) {
-                tmp.put(cart.getProductID(), cart.getQuantity());
-            }
-            for (Cart cart : cartlist) {
+                //product's quantity in cart
+                int currentQuantity = cart.getQuantity();
+                Product product = productRepository.findById(cart.getProductID()).orElseThrow(
+                        () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+                );
+                int availableProductQuantity = product.getQuantity();
                 for (Map.Entry<String, Integer> entry : productQuantity.entrySet()) {
                     if (cart.getProductID().equals(entry.getKey())) {
-                        cart.setQuantity(entry.getValue());
+                        //request quantity
+                        int requestQuantity = entry.getValue();
+                        //case
+                        if (requestQuantity > availableProductQuantity) {
+                            throw new AppException(ErrorCode.PRODUCT_UNAVAILABLE);
+                        }
+                        cart.setQuantity(requestQuantity);
                         cartRepository.save(cart);
+                        if (requestQuantity > currentQuantity) {
+                            availableProductQuantity -= (requestQuantity - currentQuantity);
+                            productService.updateQuantity(availableProductQuantity, product.getProductID());
+                        } else {
+                            availableProductQuantity += (requestQuantity - currentQuantity);
+                            productService.updateQuantity(availableProductQuantity, product.getProductID());
+                        }
                     }
                 }
             }
@@ -105,22 +135,6 @@ public class CartService {
             throw new AppException(ErrorCode.EXECUTED_FAILED);
         }
     }
-
-    //update 1 product quantity
-//    public Cart updateCartByProductID(CartRequest request) {
-//        try {
-//            List<Cart> cartlist = cartRepository.findByaccountID(request.getAccountID());
-//            Cart cart = cartRepository.findByproductID(String.valueOf(request.getProductQuantity().keySet());
-//
-//            cart.setQuantity(request.getProductQuantity());
-//            cartRepository.save(cart);
-//            return cart;
-//        } catch (DataIntegrityViolationException e) {
-//            // Catch DataIntegrityViolationException and rethrow as AppException
-//            //e.getMostSpecificCause().getMessage()
-//            throw new AppException(ErrorCode.EXECUTED_FAILED);
-//        }
-//    }
 
     public CartResponse deleteCartByProductID(String accountID, String productID) {
         try {
@@ -141,6 +155,8 @@ public class CartService {
             throw new AppException(ErrorCode.EXECUTED_FAILED);
         }
     }
+
+
 
 
 }

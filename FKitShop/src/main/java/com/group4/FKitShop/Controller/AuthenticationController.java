@@ -1,6 +1,7 @@
 package com.group4.FKitShop.Controller;
 
 import com.group4.FKitShop.Entity.ResponseObject;
+import com.group4.FKitShop.Exception.MultiAppException;
 import com.group4.FKitShop.Request.AccountsRequest;
 import com.group4.FKitShop.Request.AuthenticationRequest;
 import com.group4.FKitShop.Request.IntrospectRequest;
@@ -28,7 +29,7 @@ public class AuthenticationController {
     AccountsService accountsService;
 
     @PostMapping("/register")
-    public ResponseObject createAccounts(@RequestBody @Valid AccountsRequest request){
+    public ResponseObject createAccounts(@RequestBody @Valid AccountsRequest request) throws MultiAppException {
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create account successfully")

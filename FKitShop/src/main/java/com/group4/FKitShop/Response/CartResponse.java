@@ -15,4 +15,5 @@ import java.util.Map;
 public class CartResponse {
     String accountID;
     Map<String, Integer> productQuantity;
+    String status;
 }
