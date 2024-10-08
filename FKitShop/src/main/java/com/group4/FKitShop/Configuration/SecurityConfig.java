@@ -30,11 +30,13 @@ public class SecurityConfig {
             "/accounts/signup",
             "/auth/login",
             "/auth/introspect",
+            "/carts/create"
     };
     private static final String[] GET_PUBLIC_API = {
             "/product/latest",
             "/product/{id}",
             "/product/aproducts",
+            "/carts/view/{accountID}"
     };
 //    //secretkey
     @Value("${jwt.signerKey}")

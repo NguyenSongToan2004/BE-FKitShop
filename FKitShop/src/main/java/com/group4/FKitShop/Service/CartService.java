@@ -56,6 +56,7 @@ public class CartService {
                     Cart cart = carttmp.get();
                     int cQuantity = carttmp.get().getQuantity();
                     cart.setQuantity(requestQuantity + carttmp.get().getQuantity());
+                    cart.setStatus("available");
                     cartRepository.save(cart);
                     productService.updateQuantity(pQuantity, productID);
                 }
