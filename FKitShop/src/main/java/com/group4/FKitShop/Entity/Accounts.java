@@ -1,10 +1,13 @@
 package com.group4.FKitShop.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -52,5 +55,9 @@ public class Accounts {
 
     @Column(name = "adminID")
     String adminID;
+
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    private Set<Supporting> supportings = new HashSet<>();
 
 }

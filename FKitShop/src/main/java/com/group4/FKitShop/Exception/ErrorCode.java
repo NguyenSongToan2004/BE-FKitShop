@@ -44,7 +44,12 @@ public enum ErrorCode {
     ORDERS_NOTFOUND(1019, "Orders not found"),
     ORDER_CREATION_FAILED(1020, "Order creation failed"),
     //orderdetails
-    ORDERDETAILS_NOTFOUND(1021, "Order details not found");
+    ORDERDETAILS_NOTFOUND(1021, "Order details not found"),
+    //Supporting
+    SUPPORTING_NOT_FOUND(1022, "Support not found"),
+    SUPPORTING_LIMITED(1023, "Support out of limit !!"),
+    ;
+
 
 
     // max = 18

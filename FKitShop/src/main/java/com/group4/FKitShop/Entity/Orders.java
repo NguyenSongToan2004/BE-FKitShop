@@ -48,5 +48,4 @@ public class Orders {
     @Temporal(TemporalType.DATE)
     Date shipDate;
 
-
 }

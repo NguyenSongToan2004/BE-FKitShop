@@ -24,5 +24,4 @@ public class OrdersRequest {
     @Size(min = 10, message = "Phone number at 10 digits")
     String phoneNumber;
     Double shippingPrice;
-
 }

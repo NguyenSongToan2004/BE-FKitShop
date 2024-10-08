@@ -1,10 +1,13 @@
 package com.group4.FKitShop.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -37,4 +40,10 @@ public class OrderDetails {
     @Temporal(TemporalType.DATE)
     Date warrantyDate;
 
+    @OneToMany(mappedBy = "orderDetail")
+    @JsonManagedReference
+    private Set<Supporting> supportings = new HashSet<>();
+
+    @Column(name = "supportCount")
+    int supportCount;
 }

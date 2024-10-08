@@ -1,6 +1,6 @@
 package com.group4.FKitShop.Service;
 
-import com.group4.FKitShop.Entity.OrderDetails;
+import com.group4.FKitShop.Entity.OrderResultSet;
 import com.group4.FKitShop.Entity.Orders;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
@@ -14,14 +14,16 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -51,17 +53,24 @@ public class OrdersService {
             Orders orders = ordersMapper.toOrders(request);
             orders.setOrdersID(generateUniqueCode());
             //total price auto tinh, gio test truoc
-           // orders.setTotalPrice(1000000.0);
+            orders.setTotalPrice(1000000.0);
             orders.setShippingPrice(request.getShippingPrice());
             orders.setStatus("Pending");
             orders.setOrderDate(new Date());
-            return ordersRepository.save(orders);
+            Orders o = ordersRepository.save(orders);
+            sendOrderEmail("leesintoan2@gmail.com", "Test demo", o);
+            return o;
         } catch (DataIntegrityViolationException e) {
             // Catch DataIntegrityViolationException and rethrow as AppException
             //e.getMostSpecificCause().getMessage()
             throw new AppException(ErrorCode.EXECUTED_FAILED);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
     }
 
     public List<Orders> getOrders() {
@@ -96,11 +105,14 @@ public class OrdersService {
         return ordersRepository.save(orders);
     }
 
-    private void sendOrderEmail(String to, String subject, Orders orders) throws MessagingException, UnsupportedEncodingException {
+    private void sendOrderEmail(String to, String subject, Orders orders) throws MessagingException, UnsupportedEncodingException, SQLException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi-VN"));
         helper.setFrom(new InternetAddress("blackpro2k4@gmail.com", "FKShop"));
+
+        List<OrderResultSet> list = getOrderResultSet(orders.getOrdersID());
+
         String scriptTable = "";
         String body = "<p>Cảm ơn quý khách <strong>"+orders.getAccountID()+"</strong> đã đặt hàng tại FKShop.</p>" +
                 "<p>Đơn hàng <strong>"+orders.getOrdersID()+"</strong> của quý khách đã được tiếp nhận, chúng tôi sẽ xử lý trong khoảng thời gian sớm nhất. Sau đây là thông tin đơn hàng.</p>" +
@@ -138,5 +150,24 @@ public class OrdersService {
         mailSender.send(message);
     }
 
+    private List<OrderResultSet> getOrderResultSet(String orderID) throws SQLException {
+        List<OrderResultSet> list = ordersRepository.getOrdersInfo(orderID);
+//        while(result.next()){
+//            OrderResultSet o = new OrderResultSet();
+//            o.setFullName(result.getString(1));
+//            o.setEmail(result.getString(2));
+//            o.setPhoneNumber(result.getString(3));
+//            o.setOrdersID(result.getString(4));
+//            o.setProductName(result.getString(5));
+//            o.setPrice(result.getDouble(6));
+//            o.setDiscount(result.getInt(7));
+//            o.setQuantity(result.getInt(8));
+//            o.setDiscountPrice(result.getDouble(9));
+//            o.setTmpPrice(result.getDouble(10));
+//            list.add(o);
+//        }
+        System.out.println("size: " + list.size());
+        return list;
+    }
 
 }
