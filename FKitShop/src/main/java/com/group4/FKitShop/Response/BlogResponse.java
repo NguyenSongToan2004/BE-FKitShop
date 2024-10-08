@@ -1,7 +1,9 @@
 package com.group4.FKitShop.Response;
 
-import com.group4.FKitShop.Entity.OrderDetails;
-import com.group4.FKitShop.Entity.Orders;
+
+import com.group4.FKitShop.Entity.Blog;
+import com.group4.FKitShop.Entity.BlogTag;
+import com.group4.FKitShop.Entity.Tag;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CheckoutResponse {
-    Orders orders;
-    List<OrderDetails> orderDetails;
+public class BlogResponse {
+    Blog blog;
+    List<BlogTag> tags;
 }

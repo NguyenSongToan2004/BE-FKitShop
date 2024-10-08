@@ -1,8 +1,10 @@
 package com.group4.FKitShop.Controller;
 
+import com.group4.FKitShop.Entity.CateProduct;
 import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.CategoryRequest;
+import com.group4.FKitShop.Response.CategoryResponse;
 import com.group4.FKitShop.Response.StringRespone;
 import com.group4.FKitShop.Service.CateProductService;
 import com.group4.FKitShop.Service.CategoryService;
@@ -66,22 +68,27 @@ public class CategoryController {
     // create cate & create cateProduct relationship tuong ung
     @PostMapping()
     public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request) {
+        Category cate = categoryService.createCategory(request);
+        cateProductService.createCateProduct_Category(request);
+        List<CateProduct> cateProducts = cateProductService.getCateProductByCategoryID(cate.getCategoryID());
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create category successfully")
-                .data(categoryService.createCategory(request))
-                .data(cateProductService.createCateProduct_Category(request))
+                .data(new CategoryResponse(cate, cateProducts))
                 .build();
     }
 
     @PutMapping("/{categoryID}")
     public  ResponseObject updateCategory(@RequestBody @Valid CategoryRequest request, @PathVariable String categoryID) {
         cateProductService.deleteCateProduct_Category(categoryID);
+        Category cate = categoryService.updateCategory(categoryID, request);
+        cateProductService.updateCateProduct_Category(categoryID, request);
+        List<CateProduct> cateProducts = cateProductService.getCateProductByCategoryID(cate.getCategoryID());
+
         return ResponseObject.builder()
                 .status(1000)
                 .message("Update category successfully")
-                .data(categoryService.updateCategory(categoryID, request))
-                .data(cateProductService.createCateProduct_Category(request))
+                .data(new CategoryResponse(cate, cateProducts))
                 .build();
     }
 

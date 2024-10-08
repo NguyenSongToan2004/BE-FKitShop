@@ -40,6 +40,19 @@ public class BlogService {
         return blog;
     }
 
+    // get blog by tagID
+    public List<Blog> getBlogByTag(int id){
+        return blogRepository.getBlogList(id);
+    }
+
+    // filter by date
+    public List<Blog> getBlogDateDesc(){
+        return blogRepository.getBlogListDesc();
+    }
+    public List<Blog> getBlogDateAsc(){
+        return blogRepository.getBlogListAsc();
+    }
+
     private static final String UPLOAD_DIRECTORY = "uploads" + File.separator + "blogs";
 
     String uploadImage(MultipartFile file) {
@@ -85,6 +98,7 @@ public class BlogService {
         blog.setBlogID(generateUniqueCode());
         blog.setImage(uploadImage(image));
         blog.setCreateDate(new Date());
+        blog.setToDelete(1);
         return blogRepository.save(blog);
     }
 
@@ -107,23 +121,10 @@ public class BlogService {
     }
 
     @Transactional
-    public void deleteBlog(String id) {
+    public int deleteBlog(String id) {
         if (!blogRepository.existsById(id))
             throw new AppException(ErrorCode.Blog_NOTFOUND);
-        blogRepository.deleteById(id);
-    }
-
-    // get blog by tagID
-    public List<Blog> getBlogByTag(int id){
-        return blogRepository.getBlogList(id);
-    }
-
-    // filter by date
-    public List<Blog> getBlogDateDesc(){
-        return blogRepository.getBlogListDesc();
-    }
-    public List<Blog> getBlogDateAsc(){
-        return blogRepository.getBlogListAsc();
+        return blogRepository.deleteStatus(id);
     }
 
 

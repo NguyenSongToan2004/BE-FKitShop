@@ -34,6 +34,14 @@ public class WishlistService {
         return wishlist;
     }
 
+    public List<Wishlist> getWishlistByAccountID(String id){
+        return wishlistRepository.getWishlistByAccountID(id);
+    }
+
+    public List<Wishlist> getWishlistByProductID(String id){
+        return wishlistRepository.getWishlistByProductID(id);
+    }
+
     public Wishlist createWishlist(WishlistRequest request) {
        if(wishlistRepository.checkWishlistByAccountIDAndProductID(request.getAccountID(), request.getProductID()) != null){
            throw new AppException(ErrorCode.Wishlist_EXIST);
@@ -59,11 +67,5 @@ public class WishlistService {
         wishlistRepository.deleteById(id);
     }
 
-    public List<Wishlist> getWishlistByAccountID(String id){
-        return wishlistRepository.getWishlistByAccountID(id);
-    }
 
-    public List<Wishlist> getWishlistByProductID(String id){
-        return wishlistRepository.getWishlistByProductID(id);
-    }
 }

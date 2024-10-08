@@ -61,6 +61,19 @@ public class BlogTagService {
         return true;
     }
 
+    public boolean updateBlogTag_Blog(String blogID, BlogRequest request) {
+        List<Integer> tagIDs = request.getTagID();
+
+        // Loop through all tagIDs
+        for (int tagID : tagIDs) {
+            BlogTag blogtag = new BlogTag();
+            blogtag.setBlogID(blogID);
+            blogtag.setTagID(tagID);
+            blogTagRepository.save(blogtag);
+        }
+        return true;
+    }
+
     public void deleteBlogTag_Blog(String blogID) {
         List<BlogTag> blogTags = blogTagRepository.findByBlogID(blogID);
         for (BlogTag obj : blogTags) {
@@ -75,6 +88,17 @@ public class BlogTagService {
         do {
             tagID++;
         } while (tagRepository.existsById(tagID));
+
+        for (String blogID : blogIDs) {
+            BlogTag blogtag = new BlogTag();
+            blogtag.setBlogID(blogID);
+            blogtag.setTagID(tagID);
+            blogTagRepository.save(blogtag);
+        }
+    }
+
+    public void updateBlogTag_Tag(int tagID, TagRequest request) {
+        List<String> blogIDs = request.getBlogID();
 
         for (String blogID : blogIDs) {
             BlogTag blogtag = new BlogTag();

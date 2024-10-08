@@ -103,16 +103,16 @@ public class ProductController {
                 .build();
         Product product = service.updateProduct(productID, request, image);
         cateProductService.deleteCateProduct_Product(productID);
-        cateProductService.createCateProduct_Product(request);
+        cateProductService.updateCateProduct_Product(productID, request);
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Update Successfully !!", product)
         );
     }
 
-    // delete product & cateProduct relation tuong ung
+    // delete product
     @DeleteMapping("/{productID}")
     ResponseEntity<ResponseObject> deleteProduct(@PathVariable String productID) {
-        cateProductService.deleteCateProduct_Product(productID);
+        //cateProductService.deleteCateProduct_Product(productID);
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Delete Successfully !!", service.deleteProduct(productID) + " row affeted")
         );

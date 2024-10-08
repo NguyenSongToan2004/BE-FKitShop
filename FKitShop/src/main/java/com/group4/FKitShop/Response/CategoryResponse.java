@@ -1,7 +1,7 @@
 package com.group4.FKitShop.Response;
 
-import com.group4.FKitShop.Entity.OrderDetails;
-import com.group4.FKitShop.Entity.Orders;
+import com.group4.FKitShop.Entity.CateProduct;
+import com.group4.FKitShop.Entity.Category;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CheckoutResponse {
-    Orders orders;
-    List<OrderDetails> orderDetails;
+public class CategoryResponse {
+    Category cate;
+    List<CateProduct> cp;
 }

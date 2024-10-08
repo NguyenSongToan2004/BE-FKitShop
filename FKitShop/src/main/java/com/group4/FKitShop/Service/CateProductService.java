@@ -61,6 +61,19 @@ public class CateProductService {
         return true;
     }
 
+    public boolean updateCateProduct_Category(String categoryID, CategoryRequest request) {
+        List<String> productIDs = request.getProductID();
+
+        // Loop through all product IDs
+        for (String productID : productIDs) {
+            CateProduct cateProduct = new CateProduct();
+            cateProduct.setCategoryID(categoryID);
+            cateProduct.setProductID(productID);
+            cateProductRepository.save(cateProduct);
+        }
+        return true;
+    }
+
     public void deleteCateProduct_Category(String categoryID) {
         List<CateProduct> cateProducts = cateProductRepository.findByCategoryID(categoryID);
         for (CateProduct obj : cateProducts) {
@@ -84,6 +97,17 @@ public class CateProductService {
         List<String> categoryIDs = request.getCategoryID();
 
         String productID = generateProductID();
+
+        for (String categoryID : categoryIDs) {
+            CateProduct cateProduct = new CateProduct();
+            cateProduct.setCategoryID(categoryID);
+            cateProduct.setProductID(productID);
+            cateProductRepository.save(cateProduct);
+        }
+    }
+
+    public void updateCateProduct_Product(String productID, ProductRequest request) {
+        List<String> categoryIDs = request.getCategoryID();
 
         for (String categoryID : categoryIDs) {
             CateProduct cateProduct = new CateProduct();

@@ -72,13 +72,13 @@ public class WishlistController {
                 .build();
     }
 
-    // delete feedback
+    // delete wishlist
     @DeleteMapping("/{wishlistID}")
     public ResponseObject deleteWishlist(@PathVariable int wishlistID) {
         wishlistService.deleteWishlist(wishlistID);
         return ResponseObject.builder()
                 .status(1000)
-                .message("Delete feedback successfully")
+                .message("Delete wishlist successfully")
                 .build();
     }
 }
