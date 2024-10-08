@@ -44,6 +44,9 @@ public enum ErrorCode {
     ORDER_CREATION_FAILED(1020, "Order creation failed"),
     //orderdetails
     ORDERDETAILS_NOTFOUND(1021, "Order details not found"),
+    //order status
+    OrderStatus_NOTFOUND(1022, "Order status not found"),
+    OrderStatus_EXIST(1023, "Order status already exist"),
 
     ORDER_FAILED(1234, "Order failed");
 

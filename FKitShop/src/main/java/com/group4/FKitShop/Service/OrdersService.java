@@ -22,6 +22,7 @@ public class OrdersService {
 
     OrdersRepository ordersRepository;
     OrdersMapper ordersMapper;
+    OrderStatusService orderStatusService;
 
     public String generateUniqueCode() {
         int number = 1;
@@ -42,6 +43,8 @@ public class OrdersService {
             orders.setShippingPrice(request.getShippingPrice());
             orders.setStatus("Pending");
             orders.setOrderDate(new Date());
+            // tao order status
+            orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
             return ordersRepository.save(orders);
         } catch (DataIntegrityViolationException e) {
             // Catch DataIntegrityViolationException and rethrow as AppException
@@ -73,6 +76,8 @@ public class OrdersService {
         Orders orders = ordersRepository.findById(ordersID)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDERS_NOTFOUND));
         orders.setStatus(status);
+        // tao order status
+        orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
         return ordersRepository.save(orders);
     }
 

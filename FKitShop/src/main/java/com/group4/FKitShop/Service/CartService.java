@@ -11,6 +11,7 @@ import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.CartRequest;
 import com.group4.FKitShop.Response.CartResponse;
 import com.group4.FKitShop.Response.ProductCartResponse;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -138,6 +139,7 @@ public class CartService {
         }
     }
 
+    @Transactional
     public CartResponse deleteCartByProductID(String accountID, String productID) {
         try {
             cartRepository.deletebyAccountIDAndProductID(accountID, productID);
