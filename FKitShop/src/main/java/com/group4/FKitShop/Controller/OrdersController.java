@@ -11,12 +11,14 @@ import com.group4.FKitShop.Request.OrderDetailsRequest;
 import com.group4.FKitShop.Request.OrdersRequest;
 import com.group4.FKitShop.Response.CheckoutResponse;
 import com.group4.FKitShop.Service.OrderDetailsService;
+import com.group4.FKitShop.Service.OrderStatusService;
 import com.group4.FKitShop.Service.OrdersService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -31,16 +33,22 @@ public class OrdersController {
 
     OrdersService ordersService;
     OrderDetailsService orderDetailsService;
+    private final OrderStatusService orderStatusService;
 
     //bussiness flow
     @PostMapping("/checkout")
+    @Transactional
     public ResponseObject checkout(@RequestBody @Valid CheckoutRequest request) {
         try {
             //create order
+            //ensure order save and immediately flushes the changes to the database
             Orders orders = ordersService.createOrder(request.getOrdersRequest());
             if (orders == null) {
                 throw new AppException(ErrorCode.ORDER_CREATION_FAILED);
             }
+            // create order status
+            orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
+
             //create order details by orderid
             String ordersID = orders.getOrdersID();
             List<OrderDetails> details = orderDetailsService.createOrderDetails(request.getOrderDetailsRequest(), ordersID);

@@ -3,6 +3,8 @@ package com.group4.FKitShop.Request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -10,5 +12,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CheckoutRequest {
     OrdersRequest ordersRequest;
-    OrderDetailsRequest orderDetailsRequest;
+    List<OrderDetailsRequest> orderDetailsRequest;
 }

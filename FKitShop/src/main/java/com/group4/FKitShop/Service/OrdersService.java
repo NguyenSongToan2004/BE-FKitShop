@@ -43,9 +43,9 @@ public class OrdersService {
             orders.setShippingPrice(request.getShippingPrice());
             orders.setStatus("Pending");
             orders.setOrderDate(new Date());
-            // tao order status
-            orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
-            return ordersRepository.save(orders);
+
+            //ensure order save and immediately flushes the changes to the database
+            return ordersRepository.saveAndFlush(orders);
         } catch (DataIntegrityViolationException e) {
             // Catch DataIntegrityViolationException and rethrow as AppException
             //e.getMostSpecificCause().getMessage()
