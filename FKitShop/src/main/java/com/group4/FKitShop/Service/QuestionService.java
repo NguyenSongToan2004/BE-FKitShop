@@ -44,19 +44,23 @@ public class QuestionService {
     public Question updateQuestion(int id, QuestionRequest request){
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.Question_NOTFOUND));
-        question.setAccountID(request.getAccountID());
-        question.setLabID(request.getLabID());
-        question.setDescription(request.getDescription());
-        question.setResponse(request.getResponse());
+        Question ques = questionMapper.toQuestion(request);
+//        question.setAccountID(request.getAccountID());
+//        question.setLabID(request.getLabID());
+//        question.setDescription(request.getDescription());
+//        question.setResponse(request.getResponse());
         //question.setStatus(request.getStatus());
+        ques.setAccountID(question.getAccountID());
+        ques.setPostDate(question.getPostDate());
+        ques.setQuestionID(id);
         if(!request.getResponse().isEmpty()){
-            question.setResponseDate(new Date());
-            question.setStatus(1);
+            ques.setResponseDate(new Date());
+            ques.setStatus(1);
         }else{
-            question.setStatus(0);
-            question.setResponseDate(null);
+            ques.setStatus(0);
+            ques.setResponseDate(null);
         }
-        return questionRepository.save(question);
+        return questionRepository.save(ques);
     }
 
     @Transactional

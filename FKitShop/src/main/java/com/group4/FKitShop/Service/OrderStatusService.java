@@ -34,13 +34,17 @@ public class OrderStatusService {
         return os;
     }
 
-    public OrderStatus createOrderStatus(OrderStatusRequest request) {
-        if(orderStatusRepository.checkOSExist(request.getOrdersID(), request.getStatus()) != null){
+    public List<OrderStatus> getOSByOrderID(String id){
+        return orderStatusRepository.getOrderStatusDetails(id);
+    }
+
+    public OrderStatus createOrderStatus(String orderID, String status) {
+        if(orderStatusRepository.checkOSExist(orderID, status) != null){
             throw new AppException(ErrorCode.OrderStatus_EXIST);
         }
         OrderStatus os = new OrderStatus();
-        os.setOrdersID(request.getOrdersID());
-        os.setStatus(request.getStatus());
+        os.setOrdersID(orderID);
+        os.setStatus(status);
         os.setOrderStatusDate(new Date());
         return orderStatusRepository.save(os);
     }
@@ -61,7 +65,4 @@ public class OrderStatusService {
         orderStatusRepository.deleteById(id);
     }
 
-    public List<OrderStatus> getOSByOrderID(String id){
-        return orderStatusRepository.getOrderStatusDetails(id);
-    }
 }

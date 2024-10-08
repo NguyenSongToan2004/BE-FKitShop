@@ -2,6 +2,7 @@ package com.group4.FKitShop.Controller;
 
 
 import com.group4.FKitShop.Entity.OrderDetails;
+import com.group4.FKitShop.Entity.OrderStatus;
 import com.group4.FKitShop.Entity.Orders;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Exception.AppException;
@@ -10,7 +11,9 @@ import com.group4.FKitShop.Request.CheckoutRequest;
 import com.group4.FKitShop.Request.OrderDetailsRequest;
 import com.group4.FKitShop.Request.OrdersRequest;
 import com.group4.FKitShop.Response.CheckoutResponse;
+import com.group4.FKitShop.Response.OrderStatusResponse;
 import com.group4.FKitShop.Service.OrderDetailsService;
+import com.group4.FKitShop.Service.OrderStatusService;
 import com.group4.FKitShop.Service.OrdersService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -31,6 +34,7 @@ public class OrdersController {
 
     OrdersService ordersService;
     OrderDetailsService orderDetailsService;
+    OrderStatusService orderStatusService;
 
     //bussiness flow
     @PostMapping("/checkout")
@@ -118,5 +122,17 @@ public class OrdersController {
                 .build();
     }
 
+
+    // get orderstatus by orderid
+    @GetMapping("/byOrderID/{id}")
+    public ResponseObject getStatusByOrderID(@PathVariable String id) {
+        Orders od = ordersService.getOrder(id);
+        List<OrderStatus> os = orderStatusService.getOSByOrderID(id);
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Get order status details successfully")
+                .data(new OrderStatusResponse(od, os))
+                .build();
+    }
 
 }

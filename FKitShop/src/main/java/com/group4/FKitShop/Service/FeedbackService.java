@@ -1,14 +1,12 @@
 package com.group4.FKitShop.Service;
 
-import com.group4.FKitShop.Entity.Category;
+
 import com.group4.FKitShop.Entity.Feedback;
-import com.group4.FKitShop.Entity.Tag;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.FeedbackMapper;
 import com.group4.FKitShop.Repository.FeedbackRepository;
 import com.group4.FKitShop.Request.FeedbackRequest;
-import com.group4.FKitShop.Request.TagRequest;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +34,14 @@ public class FeedbackService {
         return feedback;
     }
 
+    public List<Feedback> getFeedbackByAccountID(String id){
+        return feedbackRepository.getFeedbackByAccountID(id);
+    }
+
+    public List<Feedback> getFeedbackByProductID(String id){
+        return feedbackRepository.getFeedbackByProductID(id);
+    }
+
     public Feedback createFeedback(FeedbackRequest request) {
         Feedback feedback = feedbackMapper.toFeedback(request);
         feedback.setCreateDate(new Date());
@@ -45,11 +51,12 @@ public class FeedbackService {
     public Feedback updateFeedback(int id, FeedbackRequest request){
         Feedback feedback = feedbackRepository.findById(id)
                 .orElseThrow( () -> new AppException(ErrorCode.Feedback_NOTFOUND));
-        feedback.setAccountID(request.getAccountID());
-        feedback.setProductID(request.getProductID());
-        feedback.setDescription(request.getDescription());
-        feedback.setRate(request.getRate());
-        return feedbackRepository.save(feedback);
+        Feedback fb = feedbackMapper.toFeedback(request);
+        fb.setAccountID(feedback.getAccountID());
+        fb.setProductID(feedback.getProductID());
+        fb.setFeedbackID(id);
+        fb.setCreateDate(new Date());
+        return feedbackRepository.save(fb);
     }
 
     @Transactional
@@ -59,11 +66,4 @@ public class FeedbackService {
         feedbackRepository.deleteById(id);
     }
 
-    public List<Feedback> getFeedbackByAccountID(String id){
-        return feedbackRepository.getFeedbackByAccountID(id);
-    }
-
-    public List<Feedback> getFeedbackByProductID(String id){
-        return feedbackRepository.getFeedbackByProductID(id);
-    }
-}
+   }

@@ -1,8 +1,11 @@
 package com.group4.FKitShop.Controller;
 
+import com.group4.FKitShop.Entity.CateProduct;
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.ProductRequest;
+import com.group4.FKitShop.Response.CategoryResponse;
+import com.group4.FKitShop.Response.ProductResponse;
 import com.group4.FKitShop.Response.StringRespone;
 import com.group4.FKitShop.Service.CateProductService;
 import com.group4.FKitShop.Service.CategoryService;
@@ -29,7 +32,7 @@ public class ProductController {
 
     // create product & cateProduct relation tuong ung
     @PostMapping("/")
-    ResponseEntity<ResponseObject> addProduct(
+    public ResponseObject addProduct(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("publisher") String publisher,
@@ -60,9 +63,13 @@ public class ProductController {
                 .build();
         Product product = service.addProduct(request, image);
         cateProductService.createCateProduct_Product(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                new ResponseObject(1000, "Create new product sucessfully !!", product)
-        );
+        List<CateProduct> cateProducts = cateProductService.getCateProductByProductID(product.getProductID());
+
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Create product successfully")
+                .data(new ProductResponse(product, cateProducts))
+                .build();
     }
 
     @GetMapping("/{id}")
@@ -73,7 +80,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productID}")
-    ResponseEntity<ResponseObject> getProduct(@PathVariable String productID,
+    public ResponseObject getProduct(@PathVariable String productID,
                                               @RequestParam("name") String name,
                                               @RequestParam("description") String description,
                                               @RequestParam("publisher") String publisher,
@@ -104,9 +111,13 @@ public class ProductController {
         Product product = service.updateProduct(productID, request, image);
         cateProductService.deleteCateProduct_Product(productID);
         cateProductService.updateCateProduct_Product(productID, request);
-        return ResponseEntity.ok(
-                new ResponseObject(1000, "Update Successfully !!", product)
-        );
+        List<CateProduct> cateProducts = cateProductService.getCateProductByProductID(product.getProductID());
+
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Update product successfully")
+                .data(new ProductResponse(product, cateProducts))
+                .build();
     }
 
     // delete product
