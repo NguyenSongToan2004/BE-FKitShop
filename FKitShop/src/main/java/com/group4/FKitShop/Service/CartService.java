@@ -44,36 +44,32 @@ public class CartService {
             // Get the current cart by accountID
             List<Cart> currentCart = cartRepository.findByaccountID(cartRequest.getAccountID());
             List<ProductCartResponse> cartResponses = new ArrayList<>();
+            Cart newcart = null;
             // Check if the cart is not empty
-            if (currentCart != null && !currentCart.isEmpty()) {
-                for (Cart cart : currentCart) {
-                    // Check if the product is already in the cart
-                    Optional<Cart> carttmp = cartRepository.findByaccountIDAndproductID(cartRequest.getAccountID(), cartRequest.getProductID());
-                    // If the product exists, update its quantity
-                    if (carttmp.isPresent()) {
-                        Cart existingCart = carttmp.get();
-                        existingCart.setQuantity(existingCart.getQuantity() + cartRequest.getQuantity());
-                        existingCart.setStatus("available");
-                        // Map the cart to ProductCartResponse
-                        ProductCartResponse productCartResponse = cartMapper.toProductCartResponse(existingCart);
-                        cartResponses.add(productCartResponse);
-                        // Save the updated cart
-                        cartRepository.save(existingCart);
+            if (!currentCart.isEmpty()) {
+                for (Cart existingcart : currentCart) {
+                    // Check if the product is already in the existingcart
+                    if (cartRequest.getProductID().equals(existingcart.getProductID())) {
+                        // If the product exists, update its quantity
+                        newcart = existingcart;
+                        newcart.setQuantity(newcart.getQuantity() + cartRequest.getQuantity());
+                        break;
                     }
                 }
             }
-            // If the cart is empty or the product is not in the cart, create a new cart entry
-            Cart newCart = Cart.builder()
-                    .accountID(cartRequest.getAccountID())
-                    .productID(cartRequest.getProductID())
-                    .quantity(cartRequest.getQuantity())
-                    .status("available")
-                    .build();
-            // Map to ProductCartResponse and add to the response list
-            ProductCartResponse productCartResponse = cartMapper.toProductCartResponse(newCart);
-            cartResponses.add(productCartResponse);
-            cartRepository.save(newCart);
+            if (newcart == null) {
+                newcart = Cart.builder()
+                        .accountID(cartRequest.getAccountID())
+                        .productID(cartRequest.getProductID())
+                        .quantity(cartRequest.getQuantity())
+                        .status("available")
+                        .build();
 
+            }
+            cartRepository.save(newcart);
+            // Map to ProductCartResponse and add to the response list
+            ProductCartResponse productCartResponse = cartMapper.toProductCartResponse(newcart);
+            cartResponses.add(productCartResponse);
             return CartResponse.builder()
                     .accountID(cartRequest.getAccountID())
                     .products(cartResponses)
@@ -83,7 +79,6 @@ public class CartService {
             throw new AppException(ErrorCode.EXECUTED_FAILED);
         }
     }
-
 
     public CartResponse viewCartByAccountID(String accountID) {
         try {
