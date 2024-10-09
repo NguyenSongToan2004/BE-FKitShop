@@ -30,7 +30,7 @@ public class VNPAYController {
     }
 
     // Sau khi hoàn tất thanh toán, VNPAY sẽ chuyển hướng trình duyệt về URL này
-    @GetMapping("/vnpay-payment-return")
+    @GetMapping("/home")
     public String paymentCompleted(HttpServletRequest request, Model model) {
         int paymentStatus = vnPayService.orderReturn(request);
 

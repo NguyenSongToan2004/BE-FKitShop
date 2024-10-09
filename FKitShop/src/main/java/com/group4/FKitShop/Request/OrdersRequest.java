@@ -19,6 +19,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrdersRequest {
     String accountID;
+    String name;
     String province;
     String district;
     String ward;
@@ -27,4 +28,5 @@ public class OrdersRequest {
     @Size(min = 10, message = "Phone number at 10 digits")
     String phoneNumber;
     Double shippingPrice;
+    String note;
 }

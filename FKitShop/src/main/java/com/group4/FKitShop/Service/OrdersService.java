@@ -54,10 +54,12 @@ public class OrdersService {
             Orders orders = ordersMapper.toOrders(request);
             orders.setOrdersID(generateUniqueCode());
             //total price auto tinh, gio test truoc
+            orders.setName(request.getName());
             orders.setTotalPrice(1000000.0);
             orders.setShippingPrice(request.getShippingPrice());
             orders.setStatus("Pending");
             orders.setOrderDate(new Date());
+            orders.setNote(request.getNote());
 
             //ensure order save and immediately flushes the changes to the database
             return ordersRepository.saveAndFlush(orders);
@@ -83,6 +85,8 @@ public class OrdersService {
         orders.setPayingMethod(request.getPayingMethod());
         orders.setPhoneNumber(request.getPhoneNumber());
         orders.setShippingPrice(request.getShippingPrice());
+        orders.setName(request.getName());
+        orders.setAddress(request.getAddress());
         return ordersRepository.save(orders);
     }
 

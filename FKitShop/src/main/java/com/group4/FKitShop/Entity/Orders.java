@@ -22,6 +22,9 @@ public class Orders {
     @Column(name = "accountID")
     String accountID;
 
+    @Column(name = "name")
+    String name;
+
     @Column(name = "province")
     String province;
 
@@ -45,6 +48,9 @@ public class Orders {
 
     @Column(name = "totalPrice")
     Double totalPrice;
+
+    @Column(name = "note")
+    String note;
 
     @Column(name = "status")
     String status;
