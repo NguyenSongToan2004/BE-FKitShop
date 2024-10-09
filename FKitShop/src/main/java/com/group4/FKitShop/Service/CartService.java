@@ -33,7 +33,11 @@ public class CartService {
         List<Cart> cartlist = cartRepository.findByaccountID(accountID);
         List<ProductCartResponse> cartResponses = new ArrayList<>();
         for (Cart cart : cartlist) {
+            Product p = productRepository.findById(cart.getProductID())
+                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
             ProductCartResponse productCartResponse = cartMapper.toProductCartResponse(cart);
+            productCartResponse.setImage(p.getImage());
+            productCartResponse.setName(p.getName());
             cartResponses.add(productCartResponse);
         }
         return cartResponses;
