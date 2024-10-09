@@ -35,6 +35,7 @@ spring:
   shop :
     Token : 4acfbf67-8331-11ef-8e53-0a00184fe694
     ShopID : 194712
+    from-district-id : 3695 # Thu Duc City
 
 amazonProperties:
   endpointUrl: https://s3.ap-southeast-2.amazonaws.com

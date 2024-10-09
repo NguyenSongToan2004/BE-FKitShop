@@ -140,6 +140,7 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+
 <!--        oauth2 resource server-->
 <!--        including nimbus-->
         <dependency>
