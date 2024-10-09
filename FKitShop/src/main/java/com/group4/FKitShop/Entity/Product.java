@@ -28,6 +28,7 @@ public class Product {
     @NotNull
     @Length(min = 1, max = 100, message = "Product name has length from 1 to 100 characters")
     String name;
+
     String image;
     String description;
     @Length(max = 100, message = "Content Description has less than 101 characters")
