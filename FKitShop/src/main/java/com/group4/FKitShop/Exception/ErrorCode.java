@@ -48,6 +48,8 @@ public enum ErrorCode {
     //Supporting
     SUPPORTING_NOT_FOUND(1022, "Support not found"),
     SUPPORTING_LIMITED(1023, "Support out of limit !!"),
+    SUPPORTING_UNSUPPORTED_STATUS_CODE(1024, "Unsupported status code !!"),
+    SUPPORTING_INVALID_SUPPORT_DATE(1025, "Invalid support date !!"),
     ;
 
 

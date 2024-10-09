@@ -10,6 +10,7 @@ import com.group4.FKitShop.Repository.OrderDetailsRepository;
 import com.group4.FKitShop.Repository.SupportingRepository;
 import com.group4.FKitShop.Request.SupportStatusUpdateRequest;
 import com.group4.FKitShop.Request.SupportingRequest;
+import com.group4.FKitShop.Request.UpdateSupportDate;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,5 +72,33 @@ public class SupportingService {
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
         return accounts.getSupportings();
+    }
+
+    public List<Supporting> getSupportByStatus(int status){
+        if(status != 0 && status != 1 && status != 2)
+            throw new AppException(ErrorCode.SUPPORTING_UNSUPPORTED_STATUS_CODE);
+        return supportingRepository.findStatusDone(status);
+    }
+
+    public List<Supporting> getSupportByAccount(String accountID, int status){
+        if(status != 0 && status != 1 && status != 2)
+            throw new AppException(ErrorCode.SUPPORTING_UNSUPPORTED_STATUS_CODE);
+        if(!accountsRepository.existsById(accountID))
+            throw new AppException(ErrorCode.USER_NOT_EXIST);
+        return supportingRepository.findSupportByAccount(accountID, status);
+    }
+
+    public Supporting updateSupportDate(UpdateSupportDate request){
+        Supporting supporting = supportingRepository.findById(request.getSupportingID()).orElseThrow(
+                () -> new AppException(ErrorCode.SUPPORTING_NOT_FOUND)
+        );
+        Date currentDate = new Date(System.currentTimeMillis());
+//        System.out.println("current date : " +currentDate);
+//        System.out.println("request date " + request.getDate());
+//        System.out.println(currentDate.toLocalDate().equals(request.getDate().toLocalDate()));
+        if (currentDate.after(request.getDate()) && !currentDate.toLocalDate().equals(request.getDate().toLocalDate()))
+            throw new AppException(ErrorCode.SUPPORTING_INVALID_SUPPORT_DATE);
+        supporting.setSupportDate(request.getDate());
+        return supportingRepository.save(supporting);
     }
 }
