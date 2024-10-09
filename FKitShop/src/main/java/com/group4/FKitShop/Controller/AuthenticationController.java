@@ -28,10 +28,20 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
     AccountsService accountsService;
 
+//    @PostMapping("/register")
+//    public ResponseObject createAccounts(@RequestBody @Valid AccountCustomerRequest  request){
+//    }
+//    @PostMapping("/register")
+//    public ResponseObject createAccounts(@RequestBody @Valid AccountCustomerRequest request) throws MultiAppException {
+//        return ResponseObject.builder()
+//                .status(1000)
+//                .message("Create account successfully")
+//                .data(accountsService.register(request))
+//                .build();
+//    }
+
     @PostMapping("/register")
     public ResponseObject createAccounts(@RequestBody @Valid AccountCustomerRequest  request){
-    }
-    public ResponseObject createAccounts(@RequestBody @Valid AccountsRequest request) throws MultiAppException {
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create account successfully")

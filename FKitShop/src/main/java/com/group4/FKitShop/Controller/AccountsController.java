@@ -36,19 +36,6 @@ public class AccountsController {
 
     @PostMapping("/register")
     public ResponseObject signUp(@RequestBody @Valid AccountCustomerRequest request) {
-    
-    }
-    @GetMapping
-    public ResponseObject allAccounts(){
-        //manager & admin moi dc truy cap trang nay
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        //lay thong tin nguoi dang nhap
-        log.info("AccountID: {}", authentication.getName());
-        //role
-        authentication.getAuthorities().forEach(grantedAuthority
-                -> log.info(grantedAuthority.getAuthority()));
-
-
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create account successfully")
@@ -64,6 +51,41 @@ public class AccountsController {
                 .data(accountsService.allAccounts())
                 .build();
     }
+//    @PostMapping("/register")
+//    public ResponseObject signUp(@RequestBody @Valid AccountCustomerRequest request) {
+//
+//    }
+
+//    @GetMapping
+//    public ResponseObject allAccounts(){
+//        //manager & admin moi dc truy cap trang nay
+//        var authentication = SecurityContextHolder.getContext().getAuthentication();
+//        //lay thong tin nguoi dang nhap
+//        log.info("AccountID: {}", authentication.getName());
+//        //role
+//        authentication.getAuthorities().forEach(grantedAuthority
+//                -> log.info(grantedAuthority.getAuthority()));
+//        return ResponseObject.builder()
+//                .status(1000)
+//                .message("Create account successfully")
+//                .data(accountsService.register(request))
+//                .build();
+//    }
+//@GetMapping("/allAccounts")
+//public ResponseObject allAccounts(){
+//    //manager & admin moi dc truy cap trang nay
+//    var authentication = SecurityContextHolder.getContext().getAuthentication();
+//    //lay thong tin nguoi dang nhap
+//    log.info("AccountID: {}", authentication.getName());
+//    //role
+//    authentication.getAuthorities().forEach(grantedAuthority
+//            -> log.info(grantedAuthority.getAuthority()));
+//
+//
+//    return ResponseObject.builder()
+//            .data(accountsService.allAccounts())
+//            .build();
+//}
 
     @GetMapping("/{id}")
     public ResponseObject getAccountByID(@PathVariable String id) {

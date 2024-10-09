@@ -46,6 +46,4 @@ public class OrderDetails {
     @JsonManagedReference
     private Set<Supporting> supportings = new HashSet<>();
 
-    @Column(name = "supportCount")
-    int supportCount;
 }

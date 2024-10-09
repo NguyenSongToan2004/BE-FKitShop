@@ -47,8 +47,6 @@ public class AuthenticationService {
 //    @Value("${jwt.signerKey}")
     protected static final String SIGNER_KEY = "toM/m9xtJPF+QFijlzC6azr3XV7x9JExG8KR0gP7IU3gOf6mTqCAxve2dEWq6bQ7";
 
-
-
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = accountsRepository.findByemail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
@@ -57,8 +55,6 @@ public class AuthenticationService {
         // sai mật khẩu
         if (!auth)
             throw new AppException(ErrorCode.UNAUTHENTICATED);
-
-
         var token = generateToken(user);
 
         return AuthenticationResponse.builder()

@@ -56,10 +56,10 @@ public class SecurityConfig {
                         request.anyRequest().permitAll()
         );
 //        //register authentication provider supporting jwt token
-        httpSecurity.oauth2ResourceServer(oauth2 ->
-                //jwt decoder: decode jwt truyen vao
-                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
-        );
+//        httpSecurity.oauth2ResourceServer(oauth2 ->
+//                //jwt decoder: decode jwt truyen vao
+//                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+//        );
         return httpSecurity.build();
     }
     //jwt decoder interface

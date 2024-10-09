@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,17 +34,58 @@ public class AccountsService {
 
     AccountsRepository accountsRepository;
     AccountsMapper accountsMapper;
+// ==============================a Minh
+//    public Accounts createAccount(AccountsRequest request) throws MultiAppException {
+//        List<AppException> exceptions = new ArrayList<>();
+//
+//        if (accountsRepository.existsByemail(request.getEmail())){
+//            exceptions.add(new AppException(ErrorCode.PHONE_EXISTED));
+//        }
+//        if (exceptions.isEmpty()){
+//            throw new MultiAppException(exceptions);
+//        }
+//        accounts.setRole("user");
+//        accounts.setStatus(1);
+//        // accounts.setCreateDate(new D);
+//        accounts.setCreateDate(new Date(System.currentTimeMillis()));
+//        //su dung brcrypt de ma hoa password
+//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+//        accounts.setPassword(passwordEncoder.encode(request.getPassword()));
+//        return accountsRepository.save(accounts);
+//    }
 
-    public Accounts createAccount(AccountsRequest request) throws MultiAppException {
-        List<AppException> exceptions = new ArrayList<>();
+//    public Accounts register(AccountCustomerRequest request) throws MultiAppException {
+//        List<AppException> exceptions = new ArrayList<>();
+//
+//        if (accountsRepository.existsByemail(request.getEmail())){
+//        }
+//        if (accountsRepository.existsByphoneNumber(request.getPhoneNumber())){
+//            exceptions.add(new AppException(ErrorCode.PHONE_EXISTED));
+//        }
+//        if (exceptions.isEmpty()){
+//            throw new MultiAppException(exceptions);
+//        }
+//
+//        Accounts accounts = accountsMapper.toAccounts(request);
+//        accounts.setRole("user");
+//        accounts.setStatus(1);
+//        accounts.setCreateDate(new Date(System.currentTimeMillis()));
+//        //su dung brcrypt de ma hoa password
+//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+//        accounts.setPassword(passwordEncoder.encode(request.getPassword()));
+//        return accountsRepository.save(accounts);
+//    }
+// anh Minh
 
-        if (accountsRepository.existsByemail(request.getEmail())){
-        
-            exceptions.add(new AppException(ErrorCode.PHONE_EXISTED));
+    public Accounts register(AccountCustomerRequest request) {
+        if (accountsRepository.existsByemail(request.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXSITED);
         }
-        if (exceptions.isEmpty()){
-            throw new MultiAppException(exceptions);
+        if (accountsRepository.existsByphoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_EXISTED);
         }
+
+        Accounts accounts = accountsMapper.toAccounts(request);
         accounts.setRole("user");
         accounts.setStatus(1);
         // accounts.setCreateDate(new D);
@@ -63,7 +103,6 @@ public class AccountsService {
     public List<Accounts> getActiveAccounts() {
         return accountsRepository.getActiveAccounts();
     }
-
 
     public Optional<Accounts> getAccountByID(String id) {
         return accountsRepository.findById(id);
