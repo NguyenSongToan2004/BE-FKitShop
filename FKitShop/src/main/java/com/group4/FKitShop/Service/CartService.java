@@ -33,7 +33,12 @@ public class CartService {
         List<Cart> cartlist = cartRepository.findByaccountID(accountID);
         List<ProductCartResponse> cartResponses = new ArrayList<>();
         for (Cart cart : cartlist) {
+            Product p = productRepository.findById(cart.getProductID())
+                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
             ProductCartResponse productCartResponse = cartMapper.toProductCartResponse(cart);
+            productCartResponse.setImage(p.getImages().get(0).getUrl());
+            productCartResponse.setName(p.getName());
+            productCartResponse.setPrice(p.getPrice());
             cartResponses.add(productCartResponse);
         }
         return cartResponses;
@@ -138,17 +143,11 @@ public class CartService {
     public CartResponse deleteCartByProductID(String accountID, String productID) {
         try {
             cartRepository.deletebyAccountIDAndProductID(accountID, productID);
-            List<Cart> cartlist = cartRepository.findByaccountID(accountID);
-            List<ProductCartResponse> cartResponses = new ArrayList<>();
-            for (Cart cart : cartlist) {
-                ProductCartResponse productCartResponse = cartMapper.toProductCartResponse(cart);
-                cartResponses.add(productCartResponse);
-            }
+            List<ProductCartResponse> cartlist = responsesByAccountID(accountID);
             return CartResponse.builder()
                     .accountID(accountID)
-                    .products(cartResponses)
+                    .products(cartlist)
                     .build();
-
         } catch (DataIntegrityViolationException e) {
             // Catch DataIntegrityViolationException and rethrow as AppException
             //e.getMostSpecificCause().getMessage()
