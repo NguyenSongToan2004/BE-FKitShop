@@ -22,6 +22,15 @@ public class Orders {
     @Column(name = "accountID")
     String accountID;
 
+    @Column(name = "province")
+    String province;
+
+    @Column(name = "district")
+    String district;
+
+    @Column(name = "ward")
+    String ward;
+
     @Column(name = "address")
     String address;
 

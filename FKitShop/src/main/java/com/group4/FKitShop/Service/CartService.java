@@ -48,7 +48,7 @@ public class CartService {
         try {
             // Get the current cart by accountID
             List<Cart> currentCart = cartRepository.findByaccountID(cartRequest.getAccountID());
-            List<ProductCartResponse> cartResponses = new ArrayList<>();
+
             Cart newcart = null;
             // Check if the cart is not empty
             if (!currentCart.isEmpty()) {
@@ -72,9 +72,7 @@ public class CartService {
 
             }
             cartRepository.save(newcart);
-            // Map to ProductCartResponse and add to the response list
-            ProductCartResponse productCartResponse = cartMapper.toProductCartResponse(newcart);
-            cartResponses.add(productCartResponse);
+            List<ProductCartResponse> cartResponses = responsesByAccountID(cartRequest.getAccountID());
             return CartResponse.builder()
                     .accountID(cartRequest.getAccountID())
                     .products(cartResponses)
