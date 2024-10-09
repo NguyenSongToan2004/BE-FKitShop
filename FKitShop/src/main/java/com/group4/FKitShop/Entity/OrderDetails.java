@@ -39,6 +39,8 @@ public class OrderDetails {
     @Column(name = "warrantyDate")
     @Temporal(TemporalType.DATE)
     Date warrantyDate;
+    @Column(name = "supportCount")
+    int supportCount;
 
     @OneToMany(mappedBy = "orderDetail")
     @JsonManagedReference

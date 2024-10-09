@@ -14,6 +14,8 @@ public interface AccountsRepository extends JpaRepository<Accounts, String> {
 
     boolean existsByphoneNumber(String s);
 
+    boolean existsByrole(String role);
+
     Optional<Accounts> findByemail(String email);
 
 //    @Query(value = "select accountID\n" +

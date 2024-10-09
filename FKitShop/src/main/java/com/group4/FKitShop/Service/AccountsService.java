@@ -3,12 +3,14 @@ package com.group4.FKitShop.Service;
 import com.group4.FKitShop.Entity.Accounts;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Exception.MultiAppException;
 import com.group4.FKitShop.Repository.AccountsRepository;
 import com.group4.FKitShop.Request.AccountCustomerRequest;
 import com.group4.FKitShop.Request.AccountsRequest;
 import com.group4.FKitShop.Mapper.AccountsMapper;
 import com.group4.FKitShop.Request.UpdateInfoCustomerRequest;
 import com.group4.FKitShop.Request.UpdatePassword;
+import com.group4.FKitShop.Response.AccountsResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,16 +36,16 @@ public class AccountsService {
     AccountsRepository accountsRepository;
     AccountsMapper accountsMapper;
 
+    public Accounts createAccount(AccountsRequest request) throws MultiAppException {
+        List<AppException> exceptions = new ArrayList<>();
 
-    public Accounts register(AccountCustomerRequest request) {
-        if (accountsRepository.existsByemail(request.getEmail())) {
-            throw new AppException(ErrorCode.EMAIL_EXSITED);
+        if (accountsRepository.existsByemail(request.getEmail())){
+        
+            exceptions.add(new AppException(ErrorCode.PHONE_EXISTED));
         }
-        if (accountsRepository.existsByphoneNumber(request.getPhoneNumber())) {
-            throw new AppException(ErrorCode.PHONE_EXISTED);
+        if (exceptions.isEmpty()){
+            throw new MultiAppException(exceptions);
         }
-
-        Accounts accounts = accountsMapper.toAccounts(request);
         accounts.setRole("user");
         accounts.setStatus(1);
         // accounts.setCreateDate(new D);

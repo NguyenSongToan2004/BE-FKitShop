@@ -16,11 +16,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/accounts")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -33,6 +36,19 @@ public class AccountsController {
 
     @PostMapping("/register")
     public ResponseObject signUp(@RequestBody @Valid AccountCustomerRequest request) {
+    
+    }
+    @GetMapping
+    public ResponseObject allAccounts(){
+        //manager & admin moi dc truy cap trang nay
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        //lay thong tin nguoi dang nhap
+        log.info("AccountID: {}", authentication.getName());
+        //role
+        authentication.getAuthorities().forEach(grantedAuthority
+                -> log.info(grantedAuthority.getAuthority()));
+
+
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create account successfully")

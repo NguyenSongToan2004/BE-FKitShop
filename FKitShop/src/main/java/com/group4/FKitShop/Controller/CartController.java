@@ -38,7 +38,7 @@ public class CartController {
                 .data(cartService.viewCartByAccountID(accountID))
                 .build();
     }
-
+//
     @DeleteMapping("/delete")
     public ResponseObject deleteCart(@RequestParam String accountID, @RequestParam String productID) {
         return ResponseObject.builder()
@@ -50,16 +50,13 @@ public class CartController {
 
     @PutMapping()
     public ResponseObject updateCart(@RequestBody @Valid CartRequest request) {
-        Map<String, Integer> cart = request.getProductQuantity();
-        for (Map.Entry<String, Integer> entry : cart.entrySet()) {
-            String productID = entry.getKey();
-            Integer quantity = entry.getValue();
-            cartService.updateAllQuantityCart(request.getAccountID(), request.getProductQuantity());
-        }
+        String accountID = request.getAccountID();
+        String productID = request.getProductID();
+        int quantity = request.getQuantity();
         return ResponseObject.builder()
                 .status(1000)
                 .message("Update Cart successfully")
-                .data(cart)
+                .data(cartService.updateQuantityCart(accountID, productID, quantity))
                 .build();
     }
 

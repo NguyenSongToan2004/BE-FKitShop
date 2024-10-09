@@ -17,11 +17,6 @@ import java.util.Optional;
 public interface OrdersRepository extends JpaRepository<Orders, String> {
     List<Orders> findAllByaccountID(String strings);
 
-//    @Query(value = "update Orders \n" +
-//            "set totalPrice = :totalPrice\n" +
-//            "where ordersId = :ordersID", nativeQuery = true)
-//    Optional<Orders> updateTotal(@Param("totalPrice") Double totalPrice, @Param("ordersID") String ordersID);
-
 
     @Query(value = "select account.fullName, account.email, account.phoneNumber, product.name as productName,\n" +
             "\t\t\t\torders.ordersID, product.price, product.discount ,orderDetails.quantity, \n" +

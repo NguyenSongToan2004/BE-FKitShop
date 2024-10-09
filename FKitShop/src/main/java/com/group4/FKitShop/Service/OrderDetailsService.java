@@ -37,26 +37,26 @@ public class OrderDetailsService {
         return code;
     }
 
-    public List<OrderDetails> createOrderDetails(OrderDetailsRequest request, String ordersID) {
+    public List<OrderDetails> createOrderDetails(List<OrderDetailsRequest> request, String ordersID) {
         try {
-            //get the product quantities
-            Map<String, Integer> productQuantity = request.getProductQuantity();
             List<OrderDetails> orderDetails = new ArrayList<>();
-            for (Map.Entry<String, Integer> entry : productQuantity.entrySet()) {
-                Product product = productRepository.findById(entry.getKey()).get();
-                OrderDetails o = new OrderDetails();
-                o.setOrderDetailsID(generateUniqueCode());
-                o.setOrdersID(ordersID);
-                o.setProductID(product.getProductID());
-                o.setQuantity(entry.getValue());
-                o.setPrice(product.getPrice() * entry.getValue());
-                o.setIsActive(0);
-                o.setStatus("inactive");
-                o.setConfirmDate(new Date());
-                orderDetailsRepository.save(o);
-                orderDetails.add(o);
+            for (OrderDetailsRequest requestItem : request) {
+                Product product = productRepository.findById(requestItem.getProductID())
+                        .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+                OrderDetails orderDetail = OrderDetails.builder()
+                        .orderDetailsID(generateUniqueCode())
+                        .ordersID(ordersID)
+                        .productID(product.getProductID())
+                        .quantity(requestItem.getQuantity())
+                        .price(product.getPrice() * requestItem.getQuantity())
+                        .isActive(0)
+                        .status("inactive")
+                        .confirmDate(new Date())
+                        .build();
+                orderDetailsRepository.save(orderDetail);
+                orderDetails.add(orderDetail);
             }
-        return orderDetails;
+            return orderDetails;
         } catch (DataIntegrityViolationException e) {
             // Catch DataIntegrityViolationException and rethrow as AppException
             //e.getMostSpecificCause().getMessage()
@@ -64,7 +64,7 @@ public class OrderDetailsService {
         }
     }
 
-    public List<OrderDetails> getOrderDetails(){
+    public List<OrderDetails> getOrderDetails() {
         return orderDetailsRepository.findAll();
     }
 
@@ -79,9 +79,6 @@ public class OrderDetailsService {
 //        orderDetails.set
 //
 //    }
-
-
-
 
 
 }

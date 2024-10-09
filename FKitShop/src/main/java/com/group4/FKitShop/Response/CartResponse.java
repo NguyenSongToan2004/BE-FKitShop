@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
-import java.util.Map;
 
 
 @Data
@@ -14,5 +13,5 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CartResponse {
     String accountID;
-    Map<String, Integer> productQuantity;
+    List<ProductCartResponse> products;
 }

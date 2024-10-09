@@ -14,5 +14,6 @@ import java.util.Map;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderDetailsRequest {
-    Map<String,@Min(value = 1, message = "Quantity must be greater than 0") Integer> productQuantity;
+    String productID;
+    int quantity;
 }

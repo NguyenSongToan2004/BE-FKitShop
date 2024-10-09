@@ -37,6 +37,7 @@ public class OrdersService {
     OrdersMapper ordersMapper;
     JavaMailSender mailSender;
     OrderDetailsRepository orderDetailsRepository;
+    OrderStatusService orderStatusService;
 
     public String generateUniqueCode() {
         int number = 1;
@@ -57,9 +58,9 @@ public class OrdersService {
             orders.setShippingPrice(request.getShippingPrice());
             orders.setStatus("Pending");
             orders.setOrderDate(new Date());
-            Orders o = ordersRepository.save(orders);
-            sendOrderEmail("leesintoan2@gmail.com", "Test demo", o);
-            return o;
+
+            //ensure order save and immediately flushes the changes to the database
+            return ordersRepository.saveAndFlush(orders);
         } catch (DataIntegrityViolationException e) {
             // Catch DataIntegrityViolationException and rethrow as AppException
             //e.getMostSpecificCause().getMessage()
@@ -95,6 +96,8 @@ public class OrdersService {
         Orders orders = ordersRepository.findById(ordersID)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDERS_NOTFOUND));
         orders.setStatus(status);
+        // tao order status
+        orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
         return ordersRepository.save(orders);
     }
 

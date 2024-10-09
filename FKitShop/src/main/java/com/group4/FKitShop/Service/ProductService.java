@@ -192,6 +192,13 @@ public class ProductService {
         return repository.getActiveProducts();
     }
 
+    public Product updateQuantity(Integer quantity, String id) {
+        Product product = repository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+        );
+        product.setQuantity(quantity);
+        return repository.save(product);
+    }
 
     //    //private static final String UPLOAD_DIRECTORY = "FKitShop" +File.separator+ "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"uploads";
 //    @Value("${upload.directory}")
@@ -237,4 +244,6 @@ public class ProductService {
 //        ProductMapper.INSTANCE.toProduct(request,product);
 //        return repository.save(product);
 //    }
+    
+
 }
