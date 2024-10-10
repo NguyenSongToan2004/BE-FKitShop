@@ -5,11 +5,8 @@ import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Exception.MultiAppException;
 import com.group4.FKitShop.Repository.AccountsRepository;
-import com.group4.FKitShop.Request.AccountCustomerRequest;
-import com.group4.FKitShop.Request.AccountsRequest;
+import com.group4.FKitShop.Request.*;
 import com.group4.FKitShop.Mapper.AccountsMapper;
-import com.group4.FKitShop.Request.UpdateInfoCustomerRequest;
-import com.group4.FKitShop.Request.UpdatePassword;
 import com.group4.FKitShop.Response.AccountsResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -145,6 +142,17 @@ public class AccountsService {
         return "";
     }
 
+    public String activeAccount(String id) {
+        Accounts accounts = accountsRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_EXIST)
+        );
+        if (accounts.getStatus() == 0) {
+            accounts.setStatus(1);
+        }
+        accountsRepository.save(accounts);
+        return "";
+    }
+
     public String uploadAvatar(String id, MultipartFile image) {
         Accounts accounts = accountsRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
@@ -192,6 +200,31 @@ public class AccountsService {
         request.setPassword(passwordEncoder.encode(request.getPassword()));
 
         accountsMapper.toAccounts(request, accounts);
+        return accountsRepository.save(accounts);
+    }
+
+    public Accounts updateAccountByAdmin(AccountAdminRequest request, String id) {
+        Accounts accounts = accountsRepository.findById(id).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_EXIST)
+        );
+
+        if (accountsRepository.existsByemail(request.getEmail()) && !request.getEmail().equals(accounts.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXSITED);
+        }
+
+        if (accountsRepository.existsByphoneNumber(request.getPhoneNumber()) && !request.getPhoneNumber().equals(accounts.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_EXISTED);
+        }
+
+        accounts.setAdminID(request.getAdminID());
+        accounts.setFullName(request.getFullName());
+        accounts.setEmail(request.getEmail());
+        accounts.setDob(request.getDob());
+        accounts.setPhoneNumber(accounts.getPhoneNumber());
+        accounts.setImage(accounts.getImage());
+        accounts.setRole(request.getRole());
+        accounts.setStatus(request.getStatus());
+
         return accountsRepository.save(accounts);
     }
 

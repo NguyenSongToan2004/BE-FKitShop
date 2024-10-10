@@ -4,10 +4,7 @@ package com.group4.FKitShop.Controller;
 import com.group4.FKitShop.Entity.Accounts;
 
 import com.group4.FKitShop.Entity.ResponseObject;
-import com.group4.FKitShop.Request.AccountCustomerRequest;
-import com.group4.FKitShop.Request.AccountsRequest;
-import com.group4.FKitShop.Request.UpdateInfoCustomerRequest;
-import com.group4.FKitShop.Request.UpdatePassword;
+import com.group4.FKitShop.Request.*;
 import com.group4.FKitShop.Response.AccountsResponse;
 import com.group4.FKitShop.Service.AccountsService;
 import com.group4.FKitShop.Service.AuthenticationService;
@@ -129,6 +126,17 @@ public class AccountsController {
         );
     }
 
+    @PutMapping("/{id}")
+    ResponseEntity<ResponseObject> activeAccount(@PathVariable String id) {
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .status(1000)
+                        .message("Delete Account Successfully !!")
+                        .data(accountsService.activeAccount(id))
+                        .build()
+        );
+    }
+
     @GetMapping("/listAccounts")
     ResponseEntity<ResponseObject> getActiveAccounts() {
         return ResponseEntity.ok(
@@ -151,6 +159,8 @@ public class AccountsController {
         );
     }
 
+
+
     @PostMapping("/createAccount")
     public ResponseObject createAccount(@RequestBody @Valid AccountsRequest request) {
         return ResponseObject.builder()
@@ -166,6 +176,16 @@ public class AccountsController {
                 ResponseObject.builder()
                         .message("Update infomation successfully")
                         .data(accountsService.updateAccount(request, id))
+                        .build()
+        );
+    }
+
+    @PutMapping("/admin/update/{id}")
+    public ResponseEntity<ResponseObject> updateAccountByAdmin(@RequestBody AccountAdminRequest request, @PathVariable String id) {
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Update infomation successfully")
+                        .data(accountsService.updateAccountByAdmin(request, id))
                         .build()
         );
     }

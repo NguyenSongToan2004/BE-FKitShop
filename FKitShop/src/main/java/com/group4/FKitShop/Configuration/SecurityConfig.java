@@ -24,7 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 @EnableWebSecurity
 @CrossOrigin(origins = "http://localhost:5173")
-public class SecurityConfig {
+public class  SecurityConfig {
 
     private static final String[] POST_PUBLIC_API = {
             "/accounts/signup",
@@ -36,7 +36,8 @@ public class SecurityConfig {
             "/product/latest",
             "/product/{id}",
             "/product/aproducts",
-            "/carts/view/{accountID}"
+            "/carts/view/{accountID}",
+            "/"
     };
 //    //secretkey
     @Value("${jwt.signerKey}")
