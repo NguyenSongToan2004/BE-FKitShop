@@ -32,4 +32,9 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 
     Optional<Cart> findByproductID(String productID);
 
+    @Modifying
+    @Query(value = "delete from Cart\n" +
+            "where accountID = :accountID", nativeQuery = true)
+    void clearCartByAccountID(@Param("accountID") String accountID);
+
 }

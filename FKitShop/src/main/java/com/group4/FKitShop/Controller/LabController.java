@@ -4,6 +4,7 @@ import com.group4.FKitShop.Entity.Lab;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Request.DownloadLabRequest;
 import com.group4.FKitShop.Request.LabRequest;
 import com.group4.FKitShop.Service.LabService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,11 +93,12 @@ public class LabController {
     }
 
     @GetMapping("/download")
-    ResponseEntity<Resource> downloadLab(@RequestParam String fileName) {
+    ResponseEntity<Resource> downloadLab(@RequestBody DownloadLabRequest request) {
         try {
-            var fileToDownload = labService.downloadFilePDF(fileName);
+            var fileToDownload = labService.downloadFilePDF(request);
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+                            request.getFileName() + "\"")
                     .contentLength(fileToDownload.length())
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(new FileSystemResource(fileToDownload));

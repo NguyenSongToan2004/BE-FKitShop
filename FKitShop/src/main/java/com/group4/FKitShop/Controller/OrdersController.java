@@ -35,46 +35,14 @@ public class OrdersController {
     OrderDetailsService orderDetailsService;
     private final OrderStatusService orderStatusService;
 
-    //bussiness flow
     @PostMapping("/checkout")
     @Transactional
     public ResponseObject checkout(@RequestBody @Valid CheckoutRequest request) {
-        try {
-            //create order
-            //ensure order save and immediately flushes the changes to the database
-            Orders orders = ordersService.createOrder(request.getOrdersRequest());
-            if (orders == null) {
-                throw new AppException(ErrorCode.ORDER_CREATION_FAILED);
-            }
-            // create order status
-            orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
-
-            //create order details by orderid
-            String ordersID = orders.getOrdersID();
-            List<OrderDetails> details = orderDetailsService.createOrderDetails(request.getOrderDetailsRequest(), ordersID);
-            //update totalPrice in order
-            //including shipping price
-            double totalPrice = orders.getShippingPrice();
-
-            for (OrderDetails detail : details) {
-                totalPrice += detail.getPrice() * detail.getQuantity();
-
-            }
-            //update totalprice
-            orders = ordersService.updateTotalPrice(totalPrice, orders.getOrdersID());
-
-            return ResponseObject.builder()
-                    .status(1000)
-                    .message("Create Order successfully")
-                    .data(new CheckoutResponse(orders, details))
-                    .build();
-        } catch (DataIntegrityViolationException e) {
-            // Catch DataIntegrityViolationException and rethrow as AppException
-            //e.getMostSpecificCause().getMessage()
-            throw new AppException(ErrorCode.ORDER_FAILED);
-        }
-
-
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Create Order successfully")
+                .data(ordersService.checkOut(request))
+                .build();
     }
 
     @GetMapping("/allorders")

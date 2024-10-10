@@ -5,7 +5,10 @@ import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.LabMapper;
 import com.group4.FKitShop.Repository.*;
+import com.group4.FKitShop.Request.DownloadLabRequest;
 import com.group4.FKitShop.Request.LabRequest;
+import com.group4.FKitShop.Request.OrderLab;
+import com.group4.FKitShop.Response.GetLabByAccountIDResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,8 +16,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -120,42 +121,51 @@ public class LabService {
         return fileToSave.getOriginalFilename();
     }
 
-    public File downloadFilePDF(String fileName){
-        var fileToDownload = new File(System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileName);
-        if(fileName.isEmpty())
+    public File downloadFilePDF(DownloadLabRequest request){
+        var fileToDownload = new File(System.getProperty("user.dir") + File.separator +
+                STORAGE_DIRECTORY + File.separator + request.getFileName());
+        if(request.getFileName().isEmpty())
             throw new NullPointerException("File Named Null!!");
 
         if(!fileToDownload.exists())
             throw new NullPointerException("File Does Not Exist!!");
         if(!Objects.equals(fileToDownload.getParentFile().toString(),System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
             throw new SecurityException("Unsupported Filename !!");
-        return writeInfoToFile(fileToDownload);
+        return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductName());
     }
 
-    public Set<Lab> getLabByAccountID(String accountID){
+    public GetLabByAccountIDResponse getLabByAccountID(String accountID){
         Accounts accounts = accountsRepository.findById(accountID).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
-        Set<Lab> listLab = new HashSet<>();
+        Set<OrderLab> setOrderLab = new HashSet<>();
         List<Orders> ordersList = ordersRepository.findOrdersByAccountID(accountID);
         for(Orders orders : ordersList){
-            List<OrderDetails> orderDetailsList = orderDetailsRepository.findActiveOrderDetails(orders.getOrdersID(), "active");
+            List<OrderDetails> orderDetailsList = orderDetailsRepository.findActiveOrderDetails(orders.getOrdersID(), 1);
             for (OrderDetails orderDetails : orderDetailsList) {
-                Product product = productRepository.findById(orderDetails.getProductID()).orElseThrow(
-                        () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
-                );
-                List<Lab> listLabTmp = labRepository.findByProductID(product.getProductID());
+                List<Lab> listLabTmp = labRepository.findByProductID(orderDetails.getProductID());
                 for (Lab labTmp : listLabTmp) {
-                    if(!listLab.contains(labTmp)){
-                        listLab.add(labTmp);
-                    }
+                    OrderLab orderLab = new OrderLab(orders.getOrdersID(), labTmp);
+                    setOrderLab.add(orderLab);
                 }
             }
         }
-        return listLab;
+        return GetLabByAccountIDResponse.builder()
+                .accountID(accountID)
+                .orderLabs(setOrderLab)
+                .build();
     }
 
-    private File writeInfoToFile(File file) {
+    private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productName) {
+        Orders orders = ordersRepository.findById(orderID).orElseThrow(
+                () ->  new AppException(ErrorCode.ORDERS_NOTFOUND)
+        );
+        Accounts accounts = accountsRepository.findById(orders.getAccountID()).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_EXIST)
+        );
+        Lab lab = labRepository.findById(labID).orElseThrow(
+                () -> new AppException(ErrorCode.LAB_NOTFOUND)
+        );
 
         String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
         try (PDDocument document = PDDocument.load(new File(pdfPath))) {
@@ -174,10 +184,14 @@ public class LabService {
             // Đặt vị trí để thêm văn bản (ví dụ: tọa độ x = 50, y = 750)
             contentStream.newLineAtOffset(50, 750);  // Tọa độ y cao để ghi ở đầu trang
             // Nội dung văn bản cần thêm vào
-            contentStream.showText("OrderID: Test1                    CustomerID: Test2");
             contentStream.setLeading(20);
+            contentStream.showText("OrderID: "+orders.getOrdersID()+"                    ShipDate: " + orders.getShipDate());
             contentStream.newLine();
-            contentStream.showText("StemName: là sao nữa              LabID: BlaBla");
+            contentStream.showText("Customer Name: "+orders.getOrdersID());
+            contentStream.newLine();
+            contentStream.showText("StemName: "+productName+"                      Lab Name: " + lab.getName() );
+            contentStream.newLine();
+            contentStream.showText("Level : " + lab.getLevel());
             contentStream.newLine();
 
             // Kết thúc việc ghi văn bản

@@ -15,8 +15,8 @@ public interface OrderDetailsRepository extends JpaRepository<OrderDetails, Stri
 
     @Query(value = "select * \n" +
             "from OrderDetails\n" +
-            "where ordersID = :ordersID and status = :status", nativeQuery = true)
-    List<OrderDetails> findActiveOrderDetails(String ordersID, String status);
+            "where ordersID = :ordersID and isActive = :status", nativeQuery = true)
+    List<OrderDetails> findActiveOrderDetails(String ordersID, int status);
 
 //    List<OrderDetails> findByOrdersID(String ordersID);
 

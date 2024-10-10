@@ -29,6 +29,6 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
     // Lấy ra những order có status : Delivered
     @Query(value = "select *\n" +
             "from Orders \n" +
-            "where status = 'Delivered'", nativeQuery = true)
-    List<Orders> findOrdersByAccountID(String accountID);
+            "where status = 'Delivered' and accountID = :accountID", nativeQuery = true)
+    List<Orders> findOrdersByAccountID(@Param("accountID") String accountID);
 }
