@@ -49,7 +49,7 @@ public class SupportingService {
         supporting.setDescription(request.getDescription());
         supporting.setStatus(0);
         supporting.setPostDate(new Date(System.currentTimeMillis()));
-        orderDetails.setSupportCount(5);
+         // orderDetails.setSupportCount(5);
         return supportingRepository.save(supporting);
     }
 

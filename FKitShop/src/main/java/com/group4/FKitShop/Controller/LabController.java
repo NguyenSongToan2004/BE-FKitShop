@@ -106,4 +106,10 @@ public class LabController {
         }
     }
 
+    @GetMapping("/account/{accountID}")
+    ResponseEntity<ResponseObject> getLabByAccountID(@PathVariable String accountID) {
+        return  ResponseEntity.ok(
+                new ResponseObject(1000, "Get labs successfully !!", labService.getLabByAccountID(accountID))
+        );
+    }
 }

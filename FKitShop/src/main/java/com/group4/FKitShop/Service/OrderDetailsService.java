@@ -51,10 +51,12 @@ public class OrderDetailsService {
                         .price(product.getPrice() * requestItem.getQuantity())
                         .isActive(0)
                         .status("inactive")
+                        .supportCount(product.getType().equals("kit") ? 5 : 0)
                         .confirmDate(new Date())
                         .build();
                 orderDetailsRepository.save(orderDetail);
                 orderDetails.add(orderDetail);
+
             }
             return orderDetails;
         } catch (DataIntegrityViolationException e) {

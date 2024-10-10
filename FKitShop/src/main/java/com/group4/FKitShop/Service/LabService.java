@@ -1,11 +1,14 @@
 package com.group4.FKitShop.Service;
 
-import com.group4.FKitShop.Entity.Lab;
+import com.group4.FKitShop.Entity.*;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.LabMapper;
-import com.group4.FKitShop.Repository.LabRepository;
+import com.group4.FKitShop.Repository.*;
 import com.group4.FKitShop.Request.LabRequest;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -19,14 +22,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class LabService {
-    @Autowired
-    private LabRepository labRepository;
+
+    LabRepository labRepository;
+    AccountsRepository accountsRepository;
+    OrdersRepository ordersRepository;
+    OrderDetailsRepository orderDetailsRepository;
+    ProductRepository productRepository;
 
     public Lab addLabRequest(LabRequest request, MultipartFile file) {
         if(labRepository.existsByName(request.getName()))
@@ -125,6 +132,29 @@ public class LabService {
         return writeInfoToFile(fileToDownload);
     }
 
+    public Set<Lab> getLabByAccountID(String accountID){
+        Accounts accounts = accountsRepository.findById(accountID).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_EXIST)
+        );
+        Set<Lab> listLab = new HashSet<>();
+        List<Orders> ordersList = ordersRepository.findOrdersByAccountID(accountID);
+        for(Orders orders : ordersList){
+            List<OrderDetails> orderDetailsList = orderDetailsRepository.findActiveOrderDetails(orders.getOrdersID(), "active");
+            for (OrderDetails orderDetails : orderDetailsList) {
+                Product product = productRepository.findById(orderDetails.getProductID()).orElseThrow(
+                        () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+                );
+                List<Lab> listLabTmp = labRepository.findByProductID(product.getProductID());
+                for (Lab labTmp : listLabTmp) {
+                    if(!listLab.contains(labTmp)){
+                        listLab.add(labTmp);
+                    }
+                }
+            }
+        }
+        return listLab;
+    }
+
     private File writeInfoToFile(File file) {
 
         String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
@@ -162,6 +192,8 @@ public class LabService {
             throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
         }
     }
+
+
 
     String generateID(){
         String num = labRepository.getNumberLab();

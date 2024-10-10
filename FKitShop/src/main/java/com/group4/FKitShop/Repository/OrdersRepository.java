@@ -1,17 +1,15 @@
 package com.group4.FKitShop.Repository;
 
 
-import com.group4.FKitShop.Entity.Cart;
+
 import com.group4.FKitShop.Entity.OrderResultSet;
 import com.group4.FKitShop.Entity.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.sql.ResultSet;
 import java.util.List;
-import java.util.Optional;
+
 
 @Repository
 public interface OrdersRepository extends JpaRepository<Orders, String> {
@@ -27,4 +25,10 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
             "                   join StemProduct product on product.productID = orderDetails.productID\n" +
             "where orders.ordersID = :orderID", nativeQuery = true)
     List<OrderResultSet> getOrdersInfo(@Param("orderID") String orderID);
+
+    // Lấy ra những order có status : Delivered
+    @Query(value = "select *\n" +
+            "from Orders \n" +
+            "where status = 'Delivered'", nativeQuery = true)
+    List<Orders> findOrdersByAccountID(String accountID);
 }

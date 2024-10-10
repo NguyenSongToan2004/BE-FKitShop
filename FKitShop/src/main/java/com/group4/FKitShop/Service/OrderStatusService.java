@@ -37,9 +37,9 @@ public class OrderStatusService {
     }
 
     public OrderStatus createOrderStatus(String orderID, String status) {
-        if(orderStatusRepository.checkOSExist(orderID, status) != null){
-            throw new AppException(ErrorCode.OrderStatus_EXIST);
-        }
+//        if(orderStatusRepository.checkOSExist(orderID, status) != null){
+//            throw new AppException(ErrorCode.OrderStatus_EXIST);
+//        }
         OrderStatus os = new OrderStatus();
         os.setOrdersID(orderID);
         os.setStatus(status);

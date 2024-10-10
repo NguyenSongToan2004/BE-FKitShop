@@ -1,12 +1,15 @@
 package com.group4.FKitShop.Service;
 
+import com.group4.FKitShop.Entity.OrderDetails;
 import com.group4.FKitShop.Entity.OrderResultSet;
 import com.group4.FKitShop.Entity.Orders;
+import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.OrdersMapper;
 import com.group4.FKitShop.Repository.OrderDetailsRepository;
 import com.group4.FKitShop.Repository.OrdersRepository;
+import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.OrdersRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -38,6 +41,7 @@ public class OrdersService {
     JavaMailSender mailSender;
     OrderDetailsRepository orderDetailsRepository;
     OrderStatusService orderStatusService;
+    ProductRepository productRepository;
 
     public String generateUniqueCode() {
         int number = 1;
@@ -54,6 +58,7 @@ public class OrdersService {
             Orders orders = ordersMapper.toOrders(request);
             orders.setOrdersID(generateUniqueCode());
             //total price auto tinh, gio test truoc
+            orders.setAccountID(request.getAccountID());
             orders.setName(request.getName());
             orders.setTotalPrice(1000000.0);
             orders.setShippingPrice(request.getShippingPrice());
@@ -93,6 +98,18 @@ public class OrdersService {
     public Orders updateOrderStatus(String ordersID, String status) {
         Orders orders = ordersRepository.findById(ordersID)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDERS_NOTFOUND));
+        if(status.equals("Delivered")) {
+            List<OrderDetails> orderDetailsList = orderDetailsRepository.findByOrdersID(ordersID);
+            for (OrderDetails orderDetails : orderDetailsList) {
+                Product product = productRepository.findById(orderDetails.getProductID()).orElseThrow(
+                        () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+                );
+                if(product.getType().equals("kit"))
+                    orderDetails.setIsActive(1);
+                orderDetailsRepository.save(orderDetails);
+            }
+        }
+
         orders.setStatus(status);
         // tao order status
         orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
