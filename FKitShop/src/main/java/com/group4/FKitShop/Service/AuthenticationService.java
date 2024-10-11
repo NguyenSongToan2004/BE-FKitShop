@@ -152,7 +152,7 @@ public class AuthenticationService {
                 String email = claimsSet.getStringClaim("email");
                 Date dob = claimsSet.getDateClaim("dob");
                 int status = claimsSet.getIntegerClaim("status");
-                String role = claimsSet.getStringClaim("role");
+                String role = claimsSet.getStringClaim("scope");
                 Date createDate = claimsSet.getDateClaim("createDate");
                 String adminID = claimsSet.getStringClaim("adminID");
 
