@@ -207,8 +207,6 @@ public class LabService {
         }
     }
 
-
-
     String generateID(){
         String num = labRepository.getNumberLab();
         if(num == null)

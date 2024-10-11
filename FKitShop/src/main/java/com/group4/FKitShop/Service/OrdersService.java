@@ -62,7 +62,7 @@ public class OrdersService {
             double totalPrice = orders.getShippingPrice();
 
             for (OrderDetails detail : details) {
-                totalPrice += detail.getPrice() * detail.getQuantity();
+                totalPrice += detail.getPrice();
             }
             //update totalprice
             orders = updateTotalPrice(totalPrice, orders.getOrdersID());
@@ -203,13 +203,14 @@ public class OrdersService {
                 "<tr><th>No</th><th>Sản phẩm</th><th>Đơn giá</th><th>Số lượng</th><th>Tổng tạm</th></tr>" +
                 scriptTable +
                 "</table>" +
+                "<p><strong>Phí vận chuyển:</strong> "+numberFormat.format(orders.getShippingPrice())+" đ</p>" +
                 "<p><strong>Thành tiền:</strong> "+numberFormat.format(orders.getTotalPrice())+" đ</p>" +
                 "<p>Đơn hàng sẽ được giao đến địa chỉ <strong>"+fullAddress+"</strong> sau 3 - 5 ngày kể từ khi tiếp nhận đơn hàng, đối với vùng sâu vùng xa, thời gian giao hàng có thể kéo dài đến 7 ngày.</p>" +
                 "<p>Nếu bạn có bất kỳ thắc mắc nào, vui lòng gọi đến số 0344017063, nhân viên tư vấn của chúng tôi luôn sẵn lòng hỗ trợ bạn.</p>" +
                 "<p>Một lần nữa, Website <a href = \"http://localhost:5173/\">FKShop</a> xin cảm ơn quý khách.</p>";
 
         helper.setTo(accounts.getEmail());
-        helper.setSubject("Đặt Hàng Thành Công");
+        helper.setSubject("[FKShop] Đơn Hàng #"+orders.getOrdersID()+" đã được đặt !!");
         helper.setText(body, true);
 
         mailSender.send(message);

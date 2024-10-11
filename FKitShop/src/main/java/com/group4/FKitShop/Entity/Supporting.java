@@ -37,7 +37,7 @@ public class Supporting {
     String description;
 
     @NotNull
-    int status; // 0 : sent, 1: approved, 2: done
+    int status; // 0 : received, 1: approved, 2: done
 
     @NotNull
     Date postDate;
