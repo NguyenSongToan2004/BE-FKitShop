@@ -131,7 +131,7 @@ public class AccountsController {
         return ResponseEntity.ok(
                 ResponseObject.builder()
                         .status(1000)
-                        .message("Delete Account Successfully !!")
+                        .message("User has been activated")
                         .data(accountsService.activeAccount(id))
                         .build()
         );

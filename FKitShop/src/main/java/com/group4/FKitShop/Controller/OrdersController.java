@@ -95,5 +95,14 @@ public class OrdersController {
                 .build();
     }
 
+    @GetMapping("details/{ordersID}")
+    public ResponseObject getOrderDetailsByOrdersID(@PathVariable String ordersID) {
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Order Details List")
+                .data(orderDetailsService.findByOrderID(ordersID))
+                .build();
+    }
+
 
 }
