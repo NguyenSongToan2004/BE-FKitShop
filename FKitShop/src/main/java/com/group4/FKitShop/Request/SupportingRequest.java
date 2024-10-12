@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SupportingRequest {
     String accountID;
-    String orderDetailsID;
+    String labID;
     String description;
 }
 

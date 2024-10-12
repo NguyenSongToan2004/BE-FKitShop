@@ -32,6 +32,8 @@ spring:
           auth: true
           starttls:
             enable: true
+  support:
+    expected-date : 2
   shop :
     Token : 4acfbf67-8331-11ef-8e53-0a00184fe694
     ShopID : 194712

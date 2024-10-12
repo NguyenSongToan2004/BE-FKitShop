@@ -28,10 +28,18 @@ public class Supporting {
     @JsonBackReference
     Accounts account;
 
+//    @ManyToOne
+//    @JoinColumn(name = "orderDetailsID")
+//    @JsonBackReference
+//    OrderDetails orderDetail;
+
     @ManyToOne
-    @JoinColumn(name = "orderDetailsID")
+    @JoinColumn(name = "labID")
     @JsonBackReference
-    OrderDetails orderDetail;
+    Lab lab;
+
+    @NotNull
+    int countSupport;
 
     @NotNull
     String description;
@@ -41,6 +49,8 @@ public class Supporting {
 
     @NotNull
     Date postDate;
+
+    Date expectedSpDate;
 
     Date supportDate;
 }

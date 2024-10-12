@@ -53,6 +53,8 @@ public enum ErrorCode {
     SUPPORTING_LIMITED(1023, "Support out of limit !!"),
     SUPPORTING_UNSUPPORTED_STATUS_CODE(1024, "Unsupported status code !!"),
     SUPPORTING_INVALID_SUPPORT_DATE(1025, "Invalid support date !!"),
+    SUPPORTING_LAB_EXISTING(1026, "Your previous lab supporting request has not done yet !!"),
+    SUPPORTING_LAB_DONE(1027, "Your lab supporting request had done !!"),
     //order status
     OrderStatus_NOTFOUND(1022, "Order status not found"),
     OrderStatus_EXIST(1023, "Order status already exist"),

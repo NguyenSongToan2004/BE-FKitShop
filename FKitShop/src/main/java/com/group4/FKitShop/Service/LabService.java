@@ -73,6 +73,10 @@ public class LabService {
         return labRepository.findAll();
     }
 
+    public List<Lab> getLabByProductID(String productID) {
+        return labRepository.findByProductID(productID);
+    }
+
     private static final String STORAGE_DIRECTORY = "uploads" + File.separator + "lab";
 
     public String saveLabPDF(MultipartFile fileToSave) {
