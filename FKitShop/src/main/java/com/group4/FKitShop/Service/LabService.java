@@ -156,6 +156,10 @@ public class LabService {
                 .build();
     }
 
+    public List<Lab> getLabByProductID(String productID) {
+        return labRepository.findByProductID(productID);
+    }
+
     private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productName) {
         Orders orders = ordersRepository.findById(orderID).orElseThrow(
                 () ->  new AppException(ErrorCode.ORDERS_NOTFOUND)

@@ -114,4 +114,11 @@ public class LabController {
                 new ResponseObject(1000, "Get labs successfully !!", labService.getLabByAccountID(accountID))
         );
     }
+
+    @GetMapping("/product/{productID}")
+    ResponseEntity<ResponseObject> getLabByProductID(@PathVariable String productID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get lab successfully !!", labService.getLabByProductID(productID))
+        );
+    }
 }

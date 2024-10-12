@@ -83,6 +83,7 @@ public class AccountsService {
         }
 
         Accounts accounts = accountsMapper.toAccounts(request);
+        accounts.setImage("");
         accounts.setRole("user");
         accounts.setStatus(1);
         // accounts.setCreateDate(new D);
