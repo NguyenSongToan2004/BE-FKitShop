@@ -58,7 +58,12 @@ public enum ErrorCode {
     //order status
     OrderStatus_NOTFOUND(1022, "Order status not found"),
     OrderStatus_EXIST(1023, "Order status already exist"),
-    ORDER_FAILED(1234, "Order failed");
+    ORDER_FAILED(1234, "Order failed"),
+    //Payment
+    PAYMENT_FAIL(1035, "Payment failed !!"),
+    PAYMENT_INVALID_SIGN(1036, "INVALID PAYMENT SIGN !!")
+    ;
+
 
 
 

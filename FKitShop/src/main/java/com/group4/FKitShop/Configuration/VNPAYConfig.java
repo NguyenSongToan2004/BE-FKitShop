@@ -14,7 +14,6 @@ public class VNPAYConfig {
     public static String vnp_HashSecret = "A72HI1BP870VL7NBUCBJ9ZKRXMBUN1LX"; // khi đăng ký Test
     public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
-
     public static String hashAllFields(Map fields) {
         List fieldNames = new ArrayList(fields.keySet());
         Collections.sort(fieldNames);
