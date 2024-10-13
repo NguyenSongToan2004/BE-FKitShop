@@ -8,7 +8,6 @@ import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.SupportingMapper;
 import com.group4.FKitShop.Repository.AccountsRepository;
 import com.group4.FKitShop.Repository.LabRepository;
-import com.group4.FKitShop.Repository.OrderDetailsRepository;
 import com.group4.FKitShop.Repository.SupportingRepository;
 import com.group4.FKitShop.Request.*;
 import com.group4.FKitShop.Response.LabSupportResponse;
@@ -38,9 +37,6 @@ public class SupportingService {
 
     @Autowired
     AccountsRepository accountsRepository;
-
-    @Autowired
-    OrderDetailsRepository orderDetailsRepository;
 
     @Autowired
     SupportingRepository supportingRepository;
@@ -134,7 +130,7 @@ public class SupportingService {
             calendar.add(Calendar.DAY_OF_MONTH, expectedDate);
 
             Date expectDate = new Date(calendar.getTimeInMillis());
-            sendGmail(supporting, expectDate, request.getStatus());
+            sendGmail(supporting, expectDate);
             supporting.setExpectedSpDate(expectDate);
         }
 
@@ -242,7 +238,7 @@ public class SupportingService {
         return supportingRepository.save(supporting);
     }
 
-    private void sendGmail(Supporting supporting, Date expectDate, int status) throws MessagingException, UnsupportedEncodingException {
+    private void sendGmail(Supporting supporting, Date expectDate) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(new InternetAddress("blackpro2k4@gmail.com", "FKShop"));
@@ -266,7 +262,7 @@ public class SupportingService {
                 "            <td>"+supporting.getSupportingID()+"</td>\n" +
                 "            <td>"+supporting.getDescription()+"</td>\n" +
                 "            <td>"+formater.format(supporting.getPostDate())+"</td>\n" +
-                "            <td>"+formater.format(supporting.getExpectedSpDate())+"</td>\n" +
+                "            <td>"+formater.format(expectDate)+"</td>\n" +
                 "            <td>"+supporting.getCountSupport()+"</td>\n" +
                 "            <td>approved</td>\n" +
                 "        </tr>\n" +
