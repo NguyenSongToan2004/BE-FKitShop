@@ -27,16 +27,12 @@ public class VNPAYController {
 
     // Chuyển hướng người dùng đến cổng thanh toán VNPAY
     @PostMapping("/submitOrder")
-    public void submitOrder(@RequestParam("amount") int orderTotal,
+    public String submitOrder(@RequestParam("amount") int orderTotal,
                             @RequestParam("orderInfo") String orderInfo,
                             HttpServletRequest request) throws IOException {
-        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        System.out.println("port : " + request.getServerPort());
-        System.out.println("server name : " + request.getServerName());
-        System.out.println("base url : " + baseUrl);
         String vnpayUrl = vnPayService.createOrder(request, orderTotal, orderInfo, "http://localhost:8080/fkshop/home");
         System.out.println("Vn pay url : " + vnpayUrl);
-        response.sendRedirect(vnpayUrl);
+        return vnpayUrl;
     }
 
     // Sau khi hoàn tất thanh toán, VNPAY sẽ chuyển hướng trình duyệt về URL này
