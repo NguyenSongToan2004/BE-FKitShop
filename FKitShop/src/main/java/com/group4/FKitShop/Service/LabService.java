@@ -193,11 +193,12 @@ public class LabService {
             contentStream.setLeading(20);
             contentStream.showText("OrderID: "+orders.getOrdersID()+"                    ShipDate: " + orders.getShipDate());
             contentStream.newLine();
-            contentStream.showText("Customer Name: "+orders.getOrdersID());
+            contentStream.showText("Customer Name: "+accounts.getFullName());
             contentStream.newLine();
-            contentStream.showText("StemName: "+product.getName()+"                      Lab Name: " + lab.getName() );
+            contentStream.showText("Kit STEM: "+product.getName()+"                      Lab Name: " + lab.getName() );
             contentStream.newLine();
             contentStream.showText("Level : " + lab.getLevel());
+            contentStream.newLine();
             contentStream.newLine();
 
             // Kết thúc việc ghi văn bản
