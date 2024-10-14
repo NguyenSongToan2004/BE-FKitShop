@@ -63,11 +63,6 @@ public enum ErrorCode {
     PAYMENT_FAIL(1035, "Payment failed !!"),
     PAYMENT_INVALID_SIGN(1036, "INVALID PAYMENT SIGN !!")
     ;
-
-
-
-
-
     // max = 18
     private int code;
     private String message;

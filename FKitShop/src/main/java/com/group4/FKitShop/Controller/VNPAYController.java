@@ -28,66 +28,65 @@ public class VNPAYController {
         return "createOrder";
     }
 
-//    // Chuyển hướng người dùng đến cổng thanh toán VNPAY
-//    @PostMapping("/submitOrder")
-//    public String submitOrder(@RequestBody CheckoutRequest checkoutRequest ,
-//                              HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-//        String vnpayUrl = vnPayService.createOrder(request, 5000, "xin chao", "http://localhost:8080/check-out");
-//        request.setAttribute("order", checkoutRequest);
-//        request.getRequestDispatcher("/fkshop/check-out").forward(request, response);
-//        System.out.println("Vn pay url : " + vnpayUrl);
-//        return vnpayUrl;
-//    }
-//
-//    // Sau khi hoàn tất thanh toán, VNPAY sẽ chuyển hướng trình duyệt về URL này
-//    @GetMapping("/check-out")
-//    public void paymentCompleted(HttpServletRequest request) throws IOException {
-//        int paymentStatus = vnPayService.orderReturn(request);
-//        if (paymentStatus == 1) {
-//            CheckoutRequest checkoutRequest = (CheckoutRequest) request.getAttribute("order");
-//            if(checkoutRequest != null) {
-//                ordersService.checkOut(checkoutRequest);
-//            } else {
-//                System.out.println("order is null");
-//            }
-//            response.sendRedirect("http://localhost:5173/order-success");
-//        }
-//        else {
-//            response.sendRedirect("http://localhost:5173/cart");
-//        }
-//    }
-
+    // Chuyển hướng người dùng đến cổng thanh toán VNPAY
     @PostMapping("/submitOrder")
-    public String submitOrder(@RequestBody CheckoutRequest checkoutRequest,
+    public String submitOrder(@RequestParam("amount") int totalAmount,
+                              @RequestParam("orderInfo") String orderInfo,
                               HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String vnpayUrl = vnPayService.createOrder(request, 500000, "xin chao", "http://localhost:5173/order-success");
-        // Sử dụng session để lưu thông tin order
-        HttpSession session = request.getSession();
-        session.setAttribute("order", checkoutRequest);
-        System.out.println(checkoutRequest);
+        String vnpayUrl = vnPayService.createOrder(request, totalAmount, orderInfo, "http://localhost:5173/order-success");
         System.out.println("Vn pay url : " + vnpayUrl);
-        return vnpayUrl;  // Chuyển hướng tới VNPay
+        return vnpayUrl;
     }
 
+    // Sau khi hoàn tất thanh toán, VNPAY sẽ chuyển hướng trình duyệt về URL này
     @GetMapping("/check-out")
-    public void paymentCompleted(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void paymentCompleted(HttpServletRequest request) throws IOException {
         int paymentStatus = vnPayService.orderReturn(request);
-
-        HttpSession session = request.getSession();
-        CheckoutRequest checkoutRequest = (CheckoutRequest) session.getAttribute("order");  // Lấy thông tin order từ session
-
         if (paymentStatus == 1) {
-            System.out.println("Thanh toán thành công !!");
-            if (checkoutRequest != null) {
+            CheckoutRequest checkoutRequest = (CheckoutRequest) request.getAttribute("order");
+            if(checkoutRequest != null) {
                 ordersService.checkOut(checkoutRequest);
-                session.removeAttribute("order");  // Xóa order khỏi session sau khi xử lý
             } else {
                 System.out.println("order is null");
             }
             response.sendRedirect("http://localhost:5173/order-success");
-        } else {
-            System.out.println("Thanh toán thất bại !!");
+        }
+        else {
             response.sendRedirect("http://localhost:5173/cart");
         }
     }
+
+//    @PostMapping("/submitOrder")
+//    public String submitOrder(@RequestBody CheckoutRequest checkoutRequest,
+//                              HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+//        String vnpayUrl = vnPayService.createOrder(request, 500000, "xin chao", "http://localhost:5173/order-success");
+//        // Sử dụng session để lưu thông tin order
+//        HttpSession session = request.getSession();
+//        session.setAttribute("order", checkoutRequest);
+//        System.out.println(checkoutRequest);
+//        System.out.println("Vn pay url : " + vnpayUrl);
+//        return vnpayUrl;  // Chuyển hướng tới VNPay
+//    }
+//
+//    @GetMapping("/check-out")
+//    public void paymentCompleted(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        int paymentStatus = vnPayService.orderReturn(request);
+//
+//        HttpSession session = request.getSession();
+//        CheckoutRequest checkoutRequest = (CheckoutRequest) session.getAttribute("order");  // Lấy thông tin order từ session
+//
+//        if (paymentStatus == 1) {
+//            System.out.println("Thanh toán thành công !!");
+//            if (checkoutRequest != null) {
+//                ordersService.checkOut(checkoutRequest);
+//                session.removeAttribute("order");  // Xóa order khỏi session sau khi xử lý
+//            } else {
+//                System.out.println("order is null");
+//            }
+//            response.sendRedirect("http://localhost:5173/order-success");
+//        } else {
+//            System.out.println("Thanh toán thất bại !!");
+//            response.sendRedirect("http://localhost:5173/cart");
+//        }
+//    }
 }

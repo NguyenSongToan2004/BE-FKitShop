@@ -135,7 +135,7 @@ public class LabService {
             throw new NullPointerException("File Does Not Exist!!");
         if(!Objects.equals(fileToDownload.getParentFile().toString(),System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
             throw new SecurityException("Unsupported Filename !!");
-        return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductName());
+        return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductID());
     }
 
     public GetLabByAccountIDResponse getLabByAccountID(String accountID){
@@ -160,7 +160,7 @@ public class LabService {
                 .build();
     }
 
-    private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productName) {
+    private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
         Orders orders = ordersRepository.findById(orderID).orElseThrow(
                 () ->  new AppException(ErrorCode.ORDERS_NOTFOUND)
         );
@@ -170,7 +170,9 @@ public class LabService {
         Lab lab = labRepository.findById(labID).orElseThrow(
                 () -> new AppException(ErrorCode.LAB_NOTFOUND)
         );
-
+        Product product = productRepository.findById(productID).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+        );
         String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
         try (PDDocument document = PDDocument.load(new File(pdfPath))) {
             PDDocument documentReplace = document;
@@ -193,7 +195,7 @@ public class LabService {
             contentStream.newLine();
             contentStream.showText("Customer Name: "+orders.getOrdersID());
             contentStream.newLine();
-            contentStream.showText("StemName: "+productName+"                      Lab Name: " + lab.getName() );
+            contentStream.showText("StemName: "+product.getName()+"                      Lab Name: " + lab.getName() );
             contentStream.newLine();
             contentStream.showText("Level : " + lab.getLevel());
             contentStream.newLine();

@@ -76,9 +76,9 @@ public class LabController {
     ResponseEntity<List<Lab>> getAllLabs() {
         return ResponseEntity.ok(labService.getAllLab());
     }
-    
+
     @PostMapping("/upload-lab/{labID}")
-    ResponseEntity<ResponseObject> uploadLab(@RequestParam("file") MultipartFile file, @PathVariable String id) {
+    ResponseEntity<ResponseObject> uploadLab(@RequestParam("file") MultipartFile file, @PathVariable("labID") String id) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(
                     ResponseObject.builder()
@@ -92,8 +92,32 @@ public class LabController {
         }
     }
 
-    @PostMapping("/download")
-    ResponseEntity<Resource> downloadLab(@RequestBody DownloadLabRequest request) {
+//    String accountID;
+//    String orderID;
+//    String labID;
+//    String productID;
+//    String fileName;
+    @GetMapping("/get-link-download")
+    ResponseEntity<ResponseObject> getLinkDownLoad(@RequestParam("accountID") String accountID,
+                                         @RequestParam("orderID") String orderID,
+                                         @RequestParam("labID") String labID,
+                                         @RequestParam("productID") String productID,
+                                         @RequestParam("fileName") String fileName) {
+        String link = String.format("http://localhost:8080/fkshop/lab/download/accountID=%s/" +
+                "orderID=%s/labID=%s/productID=%s/fileName=%s", accountID, orderID, labID, productID, fileName);
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Download Successfully !!", link)
+        );
+    }
+
+    @GetMapping("/download")
+    ResponseEntity<Resource> downloadLab(@RequestParam("accountID") String accountID,
+                                         @RequestParam("orderID") String orderID,
+                                         @RequestParam("labID") String labID,
+                                         @RequestParam("productID") String productID,
+                                         @RequestParam("fileName") String fileName
+                                         ) {
+        DownloadLabRequest request = new DownloadLabRequest(accountID, orderID, labID, productID, fileName);
         try {
             var fileToDownload = labService.downloadFilePDF(request);
             return ResponseEntity.ok()

@@ -13,6 +13,6 @@ public class DownloadLabRequest {
     String accountID;
     String orderID;
     String labID;
-    String productName;
+    String productID;
     String fileName;
 }
