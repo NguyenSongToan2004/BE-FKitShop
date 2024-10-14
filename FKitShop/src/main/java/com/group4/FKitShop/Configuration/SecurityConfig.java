@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
@@ -51,7 +53,8 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request ->
 //                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
 //                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
+//                        .requestMatchers(HttpMethod.GET,"/accounts" )
+//                        .hasRole("admin")
 //                        .anyRequest().authenticated()
                         request.anyRequest().permitAll()
         );
@@ -63,6 +66,15 @@ public class SecurityConfig {
         );
         return httpSecurity.build();
     }
+    @Bean
+    JwtAuthenticationConverter converter(){
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        return converter;
+    }
+
     //jwt decoder interface
     @Bean
     JwtDecoder jwtDecoder() {
