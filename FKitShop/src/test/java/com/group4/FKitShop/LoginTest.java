@@ -3,6 +3,9 @@ package com.group4.FKitShop;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group4.FKitShop.ResponseObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -24,12 +27,13 @@ public class LoginTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Test
-    public void loginAuthenticationTest() throws Exception {
+    @ParameterizedTest
+    @CsvFileSource(resources = "/LoginTestData.csv", numLinesToSkip = 1)
+    public void loginAuthenticationTest(String email, String password, int code) throws Exception {
         String urlTest = "http://localhost:" + port + "/fkshop/auth/login";
 
         // Tạo đối tượng yêu cầu
-        String requestJson = "{\"email\":\"leesintoan2@gmail.com\",\"password\":\"12345623123\"}";
+        String requestJson = "{\"email\":\""+email+"\",\"password\":\""+password+"\"}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
@@ -52,7 +56,7 @@ public class LoginTest {
         System.out.println("Data: " + data);
 
         // Kiểm tra giá trị status
-        assertEquals(1006, status);
+        assertEquals(code, status);
         // Nếu bạn cần kiểm tra data, bạn cần biết dữ liệu dự kiến
         // assertEquals(expectedData, data); // thêm kiểm tra cho data nếu cần
     }
