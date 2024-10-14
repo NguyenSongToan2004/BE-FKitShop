@@ -92,7 +92,7 @@ public class LabController {
         }
     }
 
-    @GetMapping("/download")
+    @PostMapping("/download")
     ResponseEntity<Resource> downloadLab(@RequestBody DownloadLabRequest request) {
         try {
             var fileToDownload = labService.downloadFilePDF(request);
