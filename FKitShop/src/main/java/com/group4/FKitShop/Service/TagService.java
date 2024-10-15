@@ -1,7 +1,6 @@
 package com.group4.FKitShop.Service;
 
 
-import com.group4.FKitShop.Entity.Blog;
 import com.group4.FKitShop.Entity.Tag;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
