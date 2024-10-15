@@ -81,6 +81,11 @@ public class AccountsService {
             throw new AppException(ErrorCode.PHONE_EXISTED);
         }
 
+        String test = String.valueOf(request.getPhoneNumber().charAt(0));
+        if (!test.equals("0") && request.getPhoneNumber().length() == 10) {
+            throw new AppException(ErrorCode.PHONE_ERROR);
+        }
+
         Accounts accounts = accountsMapper.toAccounts(request);
         accounts.setRole("user");
         accounts.setStatus(1);
