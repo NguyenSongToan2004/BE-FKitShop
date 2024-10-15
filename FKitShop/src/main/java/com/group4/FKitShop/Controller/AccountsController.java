@@ -40,8 +40,9 @@ public class AccountsController {
                 .build();
     }
 
-    @GetMapping("/allAccounts")
-    public ResponseObject allAccounts() {
+    @GetMapping("/admin/allAccounts")
+    public ResponseObject allAccounts(@RequestHeader("Authorization") String authorization) {
+
         return ResponseObject.builder()
                 .status(1000)
                 .message("Get All Accounts Successfully !!")

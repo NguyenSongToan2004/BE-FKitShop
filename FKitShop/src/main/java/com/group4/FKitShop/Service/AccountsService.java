@@ -11,6 +11,8 @@ import com.group4.FKitShop.Response.AccountsResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,48 +33,6 @@ public class AccountsService {
 
     AccountsRepository accountsRepository;
     AccountsMapper accountsMapper;
-// ==============================a Minh
-//    public Accounts createAccount(AccountsRequest request) throws MultiAppException {
-//        List<AppException> exceptions = new ArrayList<>();
-//
-//        if (accountsRepository.existsByemail(request.getEmail())){
-//            exceptions.add(new AppException(ErrorCode.PHONE_EXISTED));
-//        }
-//        if (exceptions.isEmpty()){
-//            throw new MultiAppException(exceptions);
-//        }
-//        accounts.setRole("user");
-//        accounts.setStatus(1);
-//        // accounts.setCreateDate(new D);
-//        accounts.setCreateDate(new Date(System.currentTimeMillis()));
-//        //su dung brcrypt de ma hoa password
-//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-//        accounts.setPassword(passwordEncoder.encode(request.getPassword()));
-//        return accountsRepository.save(accounts);
-//    }
-
-//    public Accounts register(AccountCustomerRequest request) throws MultiAppException {
-//        List<AppException> exceptions = new ArrayList<>();
-//
-//        if (accountsRepository.existsByemail(request.getEmail())){
-//        }
-//        if (accountsRepository.existsByphoneNumber(request.getPhoneNumber())){
-//            exceptions.add(new AppException(ErrorCode.PHONE_EXISTED));
-//        }
-//        if (exceptions.isEmpty()){
-//            throw new MultiAppException(exceptions);
-//        }
-//
-//        Accounts accounts = accountsMapper.toAccounts(request);
-//        accounts.setRole("user");
-//        accounts.setStatus(1);
-//        accounts.setCreateDate(new Date(System.currentTimeMillis()));
-//        //su dung brcrypt de ma hoa password
-//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-//        accounts.setPassword(passwordEncoder.encode(request.getPassword()));
-//        return accountsRepository.save(accounts);
-//    }
-// anh Minh
 
     public Accounts register(AccountCustomerRequest request) {
         if (accountsRepository.existsByemail(request.getEmail())) {
@@ -94,6 +54,7 @@ public class AccountsService {
         return accountsRepository.save(accounts);
     }
 
+    @PreAuthorize("hasRole('manager')")
     public List<Accounts> allAccounts() {
         return accountsRepository.findAll();
     }
