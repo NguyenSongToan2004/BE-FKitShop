@@ -9,5 +9,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdatePassword {
-    String password;
+    String currentPassword;
+    String newPassword;
 }

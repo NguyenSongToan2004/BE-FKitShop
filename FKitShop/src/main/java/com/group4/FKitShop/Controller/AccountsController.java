@@ -159,8 +159,6 @@ public class AccountsController {
         );
     }
 
-
-
     @PostMapping("/createAccount")
     public ResponseObject createAccount(@RequestBody @Valid AccountsRequest request) {
         return ResponseObject.builder()

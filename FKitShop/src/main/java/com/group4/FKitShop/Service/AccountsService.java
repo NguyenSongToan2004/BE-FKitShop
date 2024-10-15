@@ -11,6 +11,8 @@ import com.group4.FKitShop.Response.AccountsResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,12 +26,19 @@ import java.util.Optional;
 
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AccountsService {
 
+    @Autowired
     AccountsRepository accountsRepository;
+    @Autowired
     AccountsMapper accountsMapper;
+    @Autowired
+    AmazonClient amazonClient;
+    @Value("${amazonProperties.Default.image}")
+    String defaultImage;
+    @Value("${amazonProperties.folder.Account}")
+    private String folderName;
 // ==============================a Minh
 //    public Accounts createAccount(AccountsRequest request) throws MultiAppException {
 //        List<AppException> exceptions = new ArrayList<>();
@@ -87,7 +96,7 @@ public class AccountsService {
         }
 
         Accounts accounts = accountsMapper.toAccounts(request);
-        accounts.setImage("");
+        accounts.setImage(defaultImage);
         accounts.setRole("user");
         accounts.setStatus(1);
         // accounts.setCreateDate(new D);
@@ -111,13 +120,18 @@ public class AccountsService {
     }
 
     public String updatePassword(UpdatePassword request, String id) {
-
         Accounts accounts = accountsRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
+        if (request.getNewPassword().length() < 6 || request.getCurrentPassword().length() < 6) {
+            throw new AppException(ErrorCode.USER_PASS_LENGHT);
+        }
 
         PasswordEncoder encoder = new BCryptPasswordEncoder(10);
-        accounts.setPassword(encoder.encode(request.getPassword()));
+        if (!encoder.matches(request.getCurrentPassword(), accounts.getPassword()))
+            throw new AppException(ErrorCode.USER_PASS_INCORECT);
+
+        accounts.setPassword(encoder.encode(request.getNewPassword()));
 
         accountsRepository.save(accounts);
         return "";
@@ -162,7 +176,7 @@ public class AccountsService {
         Accounts accounts = accountsRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
-        String imageUrl = uploadImage(image);
+        String imageUrl = amazonClient.uploadFile(image, folderName);
 
         if (imageUrl != "") {
             accounts.setImage(imageUrl);
@@ -182,6 +196,7 @@ public class AccountsService {
         request.setStatus(1);
         Accounts accounts = accountsMapper.toAccounts(request);
         accounts.setCreateDate(new Date(System.currentTimeMillis()));
+        accounts.setImage(defaultImage);
         //su dung brcrypt de ma hoa password
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         accounts.setPassword(passwordEncoder.encode(request.getPassword()));

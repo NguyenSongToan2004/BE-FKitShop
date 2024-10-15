@@ -17,7 +17,8 @@ public enum ErrorCode {
     USER_NOT_EXIST(1004, "User Not Found"),
     PHONE_INVALID(1005, "Wrong format for phone number"),
     UNAUTHENTICATED(1006, "Email or Password is incorrect"),
-
+    USER_PASS_LENGHT(1007, "Password must be at least 6 charaters"),
+    USER_PASS_INCORECT(1008, "Incorrect current password"),
     // Lab
     LAB_NOTFOUND(1007, "This lab is not exist !!"),
     LAB_NAMEDUPLICATED(1008, "This lab name has taken alredy !!"),
