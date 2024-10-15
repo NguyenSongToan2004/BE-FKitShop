@@ -28,7 +28,7 @@ public class OrderStatusService {
 
     public OrderStatus getOrderStatusByID(int id){
         OrderStatus os = orderStatusRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.OrderStatus_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_STATUS_NOTFOUND));
         return os;
     }
 
@@ -38,7 +38,7 @@ public class OrderStatusService {
 
     public OrderStatus createOrderStatus(String orderID, String status) {
         if(orderStatusRepository.checkOSExist(orderID, status) != null){
-            throw new AppException(ErrorCode.OrderStatus_EXIST);
+            throw new AppException(ErrorCode.ORDER_STATUS_EXIST);
         }
         OrderStatus os = new OrderStatus();
         os.setOrdersID(orderID);
@@ -49,7 +49,7 @@ public class OrderStatusService {
 
     public OrderStatus updateOrderStatus(int id, OrderStatusRequest request){
         OrderStatus os = orderStatusRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.OrderStatus_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_STATUS_NOTFOUND));
         os.setStatus(request.getStatus());
         os.setOrdersID(request.getOrdersID());
         os.setOrderStatusDate(new Date());
@@ -59,7 +59,7 @@ public class OrderStatusService {
     @Transactional
     public void deleteOS(int id) {
         if (!orderStatusRepository.existsById(id))
-            throw new AppException(ErrorCode.OrderStatus_NOTFOUND);
+            throw new AppException(ErrorCode.ORDER_STATUS_NOTFOUND);
         orderStatusRepository.deleteById(id);
     }
 

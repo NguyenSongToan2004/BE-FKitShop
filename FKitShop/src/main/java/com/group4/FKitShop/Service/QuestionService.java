@@ -30,7 +30,7 @@ public class QuestionService {
 
     public Question getQuestionByID(int id){
         Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.Question_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOTFOUND));
         return question;
     }
 
@@ -43,7 +43,7 @@ public class QuestionService {
 
     public Question updateQuestion(int id, QuestionRequest request){
         Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.Question_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOTFOUND));
         Question ques = questionMapper.toQuestion(request);
 //        question.setAccountID(request.getAccountID());
 //        question.setLabID(request.getLabID());
@@ -66,7 +66,7 @@ public class QuestionService {
     @Transactional
     public void deleteQuestion(int id) {
         if (!questionRepository.existsById(id))
-            throw new AppException(ErrorCode.Feedback_NOTFOUND);
+            throw new AppException(ErrorCode.FEEDBACK_NOTFOUND);
         questionRepository.deleteById(id);
     }
 

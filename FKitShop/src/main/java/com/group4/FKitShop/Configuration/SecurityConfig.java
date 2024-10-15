@@ -65,6 +65,7 @@ public class  SecurityConfig {
 //        );
         return httpSecurity.build();
     }
+
     //jwt decoder interface
     @Bean
     JwtDecoder jwtDecoder() {
@@ -96,37 +97,28 @@ public class  SecurityConfig {
         return new CorsFilter(url);
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
-        // Enable CORS and disable CSRF
-        httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
-
-        httpSecurity.authorizeHttpRequests(request ->
-                        request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
-                                .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-                                .requestMatchers(HttpMethod.GET,"/accounts/admin/**" ).permitAll()
-//                        .hasRole("admin")
-                                .anyRequest().authenticated()
-//                        request.anyRequest().permitAll()
-        );
-//        //register authentication provider supporting jwt token
-        httpSecurity.oauth2ResourceServer(oauth2 ->
-                //jwt decoder: decode jwt truyen vao
-                oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder()))
-        );
-        return httpSecurity.build();
-    }
-    //jwt decoder interface
-    @Bean
-    JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-    }
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+//
+//        // Enable CORS and disable CSRF
+//        httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
+//
+//        httpSecurity.authorizeHttpRequests(request ->
+//                        request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+//                                .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+//                                .requestMatchers(HttpMethod.GET,"/accounts/admin/**" ).permitAll()
+////                        .hasRole("admin")
+//                                .anyRequest().authenticated()
+////                        request.anyRequest().permitAll()
+//        );
+////        //register authentication provider supporting jwt token
+//        httpSecurity.oauth2ResourceServer(oauth2 ->
+//                //jwt decoder: decode jwt truyen vao
+//                oauth2.jwt(jwtConfigurer ->
+//                        jwtConfigurer.decoder(jwtDecoder()))
+//        );
+//        return httpSecurity.build();
+//    }
 
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter(){

@@ -71,7 +71,6 @@ public class TagController {
                 .message("Update tag successfully")
                 .data(tagService.updateTag(tagID, request))
                 .build();
-
     }
 
     // delete tag by ID

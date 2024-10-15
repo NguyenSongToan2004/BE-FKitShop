@@ -30,7 +30,7 @@ public class TagService {
 
     public Tag getTagByID(int id){
         Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.Tag_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.TAG_NOTFOUND));
         return tag;
     }
 
@@ -45,7 +45,7 @@ public class TagService {
 
     public Tag createTag(TagRequest request) {
         if (tagRepository.existsByTagName(request.getTagName()))
-            throw new AppException(ErrorCode.TagName_DUPLICATED);
+            throw new AppException(ErrorCode.TAG_NAME_DUPLICATED);
         Tag tag = tagMapper.toTag(request);
         tag.setStatus(1);
         return tagRepository.save(tag);
@@ -53,7 +53,7 @@ public class TagService {
 
     public Tag updateTag(int id, TagRequest request){
         Tag tag = tagRepository.findById(id)
-                .orElseThrow( () -> new AppException(ErrorCode.Tag_NOTFOUND));
+                .orElseThrow( () -> new AppException(ErrorCode.TAG_NOTFOUND));
         tag.setTagName(request.getTagName());
         tag.setDescription(request.getDescription());
         tag.setStatus(request.getStatus());
@@ -63,7 +63,7 @@ public class TagService {
     @Transactional
     public int deleteTag(int id) {
         if (!tagRepository.existsById(id))
-            throw new AppException(ErrorCode.Tag_NOTFOUND);
+            throw new AppException(ErrorCode.TAG_NOTFOUND);
         return tagRepository.deleteStatus(id);
     }
 

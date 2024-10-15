@@ -34,7 +34,7 @@ public class BlogService {
 
     public Blog getBlogByID(String id){
         Blog blog = blogRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.Blog_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOTFOUND));
 
         return blog;
     }
@@ -91,7 +91,7 @@ public class BlogService {
 
     public Blog createBlog(BlogRequest request, MultipartFile image) {
         if (blogRepository.existsByBlogName(request.getBlogName()))
-            throw new AppException(ErrorCode.Blog_DUPLICATED);
+            throw new AppException(ErrorCode.BLOG_DUPLICATED);
 
         Blog blog = blogMapper.toBlog(request);
         blog.setBlogID(generateUniqueCode());
@@ -104,10 +104,10 @@ public class BlogService {
     public Blog updateBlog(String id, BlogRequest request, MultipartFile image) {
 
         if (!blogRepository.existsById(id))
-            throw new AppException(ErrorCode.Blog_NOTFOUND);
+            throw new AppException(ErrorCode.BLOG_NOTFOUND);
 
         Blog blogGetDate = blogRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.Blog_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOTFOUND));
 
         Blog blog = blogMapper.toBlog(request);
         blog.setBlogID(id);
@@ -122,7 +122,7 @@ public class BlogService {
     @Transactional
     public int deleteBlog(String id) {
         if (!blogRepository.existsById(id))
-            throw new AppException(ErrorCode.Blog_NOTFOUND);
+            throw new AppException(ErrorCode.BLOG_NOTFOUND);
         return blogRepository.deleteStatus(id);
     }
 

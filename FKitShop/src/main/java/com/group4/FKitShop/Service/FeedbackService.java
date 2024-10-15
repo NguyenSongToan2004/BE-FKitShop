@@ -30,7 +30,7 @@ public class FeedbackService {
 
     public Feedback getFeedbackByID(int id){
         Feedback feedback = feedbackRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.Feedback_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.FEEDBACK_NOTFOUND));
         return feedback;
     }
 
@@ -50,7 +50,7 @@ public class FeedbackService {
 
     public Feedback updateFeedback(int id, FeedbackRequest request){
         Feedback feedback = feedbackRepository.findById(id)
-                .orElseThrow( () -> new AppException(ErrorCode.Feedback_NOTFOUND));
+                .orElseThrow( () -> new AppException(ErrorCode.FEEDBACK_NOTFOUND));
         Feedback fb = feedbackMapper.toFeedback(request);
         fb.setAccountID(feedback.getAccountID());
         fb.setProductID(feedback.getProductID());
@@ -62,7 +62,7 @@ public class FeedbackService {
     @Transactional
     public void deleteFeedback(int id) {
         if (!feedbackRepository.existsById(id))
-            throw new AppException(ErrorCode.Feedback_NOTFOUND);
+            throw new AppException(ErrorCode.FEEDBACK_NOTFOUND);
         feedbackRepository.deleteById(id);
     }
 

@@ -30,7 +30,7 @@ public class WishlistService {
 
     public Wishlist getWishlistByID(int id){
         Wishlist wishlist = wishlistRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.Wishlist_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.WISHLIST_NOTFOUND));
         return wishlist;
     }
 
@@ -44,7 +44,7 @@ public class WishlistService {
 
     public Wishlist createWishlist(WishlistRequest request) {
        if(wishlistRepository.checkWishlistByAccountIDAndProductID(request.getAccountID(), request.getProductID()) != null){
-           throw new AppException(ErrorCode.Wishlist_EXIST);
+           throw new AppException(ErrorCode.WISHLIST_EXIST);
        }
         Wishlist wishlist = new Wishlist();
         wishlist.setAccountID(request.getAccountID());
@@ -54,7 +54,7 @@ public class WishlistService {
 
     public Wishlist updateWish(int id, WishlistRequest request){
         Wishlist wishlist = wishlistRepository.findById(id)
-                .orElseThrow( () -> new AppException(ErrorCode.Wishlist_NOTFOUND));
+                .orElseThrow( () -> new AppException(ErrorCode.WISHLIST_NOTFOUND));
         wishlist.setAccountID(request.getAccountID());
         wishlist.setProductID(request.getProductID());
         return wishlistRepository.save(wishlist);
@@ -63,7 +63,7 @@ public class WishlistService {
     @Transactional
     public void deleteWishlist(int id) {
         if (!wishlistRepository.existsById(id))
-            throw new AppException(ErrorCode.Wishlist_NOTFOUND);
+            throw new AppException(ErrorCode.WISHLIST_NOTFOUND);
         wishlistRepository.deleteById(id);
     }
 

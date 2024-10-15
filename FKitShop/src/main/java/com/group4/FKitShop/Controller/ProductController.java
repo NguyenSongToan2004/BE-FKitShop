@@ -109,7 +109,7 @@ public class ProductController {
                 .type(type)
                 .categoryID(categoryID)
                 .build();
-        Product product = service.updateProduct(id, request);
+        Product product = service.updateProduct(productID, request);
 
         cateProductService.deleteCateProduct_Product(productID);
         cateProductService.updateCateProduct_Product(productID, request);

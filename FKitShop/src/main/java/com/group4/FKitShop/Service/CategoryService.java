@@ -33,7 +33,7 @@ public class CategoryService {
 
     public Category getCategoryByID(String id){
         Category cate = categoryRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.Category_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOTFOUND));
         return cate;
     }
 
@@ -77,7 +77,7 @@ public class CategoryService {
     public Category createCategory(CategoryRequest
                                            request){
         if (categoryRepository.existsByCategoryName(request.getCategoryName()))
-            throw new AppException(ErrorCode.CategoryName_DUPLICATED);
+            throw new AppException(ErrorCode.CATEGORY_NAME_DUPLICATED);
 
         Category cate = categoryMapper.toCategory((request));
       //  Category cate = new Category();
@@ -91,7 +91,7 @@ public class CategoryService {
 
     public Category updateCategory(String id, CategoryRequest request){
         Category cate = categoryRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.Category_NOTFOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOTFOUND));
 
         cate.setTagID(request.getTagID());
         cate.setCategoryName(request.getCategoryName());
@@ -103,7 +103,7 @@ public class CategoryService {
     @Transactional
     public int deleteCategory(String id) {
         if (!categoryRepository.existsById(id))
-            throw new AppException(ErrorCode.Category_NOTFOUND);
+            throw new AppException(ErrorCode.CATEGORY_NOTFOUND);
         return categoryRepository.deleteStatus(id);
     }
 
