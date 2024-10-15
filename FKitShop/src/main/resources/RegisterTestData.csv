@@ -3,3 +3,4 @@ fullName,email,password,phoneNumber,dob,expectedStatus,expectedMessage
 "Nguyen Song Toan 1","heheboi3@gmail.com","123456",0344017063,"1995-03-01",1003,phone number is already in use
 "Nguyen Song Toan 2","abcczx1@gmail.com","123456",0123498576,"1992-02-12",1000,Create account successfully
 "Nguyen Song Toan 3",leesintoan2@gmail.com,1234562,"0987612342","1995-01-02",1001,This email is already in use
+"Nguyen Song Toan 4,abc123@gmail.com,1234562,"1234567890","1995-01-12",1101,Phone number must start with 0 and contain 10 digits
