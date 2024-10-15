@@ -103,4 +103,13 @@ public class OrdersController {
                 .data(orderDetailsService.findByOrderID(ordersID))
                 .build();
     }
+
+    @GetMapping("/status/{status}")
+    public ResponseObject getOrdersByStatus(@PathVariable String status) {
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Order Status List")
+                .data(ordersService.findOrderbyStatus(status))
+                .build();
+    }
 }

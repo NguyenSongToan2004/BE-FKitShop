@@ -226,4 +226,10 @@ public class OrdersService {
         return code;
     }
 
+    public Orders findOrderbyStatus(String status){
+        Orders orders = ordersRepository.findBystatus(status)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDERS_NOTFOUND));
+        return orders;
+    }
+
 }

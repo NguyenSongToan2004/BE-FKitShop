@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -31,4 +32,6 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
             "from Orders \n" +
             "where status = 'Delivered' and accountID = :accountID", nativeQuery = true)
     List<Orders> findOrdersByAccountID(@Param("accountID") String accountID);
+
+    Optional<Orders> findBystatus(String status);
 }
