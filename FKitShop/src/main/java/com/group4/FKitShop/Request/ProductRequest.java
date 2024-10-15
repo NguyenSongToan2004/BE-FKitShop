@@ -4,6 +4,8 @@ package com.group4.FKitShop.Request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -11,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductRequest {
+
     String name;
     String description;
     String publisher;
@@ -22,4 +25,7 @@ public class ProductRequest {
     String material;
     String dimension;
     String type;
+    // ko có ngày tạo vì sẽ tự tạo
+    // crud cateProduct table
+    List<String> categoryID;
 }

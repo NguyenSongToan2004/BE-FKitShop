@@ -1,8 +1,12 @@
 package com.group4.FKitShop.Controller;
 
+import com.group4.FKitShop.Entity.CateProduct;
 import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.CategoryRequest;
+import com.group4.FKitShop.Response.CategoryResponse;
+import com.group4.FKitShop.Response.StringRespone;
+import com.group4.FKitShop.Service.CateProductService;
 import com.group4.FKitShop.Service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -20,12 +24,16 @@ import java.util.List;
 public class CategoryController {
 
     CategoryService categoryService;
+    CateProductService cateProductService;
 
+    // get all cate
     @GetMapping()
     public List<Category> allCategory(){
         return categoryService.allCategory();
     }
 
+
+    // get cate by ID
     @GetMapping("/{categoryID}")
     ResponseEntity<ResponseObject> getCategoryByID(@PathVariable() String categoryID) {
         return ResponseEntity.ok(
@@ -33,31 +41,63 @@ public class CategoryController {
         );
     }
 
+    // get list category by productID
+    @GetMapping("/byProductID/{productID}")
+    ResponseEntity<ResponseObject> getCategoryByProductID(@PathVariable String productID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", categoryService.getCategoryList(productID))
+        );
+    }
+
+    // get cate by tagID
+    @GetMapping("/byTagID/{tagID}")
+    ResponseEntity<ResponseObject> getCategoryByTag(@PathVariable int tagID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", categoryService.getCategoryByTag(tagID))
+        );
+    }
+
+    // get cate by name contain
+    @GetMapping("/byName/{name}")
+    ResponseEntity<ResponseObject> getCategoryByName(@PathVariable String name) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", categoryService.getCategoryByName(name))
+        );
+    }
+
+    // create cate & create cateProduct relationship tuong ung
     @PostMapping()
-    public ResponseObject createTag(@RequestBody @Valid CategoryRequest request ) {
+    public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request) {
+        Category cate = categoryService.createCategory(request);
+        cateProductService.createCateProduct_Category(request);
+        List<CateProduct> cateProducts = cateProductService.getCateProductByCategoryID(cate.getCategoryID());
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create category successfully")
-                .data(categoryService.createCategory(request))
+                .data(new CategoryResponse(cate, cateProducts))
                 .build();
     }
 
     @PutMapping("/{categoryID}")
     public  ResponseObject updateCategory(@RequestBody @Valid CategoryRequest request, @PathVariable String categoryID) {
+        cateProductService.deleteCateProduct_Category(categoryID);
+        Category cate = categoryService.updateCategory(categoryID, request);
+        cateProductService.updateCateProduct_Category(categoryID, request);
+        List<CateProduct> cateProducts = cateProductService.getCateProductByCategoryID(cate.getCategoryID());
+
         return ResponseObject.builder()
                 .status(1000)
-                .message("Update tag successfully")
-                .data(categoryService.updateCategory(categoryID, request))
+                .message("Update category successfully")
+                .data(new CategoryResponse(cate, cateProducts))
                 .build();
     }
 
-    @DeleteMapping("/{tagID}")
-    public ResponseObject deleteCategory(@PathVariable String categoryID){
-        categoryService.deleteTag(categoryID);
-        return ResponseObject.builder()
-                .status(1000)
-                .message("Delete tag successfully")
-                .build();
-
+    // delete category
+    @DeleteMapping("/{categoryID}")
+    ResponseEntity <ResponseObject> deleteCategory(@PathVariable String categoryID){
+        //cateProductService.deleteCateProduct_Category(categoryID);
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Delete Successfully !!",  categoryService.deleteCategory(categoryID) + " row affeted")
+        );
     }
 }

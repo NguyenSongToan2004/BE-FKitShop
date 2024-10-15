@@ -41,18 +41,31 @@ public enum ErrorCode {
     // Blog
     Blog_DUPLICATED(1016, "This blog name has been taken"),
     Blog_NOTFOUND(1017, "Blog not found"),
-    //token
+    // token
     INVALID_TOKEN(1018, "Invalid token"),
-    //sql
+    // sql
     EXECUTED_FAILED(1111, "Executed failed"),
-    //cart
+    // cart
     CART_NOTFOUND(1100, "Cart not found"),
-    //orders
+
+    CateProduct_NOTFOUND(1019, "This relationship not found"),
+
+    Question_NOTFOUND(1020, "Question not found"),
+
+    Feedback_NOTFOUND(1021, "Feedback not found"),
+
+    Wishlist_NOTFOUND(1022, "Wishlist not found"),
+    Wishlist_EXIST(1023, "This product has been added to Wishlist"),
+
+    // orderstatus
+    OrderStatus_NOTFOUND(1024, "OrderStatus not found"),
+
+    // orders
     ORDERS_NOTFOUND(1019, "Orders not found"),
     ORDER_CREATION_FAILED(1020, "Order creation failed"),
-    //orderdetails
+    // orderdetails
     ORDERDETAILS_NOTFOUND(1021, "Order details not found"),
-    //Supporting
+    // Supporting
     SUPPORTING_NOT_FOUND(1022, "Support not found"),
     SUPPORTING_LIMITED(1023, "Support out of limit !!"),
     SUPPORTING_UNSUPPORTED_STATUS_CODE(1024, "Unsupported status code !!"),
@@ -61,15 +74,14 @@ public enum ErrorCode {
     SUPPORTING_LAB_DONE(1027, "Your lab supporting request had done !!"),
     SUPPORTING_DATE_NULL(1028, "Date support must not be null !!"),
     SUPPORTING_INVALID_STATUS(1029, "Invalid order status (received -> approved -> done) !!"),
-    //order status
-    OrderStatus_NOTFOUND(1022, "Order status not found"),
+    // order status
     OrderStatus_EXIST(1023, "Order status already exist"),
     ORDER_FAILED(1234, "Order failed"),
-    //Payment
+    // Payment
     PAYMENT_FAIL(1035, "Payment failed !!"),
-    PAYMENT_INVALID_SIGN(1036, "INVALID PAYMENT SIGN !!")
-    ;
+    PAYMENT_INVALID_SIGN(1036, "INVALID PAYMENT SIGN !!");
     // max = 18
+
     private int code;
     private String message;
 

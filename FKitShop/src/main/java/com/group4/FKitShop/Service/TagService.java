@@ -7,6 +7,7 @@ import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.TagRepository;
 import com.group4.FKitShop.Mapper.TagMapper;
 import com.group4.FKitShop.Request.TagRequest;
+import com.group4.FKitShop.Mapper.TagMapper;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,51 +31,41 @@ public class TagService {
     public Tag getTagByID(int id){
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.Tag_NOTFOUND));
-
         return tag;
+    }
+
+    public List<Tag> getTagByName(String name){
+        return tagRepository.getTagByName("%"+name+"%");
+    }
+
+    // get tag by blogID
+    public List<Tag> getTagByBlog(String id){
+        return tagRepository.getTagList(id);
     }
 
     public Tag createTag(TagRequest request) {
         if (tagRepository.existsByTagName(request.getTagName()))
             throw new AppException(ErrorCode.TagName_DUPLICATED);
-
-//        Tag tag = new Tag();
-//        tag.setTagName(tagName);
-//        tag.setDescription(description);
-
         Tag tag = tagMapper.toTag(request);
+        tag.setStatus(1);
         return tagRepository.save(tag);
     }
 
     public Tag updateTag(int id, TagRequest request){
         Tag tag = tagRepository.findById(id)
                 .orElseThrow( () -> new AppException(ErrorCode.Tag_NOTFOUND));
-
-//        if(request.getTagName() == null){
-//            tag.setTagName(getTagByID(id).getTagName());
-//        }else{
-//            tag.setTagName(request.getTagName());
-//        }
-//
-//        if(request.getDescription() == null){
-//            tag.setDescription(getTagByID(id).getDescription());
-//        }else{
-//            tag.setDescription(request.getDescription());
-//        }
-
         tag.setTagName(request.getTagName());
         tag.setDescription(request.getDescription());
+        tag.setStatus(request.getStatus());
         return tagRepository.save(tag);
     }
 
-
     @Transactional
-    public void deleteTag(int id) {
+    public int deleteTag(int id) {
         if (!tagRepository.existsById(id))
             throw new AppException(ErrorCode.Tag_NOTFOUND);
-        tagRepository.deleteById(id);
+        return tagRepository.deleteStatus(id);
     }
 
-    
 
 }

@@ -23,12 +23,13 @@ public class TagController {
 
     TagService tagService;
 
+    // get all tag
     @GetMapping()
     public List<Tag> allTag(){
         return tagService.allTag();
     }
 
-
+    // get tag by ID
     @GetMapping("/{tagID}")
     ResponseEntity<ResponseObject> getTagByID(@PathVariable() int tagID) {
         return ResponseEntity.ok(
@@ -36,6 +37,23 @@ public class TagController {
         );
     }
 
+    // get tag by blogID
+    @GetMapping("/byBlogID/{blogID}")
+    ResponseEntity<ResponseObject> getTagByBlogID(@PathVariable String blogID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", tagService.getTagByBlog(blogID))
+        );
+    }
+
+    // get tag by blogID
+    @GetMapping("/byName/{name}")
+    ResponseEntity<ResponseObject> getTagByName(@PathVariable String name) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", tagService.getTagByName(name))
+        );
+    }
+
+    // create tag
     @PostMapping()
     public ResponseObject createTag(@RequestBody @Valid TagRequest request ) {
         return ResponseObject.builder()
@@ -45,7 +63,7 @@ public class TagController {
                 .build();
       }
 
-
+    // update tag by ID
     @PutMapping("/{tagID}")
     public ResponseObject updateTag(@RequestBody @Valid TagRequest request, @PathVariable int tagID) {
         return ResponseObject.builder()
@@ -56,13 +74,11 @@ public class TagController {
 
     }
 
+    // delete tag by ID
     @DeleteMapping("/{tagID}")
-    public ResponseObject deleteTag(@PathVariable int tagID){
-        tagService.deleteTag(tagID);
-        return ResponseObject.builder()
-                .status(1000)
-                .message("Delete tag successfully")
-                .build();
-
+    ResponseEntity<ResponseObject> deleteTag(@PathVariable int tagID){
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Delete Successfully !!",  tagService.deleteTag(tagID) + " row affeted")
+        );
     }
 }

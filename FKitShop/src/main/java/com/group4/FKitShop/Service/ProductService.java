@@ -246,4 +246,9 @@ public class ProductService {
 //    }
     
 
+
+    // get lis product by categoryID
+    public List<Product> getProductIDList(String id){
+        return repository.getProductIDList(id);
+    }
 }

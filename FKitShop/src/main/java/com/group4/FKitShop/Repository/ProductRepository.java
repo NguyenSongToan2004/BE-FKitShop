@@ -65,4 +65,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "where s.productID = :productID and i.url like :url", nativeQuery = true
     )
     String existsByUrl(@Param("productID") String productID, @Param("url") String url);
+    @Query(value = "select st.* from StemProduct st\n" +
+            "    join CateProduct cp on cp.productID = st.productID\n" +
+            "    join Category c on c.categoryID = cp.categoryID\n" +
+            "    where c.categoryID = :id", nativeQuery = true)
+    List<Product> getProductIDList(@Param("id") String id);
 }

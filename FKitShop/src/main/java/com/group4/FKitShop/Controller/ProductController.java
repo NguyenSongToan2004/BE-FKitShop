@@ -1,14 +1,22 @@
 package com.group4.FKitShop.Controller;
 
+import com.group4.FKitShop.Entity.CateProduct;
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.ProductRequest;
+import com.group4.FKitShop.Response.CategoryResponse;
+import com.group4.FKitShop.Response.ProductResponse;
+import com.group4.FKitShop.Response.StringRespone;
+import com.group4.FKitShop.Service.CateProductService;
+import com.group4.FKitShop.Service.CategoryService;
 import com.group4.FKitShop.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/product")
@@ -17,9 +25,14 @@ public class ProductController {
 
     @Autowired
     ProductService service;
+    @Autowired
+    CateProductService cateProductService;
+    @Autowired
+    CategoryService categoryService;
 
+    // create product & cateProduct relation tuong ung
     @PostMapping("/")
-    ResponseEntity<ResponseObject> addProduct(
+    public ResponseObject addProduct(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("publisher") String publisher,
@@ -31,7 +44,8 @@ public class ProductController {
             @RequestParam("material") String material,
             @RequestParam("dimension") String dimension,
             @RequestParam("type") String type,
-            @RequestParam("images") MultipartFile[] image
+            @RequestParam("images") MultipartFile[] image,
+            @RequestParam("categoryID") List<String> categoryID
     ) {
         System.out.println("tới đây");
         ProductRequest request = ProductRequest.builder()
@@ -46,11 +60,17 @@ public class ProductController {
                 .material(material)
                 .dimension(dimension)
                 .type(type)
+                .categoryID(categoryID)
                 .build();
         Product product = service.addProduct(request, image);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                new ResponseObject(1000, "Create new product sucessfully !!", product)
-        );
+        cateProductService.createCateProduct_Product(request);
+        List<CateProduct> cateProducts = cateProductService.getCateProductByProductID(product.getProductID());
+
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Create product successfully")
+                .data(new ProductResponse(product, cateProducts))
+                .build();
     }
 
     @GetMapping("/{id}")
@@ -60,8 +80,8 @@ public class ProductController {
         );
     }
 
-    @PutMapping("/{id}")
-    ResponseEntity<ResponseObject> getProduct(@PathVariable String id,
+    @PutMapping("/{productID}")
+    public ResponseObject getProduct(@PathVariable String productID,
                                               @RequestParam("name") String name,
                                               @RequestParam("description") String description,
                                               @RequestParam("publisher") String publisher,
@@ -72,7 +92,8 @@ public class ProductController {
                                               @RequestParam("weight") double weight,
                                               @RequestParam("material") String material,
                                               @RequestParam("dimension") String dimension,
-                                              @RequestParam("type") String type
+                                              @RequestParam("type") String type,
+                                              @RequestParam("categoryID") List<String> categoryID
                                               ) {
         ProductRequest request = ProductRequest.builder()
                 .name(name)
@@ -86,10 +107,27 @@ public class ProductController {
                 .material(material)
                 .dimension(dimension)
                 .type(type)
+                .categoryID(categoryID)
                 .build();
         Product product = service.updateProduct(id, request);
+
+        cateProductService.deleteCateProduct_Product(productID);
+        cateProductService.updateCateProduct_Product(productID, request);
+        List<CateProduct> cateProducts = cateProductService.getCateProductByProductID(product.getProductID());
+
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Update product successfully")
+                .data(new ProductResponse(product, cateProducts))
+                .build();
+    }
+
+    // delete product
+    @DeleteMapping("/{productID}")
+    ResponseEntity<ResponseObject> deleteProduct(@PathVariable String productID) {
+        //cateProductService.deleteCateProduct_Product(productID);
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Update Successfully !!", product)
+                new ResponseObject(1000, "Delete Successfully !!", service.deleteProduct(productID) + " row affeted")
         );
     }
 
@@ -99,11 +137,11 @@ public class ProductController {
                 new ResponseObject(1000, "Update image successfully !!", service.updateImage(image, productID, imageID) + " row affeted")
         );
     }
-
-    @DeleteMapping("/{id}")
-    ResponseEntity<ResponseObject> deleteProduct(@PathVariable String id) {
+    // get list product by categoryID
+    @GetMapping("/byCategoryID/{categoryID}")
+    ResponseEntity<ResponseObject> getProductByCategoryID(@PathVariable String categoryID) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Delete Successfully !!", service.deleteProduct(id) + " row affeted")
+                new ResponseObject(1000, "Found successfully", service.getProductIDList(categoryID))
         );
     }
 

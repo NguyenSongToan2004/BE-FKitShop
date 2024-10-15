@@ -26,13 +26,7 @@ public class Tag {
     @Column(name = "description")
     private String description;
 
-    public Tag(int tagID, String tagName, String description) {
-        this.tagID = tagID;
-        this.tagName = tagName;
-        this.description = description;
-    }
-
-    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Category> category = new ArrayList<>();
+    @Column(name = "status")
+    int status;
 
 }
