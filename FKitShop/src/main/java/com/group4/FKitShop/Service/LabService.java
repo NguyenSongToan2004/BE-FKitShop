@@ -9,6 +9,7 @@ import com.group4.FKitShop.Request.DownloadLabRequest;
 import com.group4.FKitShop.Request.LabRequest;
 import com.group4.FKitShop.Request.OrderLab;
 import com.group4.FKitShop.Response.GetLabByAccountIDResponse;
+import com.group4.FKitShop.Response.GetLabResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,6 +40,8 @@ public class LabService {
     public Lab addLabRequest(LabRequest request, MultipartFile file) {
         if(labRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.LAB_NAMEDUPLICATED);
+        if(labRepository.findByFileNamePDF(file.getOriginalFilename()) != null)
+            throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
         Lab lab = LabMapper.INSTANCE.toLab(request);
         lab.setLabID(generateID());
         // create current Date
@@ -104,6 +107,8 @@ public class LabService {
         if (fileToSave.isEmpty()) {
             return null;
         }
+        if(labRepository.findByFileNamePDF(fileToSave.getOriginalFilename()) != null)
+            throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
 
         Lab lab = labRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LAB_NOTFOUND));
 
@@ -149,7 +154,13 @@ public class LabService {
             for (OrderDetails orderDetails : orderDetailsList) {
                 List<Lab> listLabTmp = labRepository.findByProductID(orderDetails.getProductID());
                 for (Lab labTmp : listLabTmp) {
-                    OrderLab orderLab = new OrderLab(orders.getOrdersID(), labTmp);
+                    Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
+                            () -> new AppException(ErrorCode.USER_NOT_EXIST)
+                    );
+                    GetLabResponse labResponse = new GetLabResponse();
+                    LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
+                    labResponse.setProductName(p.getName());
+                    OrderLab orderLab = new OrderLab(orders.getOrdersID(), labResponse);
                     setOrderLab.add(orderLab);
                 }
             }

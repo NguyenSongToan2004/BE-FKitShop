@@ -79,7 +79,6 @@ public class LabController {
 
     @PostMapping("/upload-lab/{labID}")
     ResponseEntity<ResponseObject> uploadLab(@RequestParam("file") MultipartFile file, @PathVariable("labID") String id) {
-        try {
             return ResponseEntity.status(HttpStatus.OK).body(
                     ResponseObject.builder()
                             .status(1000)
@@ -87,16 +86,8 @@ public class LabController {
                             .data(labService.saveLabPDF(file, id))
                             .build()
             );
-        } catch (Exception e){
-            throw new AppException(ErrorCode.LAB_UPLOAD_FAILED);
-        }
     }
 
-//    String accountID;
-//    String orderID;
-//    String labID;
-//    String productID;
-//    String fileName;
     @GetMapping("/get-link-download")
     ResponseEntity<ResponseObject> getLinkDownLoad(@RequestParam("accountID") String accountID,
                                          @RequestParam("orderID") String orderID,

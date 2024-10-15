@@ -80,7 +80,7 @@ public class SupportingService {
                 () -> new AppException(ErrorCode.LAB_NOTFOUND)
         );
         if (supporting != null) {
-            if(supporting.getStatus() != 2)
+            if(supporting.getStatus() != 2 && supporting.getStatus() != 3)
                 throw new AppException(ErrorCode.SUPPORTING_LAB_EXISTING);
             if(supporting.getCountSupport() == 0)
                 throw new AppException(ErrorCode.SUPPORTING_LIMITED);
@@ -89,6 +89,7 @@ public class SupportingService {
                 newSupporting.setStatus(0);
                 newSupporting.setDescription(request.getDescription());
                 newSupporting.setPostDate(new Date(System.currentTimeMillis()));
+                newSupporting.setCountSupport(supporting.getCountSupport() - 1);
                 return supportingRepository.save(newSupporting);
             }
         }
@@ -99,7 +100,7 @@ public class SupportingService {
         newSupporting.setDescription(request.getDescription());
         newSupporting.setStatus(0);
         newSupporting.setPostDate(new Date(System.currentTimeMillis()));
-        newSupporting.setCountSupport(5);
+        newSupporting.setCountSupport(5-1);
         return supportingRepository.save(newSupporting);
     }
 
@@ -120,20 +121,44 @@ public class SupportingService {
         Supporting supporting = supportingRepository.findById(request.getSupportingID()).orElseThrow(
                 () -> new AppException(ErrorCode.SUPPORTING_NOT_FOUND)
         );
-        supporting.setStatus(request.getStatus());
-        if(request.getStatus() == 2)
-            supporting.setCountSupport(supporting.getCountSupport() - 1);
-        else if (request.getStatus() == 1) {
-            // gửi gmail báo đã approved, cho lịch hẹn qua điện thoại
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date(System.currentTimeMillis()));
-            calendar.add(Calendar.DAY_OF_MONTH, expectedDate);
+        switch (request.getStatus()){
+            case 0:
+                throw new AppException(ErrorCode.SUPPORTING_INVALID_STATUS);
+            case 1:{
+                if (supporting.getStatus() != 0)
+                    throw new AppException(ErrorCode.SUPPORTING_INVALID_STATUS);
+                else {
+                    // gửi gmail báo đã approved, cho lịch hẹn qua điện thoại
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date(System.currentTimeMillis()));
+                    calendar.add(Calendar.DAY_OF_MONTH, expectedDate);
 
-            Date expectDate = new Date(calendar.getTimeInMillis());
-            sendGmail(supporting, expectDate);
-            supporting.setExpectedSpDate(expectDate);
+                    Date expectDate = new Date(calendar.getTimeInMillis());
+                    sendGmail(supporting, expectDate);
+                    supporting.setExpectedSpDate(expectDate);
+                }
+                break;
+            }
+            case 2:{
+                if (supporting.getStatus() != 1)
+                    throw new AppException(ErrorCode.SUPPORTING_INVALID_STATUS);
+                else {
+                    if (supporting.getSupportDate() == null)
+                        throw new AppException(ErrorCode.SUPPORTING_DATE_NULL);
+                }
+                break;
+            }
+            case 3:{
+                if (supporting.getStatus() < 2) {
+                    supporting.setStatus(request.getStatus());
+                    supporting.setCountSupport(supporting.getCountSupport() + 1);
+                } else
+                    throw new AppException(ErrorCode.SUPPORTING_LAB_DONE);
+                break;
+            }
         }
 
+        supporting.setStatus(request.getStatus());
         return supportingRepository.save(supporting);
     }
 
@@ -184,7 +209,7 @@ public class SupportingService {
     }
 
     public List<AllLabSupport> getSupportByStatus(int status){
-        if(status != 0 && status != 1 && status != 2)
+        if(status != 0 && status != 1 && status != 2 && status !=3)
             throw new AppException(ErrorCode.SUPPORTING_UNSUPPORTED_STATUS_CODE);
         List<AllLabSupport> supportingResponses = new ArrayList<>();
         for (Supporting supporting : supportingRepository.findAll()) {
@@ -232,7 +257,8 @@ public class SupportingService {
 //        System.out.println("current date : " +currentDate);
 //        System.out.println("request date " + request.getDate());
 //        System.out.println(currentDate.toLocalDate().equals(request.getDate().toLocalDate()));
-        if (currentDate.after(request.getDate()) && !currentDate.toLocalDate().equals(request.getDate().toLocalDate()))
+        if (supporting.getExpectedSpDate().after(request.getDate()) &&
+                !supporting.getExpectedSpDate().toLocalDate().equals(request.getDate().toLocalDate()))
             throw new AppException(ErrorCode.SUPPORTING_INVALID_SUPPORT_DATE);
         supporting.setSupportDate(request.getDate());
         return supportingRepository.save(supporting);

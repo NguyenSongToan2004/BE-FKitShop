@@ -22,6 +22,7 @@ public enum ErrorCode {
     LAB_UPLOAD_FAILED(1018, "Upload failed"),
     LAB_UNSUPPORTED_FILENAME(1019, "Unsupported filename !!"),
     LAB_DOWNLOAD_FAILED(1020, "Download failed"),
+    LAB_FILENAME_DUPLICATED(1008, "This file PDF existed !!"),
     // Product
     PRODUCT_NAMEDUPLICATED(1009, "This product name has taken alredy !!"),
     PRODUCT_NOTFOUND(1010, "This product is not exist !!"),
@@ -55,6 +56,8 @@ public enum ErrorCode {
     SUPPORTING_INVALID_SUPPORT_DATE(1025, "Invalid support date !!"),
     SUPPORTING_LAB_EXISTING(1026, "Your previous lab supporting request has not done yet !!"),
     SUPPORTING_LAB_DONE(1027, "Your lab supporting request had done !!"),
+    SUPPORTING_DATE_NULL(1028, "Date support must not be null !!"),
+    SUPPORTING_INVALID_STATUS(1029, "Invalid order status (received -> approved -> done) !!"),
     //order status
     OrderStatus_NOTFOUND(1022, "Order status not found"),
     OrderStatus_EXIST(1023, "Order status already exist"),
