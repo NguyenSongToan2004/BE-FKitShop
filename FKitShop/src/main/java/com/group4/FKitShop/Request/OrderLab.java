@@ -1,6 +1,7 @@
 package com.group4.FKitShop.Request;
 
 import com.group4.FKitShop.Entity.Lab;
+import com.group4.FKitShop.Response.GetLabResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,5 +12,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderLab {
     String orderID;
-    Lab lab;
+    GetLabResponse lab;
 }

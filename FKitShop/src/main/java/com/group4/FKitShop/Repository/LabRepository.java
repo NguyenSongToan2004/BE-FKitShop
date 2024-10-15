@@ -21,4 +21,6 @@ public interface LabRepository extends JpaRepository<Lab, String> {
     boolean existsByName(String name);
 
     List<Lab> findByProductID(String productID);
+
+    Lab findByFileNamePDF(String fileNamePDF);
 }

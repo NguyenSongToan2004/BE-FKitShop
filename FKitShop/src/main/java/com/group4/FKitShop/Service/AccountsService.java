@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,6 +79,11 @@ public class AccountsService {
         }
         if (accountsRepository.existsByphoneNumber(request.getPhoneNumber())) {
             throw new AppException(ErrorCode.PHONE_EXISTED);
+        }
+
+        String test = String.valueOf(request.getPhoneNumber().charAt(0));
+        if (!test.equals("0") && request.getPhoneNumber().length() == 10) {
+            throw new AppException(ErrorCode.PHONE_ERROR);
         }
 
         Accounts accounts = accountsMapper.toAccounts(request);

@@ -11,17 +11,20 @@ public enum ErrorCode {
 
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized exception"),
     EMAIL_EXSITED(1001, "This email is already in use"),
-    USERNAME_INVALID(1002, "username at least 3 charaters"),
+    USERNAME_INVALID(1002, "username at least 6 charaters"),
     PHONE_EXISTED(1003, "phone number is already in use"),
+    PHONE_ERROR(1101, "Phone number must start with 0 and contain 10 digits"),
     USER_NOT_EXIST(1004, "User Not Found"),
     PHONE_INVALID(1005, "Wrong format for phone number"),
     UNAUTHENTICATED(1006, "Email or Password is incorrect"),
+
     // Lab
     LAB_NOTFOUND(1007, "This lab is not exist !!"),
     LAB_NAMEDUPLICATED(1008, "This lab name has taken alredy !!"),
     LAB_UPLOAD_FAILED(1018, "Upload failed"),
     LAB_UNSUPPORTED_FILENAME(1019, "Unsupported filename !!"),
     LAB_DOWNLOAD_FAILED(1020, "Download failed"),
+    LAB_FILENAME_DUPLICATED(1008, "This file PDF existed !!"),
     // Product
     PRODUCT_NAMEDUPLICATED(1009, "This product name has taken alredy !!"),
     PRODUCT_NOTFOUND(1010, "This product is not exist !!"),
@@ -53,14 +56,18 @@ public enum ErrorCode {
     SUPPORTING_LIMITED(1023, "Support out of limit !!"),
     SUPPORTING_UNSUPPORTED_STATUS_CODE(1024, "Unsupported status code !!"),
     SUPPORTING_INVALID_SUPPORT_DATE(1025, "Invalid support date !!"),
+    SUPPORTING_LAB_EXISTING(1026, "Your previous lab supporting request has not done yet !!"),
+    SUPPORTING_LAB_DONE(1027, "Your lab supporting request had done !!"),
+    SUPPORTING_DATE_NULL(1028, "Date support must not be null !!"),
+    SUPPORTING_INVALID_STATUS(1029, "Invalid order status (received -> approved -> done) !!"),
     //order status
     OrderStatus_NOTFOUND(1022, "Order status not found"),
     OrderStatus_EXIST(1023, "Order status already exist"),
-    ORDER_FAILED(1234, "Order failed");
-
-
-
-
+    ORDER_FAILED(1234, "Order failed"),
+    //Payment
+    PAYMENT_FAIL(1035, "Payment failed !!"),
+    PAYMENT_INVALID_SIGN(1036, "INVALID PAYMENT SIGN !!")
+    ;
     // max = 18
     private int code;
     private String message;

@@ -9,6 +9,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -39,4 +41,7 @@ public class Lab {
     Date createDate;
 
     String fileNamePDF;
+
+    @OneToMany (mappedBy = "lab")
+    Set<Supporting> supportings = new HashSet<>();
 }

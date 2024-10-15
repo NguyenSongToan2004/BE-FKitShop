@@ -9,6 +9,7 @@ import com.group4.FKitShop.Request.DownloadLabRequest;
 import com.group4.FKitShop.Request.LabRequest;
 import com.group4.FKitShop.Request.OrderLab;
 import com.group4.FKitShop.Response.GetLabByAccountIDResponse;
+import com.group4.FKitShop.Response.GetLabResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,6 +40,8 @@ public class LabService {
     public Lab addLabRequest(LabRequest request, MultipartFile file) {
         if(labRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.LAB_NAMEDUPLICATED);
+        if(labRepository.findByFileNamePDF(file.getOriginalFilename()) != null)
+            throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
         Lab lab = LabMapper.INSTANCE.toLab(request);
         lab.setLabID(generateID());
         // create current Date
@@ -73,6 +76,10 @@ public class LabService {
         return labRepository.findAll();
     }
 
+    public List<Lab> getLabByProductID(String productID) {
+        return labRepository.findByProductID(productID);
+    }
+
     private static final String STORAGE_DIRECTORY = "uploads" + File.separator + "lab";
 
     public String saveLabPDF(MultipartFile fileToSave) {
@@ -100,6 +107,8 @@ public class LabService {
         if (fileToSave.isEmpty()) {
             return null;
         }
+        if(labRepository.findByFileNamePDF(fileToSave.getOriginalFilename()) != null)
+            throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
 
         Lab lab = labRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LAB_NOTFOUND));
 
@@ -131,7 +140,7 @@ public class LabService {
             throw new NullPointerException("File Does Not Exist!!");
         if(!Objects.equals(fileToDownload.getParentFile().toString(),System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
             throw new SecurityException("Unsupported Filename !!");
-        return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductName());
+        return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductID());
     }
 
     public GetLabByAccountIDResponse getLabByAccountID(String accountID){
@@ -145,7 +154,13 @@ public class LabService {
             for (OrderDetails orderDetails : orderDetailsList) {
                 List<Lab> listLabTmp = labRepository.findByProductID(orderDetails.getProductID());
                 for (Lab labTmp : listLabTmp) {
-                    OrderLab orderLab = new OrderLab(orders.getOrdersID(), labTmp);
+                    Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
+                            () -> new AppException(ErrorCode.USER_NOT_EXIST)
+                    );
+                    GetLabResponse labResponse = new GetLabResponse();
+                    LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
+                    labResponse.setProductName(p.getName());
+                    OrderLab orderLab = new OrderLab(orders.getOrdersID(), labResponse);
                     setOrderLab.add(orderLab);
                 }
             }
@@ -156,11 +171,7 @@ public class LabService {
                 .build();
     }
 
-    public List<Lab> getLabByProductID(String productID) {
-        return labRepository.findByProductID(productID);
-    }
-
-    private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productName) {
+    private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
         Orders orders = ordersRepository.findById(orderID).orElseThrow(
                 () ->  new AppException(ErrorCode.ORDERS_NOTFOUND)
         );
@@ -170,7 +181,9 @@ public class LabService {
         Lab lab = labRepository.findById(labID).orElseThrow(
                 () -> new AppException(ErrorCode.LAB_NOTFOUND)
         );
-
+        Product product = productRepository.findById(productID).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+        );
         String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
         try (PDDocument document = PDDocument.load(new File(pdfPath))) {
             PDDocument documentReplace = document;
@@ -191,11 +204,12 @@ public class LabService {
             contentStream.setLeading(20);
             contentStream.showText("OrderID: "+orders.getOrdersID()+"                    ShipDate: " + orders.getShipDate());
             contentStream.newLine();
-            contentStream.showText("Customer Name: "+orders.getOrdersID());
+            contentStream.showText("Customer Name: "+accounts.getFullName());
             contentStream.newLine();
-            contentStream.showText("StemName: "+productName+"                      Lab Name: " + lab.getName() );
+            contentStream.showText("Kit STEM: "+product.getName()+"                      Lab Name: " + lab.getName() );
             contentStream.newLine();
             contentStream.showText("Level : " + lab.getLevel());
+            contentStream.newLine();
             contentStream.newLine();
 
             // Kết thúc việc ghi văn bản

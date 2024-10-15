@@ -1,6 +1,9 @@
 package com.group4.FKitShop.Service;
 
 import com.group4.FKitShop.Configuration.VNPAYConfig;
+import com.group4.FKitShop.Exception.AppException;
+import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Response.VNPayResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +39,8 @@ public class VNPAYService {
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
 
-        urlReturn += VNPAYConfig.vnp_Returnurl;
+        // urlReturn += VNPAYConfig.vnp_Returnurl;
+        System.out.println("url return : " + urlReturn);
         vnp_Params.put("vnp_ReturnUrl", urlReturn);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
@@ -85,6 +89,7 @@ public class VNPAYService {
     }
 
     public int orderReturn(HttpServletRequest request){
+        int paymentStatus;
         Map fields = new HashMap();
         for (Enumeration params = request.getParameterNames(); params.hasMoreElements();) {
             String fieldName = null;
@@ -108,15 +113,31 @@ public class VNPAYService {
             fields.remove("vnp_SecureHash");
         }
         String signValue = VNPAYConfig.hashAllFields(fields);
+        System.out.printf("order info : " +request.getParameter("vnp_OrderInfo"));
+        System.out.println("total money : " + request.getParameter("vnp_Amount"));
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                return 1;
+                System.out.println("00".equals(request.getParameter("vnp_TransactionStatus")));
+                paymentStatus = 1;
             } else {
-                return 0;
+                paymentStatus =  0;
             }
         } else {
-            return -1;
+            paymentStatus = -1;
+            throw new AppException(ErrorCode.PAYMENT_INVALID_SIGN);
         }
+//        String orderInfo = request.getParameter("vnp_OrderInfo");
+//        String paymentTime = request.getParameter("vnp_PayDate");
+//        String transactionId = request.getParameter("vnp_TransactionNo");
+//        String totalPrice = request.getParameter("vnp_Amount");
+        VNPayResponse response = VNPayResponse.builder()
+                .orderInfo(request.getParameter("vnp_OrderInfo"))
+                .paymentTime(request.getParameter("vnp_TransactionNo"))
+                .transactionID(request.getParameter("vnp_TransactionNo"))
+                .totalPrice(request.getParameter("vnp_Amount"))
+                .status(paymentStatus)
+                .build();
+        return paymentStatus;
     }
 
 }

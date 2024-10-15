@@ -59,11 +59,7 @@ public class OrdersService {
             List<OrderDetails> details = orderDetailsService.createOrderDetails(request.getOrderDetailsRequest(), ordersID);
             //update totalPrice in order
             //including shipping price
-            double totalPrice = orders.getShippingPrice();
-
-            for (OrderDetails detail : details) {
-                totalPrice += detail.getPrice();
-            }
+            double totalPrice = updateStockAndTotalPrice(details, orders.getShippingPrice());
             //update totalprice
             orders = updateTotalPrice(totalPrice, orders.getOrdersID());
             sendOrderEmail(orders, details);
@@ -214,6 +210,23 @@ public class OrdersService {
         helper.setText(body, true);
 
         mailSender.send(message);
+    }
+
+    private double updateStockAndTotalPrice(List<OrderDetails> details,  double shippingPrice) {
+        double totalPrice = 0;
+        for (OrderDetails detail : details) {
+            Product product = productRepository.findById(detail.getProductID()).orElseThrow(
+                    () -> new RuntimeException("Product not found")
+            );
+            if (product.getQuantity() < detail.getQuantity()){
+                throw new AppException(ErrorCode.PRODUCT_UNAVAILABLE);
+            }
+            product.setQuantity(product.getQuantity() - detail.getQuantity());
+            product.setUnitOnOrder(product.getUnitOnOrder() + detail.getQuantity());
+            totalPrice += detail.getPrice();
+            productRepository.save(product);
+        }
+        return totalPrice+=shippingPrice;
     }
 
     private String generateUniqueCode() {

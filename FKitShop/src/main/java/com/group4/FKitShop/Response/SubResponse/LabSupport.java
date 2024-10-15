@@ -1,18 +1,17 @@
-package com.group4.FKitShop.Request;
+package com.group4.FKitShop.Response.SubResponse;
 
+import com.group4.FKitShop.Entity.Supporting;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
-public class DownloadLabRequest {
-    String accountID;
-    String orderID;
+public class LabSupport {
     String labID;
-    String productID;
-    String fileName;
+    String labName;
+    Supporting supporting;
 }
