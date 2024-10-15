@@ -17,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -108,6 +109,7 @@ public class OrdersService {
         }
     }
 
+    @PreAuthorize("hasRole('manager' || 'admin')")
     public List<Orders> getOrders() {
         return ordersRepository.findAll();
     }

@@ -54,7 +54,7 @@ public class AccountsService {
         return accountsRepository.save(accounts);
     }
 
-    @PreAuthorize("hasRole('manager')")
+    @PreAuthorize("hasRole('manager' || 'admin')")
     public List<Accounts> allAccounts() {
         return accountsRepository.findAll();
     }

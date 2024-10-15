@@ -46,7 +46,7 @@ public class OrdersController {
     }
 
     @GetMapping("/allorders")
-    public ResponseObject allOrders() {
+    public ResponseObject allOrders(@RequestHeader("Authorization") String authorization) {
         return ResponseObject.builder()
                 .status(1000)
                 .message("All orders")

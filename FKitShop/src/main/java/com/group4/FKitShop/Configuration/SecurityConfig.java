@@ -40,6 +40,7 @@ public class  SecurityConfig {
             "/product/{id}",
             "/product/aproducts",
             "/carts/view/{accountID}",
+            "/orders/allorders",
             "/"
     };
 //    //secretkey
