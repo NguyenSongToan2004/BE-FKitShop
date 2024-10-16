@@ -89,7 +89,7 @@ public class OrdersService {
             orders.setName(request.getName());
             orders.setTotalPrice(1000000.0);
             orders.setShippingPrice(request.getShippingPrice());
-            orders.setStatus("Pending");
+            orders.setStatus("pending");
             orders.setOrderDate(new Date());
             orders.setNote(request.getNote());
 
@@ -139,7 +139,7 @@ public class OrdersService {
             }
         }
 
-        orders.setStatus(status);
+        orders.setStatus(status.toLowerCase());
         // tao order status
         orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
         return ordersRepository.save(orders);

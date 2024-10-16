@@ -33,7 +33,7 @@ public class VNPAYController {
     public String submitOrder(@RequestParam("amount") int totalAmount,
                               @RequestParam("orderInfo") String orderInfo,
                               HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String vnpayUrl = vnPayService.createOrder(request, totalAmount, orderInfo, "http://localhost:5173/order-success");
+        String vnpayUrl = vnPayService.createOrder(request, totalAmount, orderInfo, "http://localhost:5173/handle-vnpay");
         System.out.println("Vn pay url : " + vnpayUrl);
         return vnpayUrl;
     }
