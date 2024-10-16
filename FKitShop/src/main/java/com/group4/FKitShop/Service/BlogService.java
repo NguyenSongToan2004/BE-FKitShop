@@ -47,6 +47,11 @@ public class BlogService {
         return blogRepository.getBlogList(id);
     }
 
+    // get blog active
+    public List<Blog> getBlogActive(){
+        return blogRepository.getBlogActive();
+    }
+
     // filter by date
     public List<Blog> getBlogDateDesc(){
         return blogRepository.getBlogListDesc();
