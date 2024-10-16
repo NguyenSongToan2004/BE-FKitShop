@@ -43,6 +43,11 @@ public class TagService {
         return tagRepository.getTagList(id);
     }
 
+    //get tag active
+    public List<Tag> getTagActive(){
+        return tagRepository.getTagActive();
+    }
+
     public Tag createTag(TagRequest request) {
         if (tagRepository.existsByTagName(request.getTagName()))
             throw new AppException(ErrorCode.TAG_NAME_DUPLICATED);

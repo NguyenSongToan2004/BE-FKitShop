@@ -41,6 +41,14 @@ public class CategoryController {
         );
     }
 
+    // get cate active
+    @GetMapping("/active")
+    ResponseEntity<ResponseObject> getCateActive() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", categoryService.getCateActive())
+        );
+    }
+
     // get list category by productID
     @GetMapping("/byProductID/{productID}")
     ResponseEntity<ResponseObject> getCategoryByProductID(@PathVariable String productID) {

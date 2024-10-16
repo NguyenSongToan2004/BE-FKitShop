@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +26,9 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlogService {
 
+    @Autowired
     BlogRepository blogRepository;
+    @Autowired
     BlogMapper blogMapper;
 
     public List<Blog> allBlog(){
@@ -42,6 +45,11 @@ public class BlogService {
     // get blog by tagID
     public List<Blog> getBlogByTag(int id){
         return blogRepository.getBlogList(id);
+    }
+
+    // get blog active
+    public List<Blog> getBlogActive(){
+        return blogRepository.getBlogActive();
     }
 
     // filter by date

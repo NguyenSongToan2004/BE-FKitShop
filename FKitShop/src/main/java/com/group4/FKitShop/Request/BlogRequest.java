@@ -22,7 +22,7 @@ public class BlogRequest {
 
 
     // in order to crud BlogTag table
-    List<Integer> tagID;
+    private List<Integer> tagID;
 
 }
 

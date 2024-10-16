@@ -47,6 +47,7 @@ amazonProperties:
   folder:
     Product: Product
     Account: Account
+    Blog: Blog
   Default:
     image: https://s3.ap-southeast-2.amazonaws.com/fkshop/Account/1729013592098-default_user_image1.jpg
 

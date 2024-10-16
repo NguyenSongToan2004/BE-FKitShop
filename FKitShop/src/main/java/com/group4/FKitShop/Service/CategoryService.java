@@ -58,6 +58,11 @@ public class CategoryService {
         return categoryRepository.getCategoryList(id);
     }
 
+    // list cate active
+    public List<Category> getCateActive(){
+        return categoryRepository.getCategoryActive();
+    }
+
     // list cate by tagID
     public List<Category> getCategoryByTag(int id){
         return categoryRepository.getCategoryByTagID(id);
@@ -82,7 +87,7 @@ public class CategoryService {
         Category cate = categoryMapper.toCategory((request));
       //  Category cate = new Category();
         cate.setCategoryID(generateUniqueCode());
-        cate.setStatus(request.getStatus());
+        cate.setStatus(1);
 //        cate.setTagID(request.getTagID());
 //        cate.setCategoryName(request.getCategoryName());
 //        cate.setDescription(request.getDescription());
