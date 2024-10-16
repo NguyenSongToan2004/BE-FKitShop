@@ -28,10 +28,16 @@ public interface BlogRepository extends JpaRepository<Blog, String> {
             "    order by createDate asc", nativeQuery = true)
     List<Blog> getBlogListAsc();
 
+    // get blog active
+    @Query(value = "select * from Blog\n" +
+            "    where toDelete = 1 ", nativeQuery = true)
+    List<Blog> getBlogActive();
+
+
     // delete by changing status
     @Modifying
     @Query(value = "update Blog\n" +
-            "set toDdelete = 0\n" +
+            "set toDelete = 0\n" +
             "where blogID = :id", nativeQuery = true)
     int deleteStatus(@Param("id") String id);
 }

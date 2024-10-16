@@ -58,6 +58,11 @@ public class CategoryService {
         return categoryRepository.getCategoryList(id);
     }
 
+    // list cate active
+    public List<Category> getCateActive(){
+        return categoryRepository.getCategoryActive();
+    }
+
     // list cate by tagID
     public List<Category> getCategoryByTag(int id){
         return categoryRepository.getCategoryByTagID(id);

@@ -40,6 +40,14 @@ public class BlogController {
         );
     }
 
+    // get blog active
+    @GetMapping("/active")
+    ResponseEntity<ResponseObject> getBlogActive() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", blogService.getBlogActive())
+        );
+    }
+
     // get blog by tagID
     @GetMapping("/byTagID/{tagID}")
     ResponseEntity<ResponseObject> getBlogByTagID(@PathVariable int tagID) {

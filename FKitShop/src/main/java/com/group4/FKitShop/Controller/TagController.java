@@ -37,6 +37,14 @@ public class TagController {
         );
     }
 
+    // get tag active
+    @GetMapping("/active")
+    ResponseEntity<ResponseObject> getTagActive() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", tagService.getTagActive())
+        );
+    }
+
     // get tag by blogID
     @GetMapping("/byBlogID/{blogID}")
     ResponseEntity<ResponseObject> getTagByBlogID(@PathVariable String blogID) {

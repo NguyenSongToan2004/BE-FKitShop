@@ -28,6 +28,12 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
             "where tagID = :id", nativeQuery = true)
     List<Category> getCategoryByTagID(@Param("id") int id);
 
+    // get cate active
+    @Query(value = "select * \n" +
+            "from Category\n" +
+            "where status = 1", nativeQuery = true)
+    List<Category> getCategoryActive();
+
     // get cate by name
     @Query(value = "SELECT * FROM Category\n" +
             "where categoryName like :character", nativeQuery = true)

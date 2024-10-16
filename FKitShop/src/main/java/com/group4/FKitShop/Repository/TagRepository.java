@@ -28,6 +28,10 @@ public interface TagRepository extends JpaRepository<Tag, Integer> {
             "where b.blogID = :id", nativeQuery = true)
     List<Tag> getTagList(@Param("id") String id);
 
+    @Query(value = "SELECT * FROM Tag\n" +
+            "where status = 1", nativeQuery = true)
+    List<Tag> getTagActive();
+
     // delete by changing status
     @Modifying
     @Query(value = "update Tag\n" +
