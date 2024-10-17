@@ -53,6 +53,10 @@ public class CartService {
             // Check if the cart is not empty
             if (!currentCart.isEmpty()) {
                 for (Cart existingcart : currentCart) {
+                    Product product = productRepository.findById(existingcart.getProductID())
+                            .orElseThrow(()-> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+                    if (cartRequest.getQuantity() > product.getQuantity())
+                        throw new AppException(ErrorCode.PRODUCT_UNAVAILABLE);
                     // Check if the product is already in the existingcart
                     if (cartRequest.getProductID().equals(existingcart.getProductID())) {
                         // If the product exists, update its quantity
