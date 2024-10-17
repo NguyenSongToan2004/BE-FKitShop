@@ -55,7 +55,7 @@ public class CartService {
                 for (Cart existingcart : currentCart) {
                     Product product = productRepository.findById(existingcart.getProductID())
                             .orElseThrow(()-> new AppException(ErrorCode.PRODUCT_NOTFOUND));
-                    if (cartRequest.getQuantity() > product.getQuantity())
+                    if (cartRequest.getQuantity() + existingcart.getQuantity() > product.getQuantity())
                         throw new AppException(ErrorCode.PRODUCT_UNAVAILABLE);
                     // Check if the product is already in the existingcart
                     if (cartRequest.getProductID().equals(existingcart.getProductID())) {
