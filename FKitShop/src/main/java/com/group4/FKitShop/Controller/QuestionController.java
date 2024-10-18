@@ -3,6 +3,7 @@ package com.group4.FKitShop.Controller;
 import com.group4.FKitShop.Entity.Question;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.QuestionRequest;
+import com.group4.FKitShop.Response.QuestionResponse;
 import com.group4.FKitShop.Service.QuestionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class QuestionController {
 
     // get all question
     @GetMapping()
-    public List<Question> allQuestions() {
+    public List<QuestionResponse> allQuestions() {
         return questionService.allQuestions();
     }
 

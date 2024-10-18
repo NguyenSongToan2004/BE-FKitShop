@@ -7,12 +7,14 @@ import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.QuestionMapper;
 import com.group4.FKitShop.Repository.QuestionRepository;
 import com.group4.FKitShop.Request.QuestionRequest;
+import com.group4.FKitShop.Response.QuestionResponse;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,9 +25,23 @@ public class QuestionService {
 
     QuestionRepository questionRepository;
     QuestionMapper questionMapper;
+    AccountsService accountsService;
+    LabService labService;
 
-    public List<Question> allQuestions(){
-        return questionRepository.findAll();
+    public List<QuestionResponse> allQuestions(){
+        List<QuestionResponse> responses = new ArrayList<>();
+        List<Question> questions = questionRepository.findAll();
+        for (Question question : questions) {
+            QuestionResponse questionResponse = questionMapper.toQuestionResponse(question);
+            String customerName = (accountsService.getAccountByID(question.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            String labName = labService.getLab(question.getLabID()).getName();
+            questionResponse.setCustomerName(customerName);
+            questionResponse.setLabName(labName);
+            responses.add(questionResponse);
+        }
+
+        return responses;
     }
 
     public Question getQuestionByID(int id){
@@ -34,22 +50,26 @@ public class QuestionService {
         return question;
     }
 
-    public Question createQuestion(QuestionRequest request) {
+    public QuestionResponse createQuestion(QuestionRequest request) {
+        QuestionResponse questionResponse = new QuestionResponse();
         Question question = questionMapper.toQuestion(request);
         question.setStatus(0);
         question.setPostDate(new Date());
-        return questionRepository.save(question);
+        questionRepository.save(question);
+        questionResponse = questionMapper.toQuestionResponse(question);
+        String customerName = (accountsService.getAccountByID(question.getAccountID())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+        String labName = labService.getLab(question.getLabID()).getName();
+        questionResponse.setCustomerName(customerName);
+        questionResponse.setLabName(labName);
+        return questionResponse;
     }
 
-    public Question updateQuestion(int id, QuestionRequest request){
+    public QuestionResponse updateQuestion(int id, QuestionRequest request){
+        QuestionResponse questionResponse = new QuestionResponse();
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOTFOUND));
         Question ques = questionMapper.toQuestion(request);
-//        question.setAccountID(request.getAccountID());
-//        question.setLabID(request.getLabID());
-//        question.setDescription(request.getDescription());
-//        question.setResponse(request.getResponse());
-        //question.setStatus(request.getStatus());
         ques.setAccountID(question.getAccountID());
         ques.setPostDate(question.getPostDate());
         ques.setQuestionID(id);
@@ -60,7 +80,14 @@ public class QuestionService {
             ques.setStatus(0);
             ques.setResponseDate(null);
         }
-        return questionRepository.save(ques);
+        questionRepository.save(ques);
+        questionResponse = questionMapper.toQuestionResponse(question);
+        String customerName = (accountsService.getAccountByID(question.getAccountID())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+        String labName = labService.getLab(question.getLabID()).getName();
+        questionResponse.setCustomerName(customerName);
+        questionResponse.setLabName(labName);
+        return questionResponse;
     }
 
     @Transactional
@@ -70,12 +97,49 @@ public class QuestionService {
         questionRepository.deleteById(id);
     }
 
-    public List<Question> getQuestionByAccountID(String id){
-        return questionRepository.getQuestionByAccountID(id);
+    public List<QuestionResponse> getQuestionByAccountID(String id){
+        List<QuestionResponse> responses = new ArrayList<>();
+        List<Question> questions = questionRepository.getQuestionByAccountID(id);
+        for (Question question : questions) {
+            QuestionResponse questionResponse = questionMapper.toQuestionResponse(question);
+            String customerName = (accountsService.getAccountByID(question.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            String labName = labService.getLab(question.getLabID()).getName();
+            questionResponse.setCustomerName(customerName);
+            questionResponse.setLabName(labName);
+            responses.add(questionResponse);
+        }
+        return responses;
     }
 
-    public List<Question> getQuestionByLabID(String id){
-        return questionRepository.getQuestionByLabID(id);
+    public List<QuestionResponse> getQuestionByLabID(String id){
+        List<QuestionResponse> responses = new ArrayList<>();
+        List<Question> questions = questionRepository.getQuestionByLabID(id);
+        for (Question question : questions) {
+            QuestionResponse questionResponse = questionMapper.toQuestionResponse(question);
+            String customerName = (accountsService.getAccountByID(question.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            String labName = labService.getLab(question.getLabID()).getName();
+            questionResponse.setCustomerName(customerName);
+            questionResponse.setLabName(labName);
+            responses.add(questionResponse);
+        }
+        return responses;
+    }
+
+    public List<QuestionResponse> getQuestionByAccountAndLab(String account, String lab){
+        List<QuestionResponse> responses = new ArrayList<>();
+        List<Question> questions = questionRepository.getQuesByAccountAndLab(account, lab);
+        for (Question question : questions) {
+            QuestionResponse questionResponse = questionMapper.toQuestionResponse(question);
+            String customerName = (accountsService.getAccountByID(question.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            String labName = labService.getLab(question.getLabID()).getName();
+            questionResponse.setCustomerName(customerName);
+            questionResponse.setLabName(labName);
+            responses.add(questionResponse);
+        }
+        return responses;
     }
 
 }

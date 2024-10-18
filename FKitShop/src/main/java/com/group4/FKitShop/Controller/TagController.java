@@ -4,6 +4,7 @@ package com.group4.FKitShop.Controller;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Entity.Tag;
 import com.group4.FKitShop.Request.TagRequest;
+import com.group4.FKitShop.Response.TagResponse;
 import com.group4.FKitShop.Service.TagService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -25,7 +26,7 @@ public class TagController {
 
     // get all tag
     @GetMapping()
-    public List<Tag> allTag(){
+    public List<TagResponse> allTag(){
         return tagService.allTag();
     }
 

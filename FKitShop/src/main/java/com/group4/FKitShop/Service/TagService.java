@@ -1,19 +1,21 @@
 package com.group4.FKitShop.Service;
 
 
+import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Entity.Tag;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.TagRepository;
 import com.group4.FKitShop.Mapper.TagMapper;
 import com.group4.FKitShop.Request.TagRequest;
-import com.group4.FKitShop.Mapper.TagMapper;
+import com.group4.FKitShop.Response.TagResponse;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,46 +25,97 @@ public class TagService {
 
     TagRepository tagRepository;
     TagMapper tagMapper;
+    CategoryService categoryService;
 
-    public List<Tag> allTag(){
-        return tagRepository.findAll();
+    public List<TagResponse> allTag(){
+        List<Tag> tags = tagRepository.findAll();
+        List<TagResponse> tagResponses = new ArrayList<>();
+        for (Tag tag : tags) {
+            TagResponse tagResponse = new TagResponse();
+            List<Category> cates = categoryService.getCategoryByTag(tag.getTagID());
+            tagResponse.setTag(tag);
+            tagResponse.setCates(cates);
+            tagResponses.add(tagResponse);
+        }
+        return tagResponses;
     }
 
-    public Tag getTagByID(int id){
+    public TagResponse getTagByID(int id){
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.TAG_NOTFOUND));
-        return tag;
+        List<Category> cates = categoryService.getCategoryByTag(tag.getTagID());
+        TagResponse tagResponse = new TagResponse();
+        tagResponse.setTag(tag);
+        tagResponse.setCates(cates);
+        return tagResponse;
     }
 
-    public List<Tag> getTagByName(String name){
-        return tagRepository.getTagByName("%"+name+"%");
+    public List<TagResponse> getTagByName(String name){
+        List<Tag> tags = tagRepository.getTagByName("%"+name+"%");
+        List<TagResponse> tagResponses = new ArrayList<>();
+        for (Tag tag : tags) {
+            TagResponse tagResponse = new TagResponse();
+            List<Category> cates = categoryService.getCategoryByTag(tag.getTagID());
+            tagResponse.setTag(tag);
+            tagResponse.setCates(cates);
+            tagResponses.add(tagResponse);
+        }
+        return tagResponses;
     }
 
     // get tag by blogID
-    public List<Tag> getTagByBlog(String id){
-        return tagRepository.getTagList(id);
+    public List<TagResponse> getTagByBlog(String id){
+        List<Tag> tags = tagRepository.getTagList(id);
+        List<TagResponse> tagResponses = new ArrayList<>();
+        for (Tag tag : tags) {
+            TagResponse tagResponse = new TagResponse();
+            List<Category> cates = categoryService.getCategoryByTag(tag.getTagID());
+            tagResponse.setTag(tag);
+            tagResponse.setCates(cates);
+            tagResponses.add(tagResponse);
+        }
+        return tagResponses;
     }
 
     //get tag active
-    public List<Tag> getTagActive(){
-        return tagRepository.getTagActive();
+    public List<TagResponse> getTagActive(){
+        List<Tag> tags = tagRepository.getTagActive();
+        List<TagResponse> tagResponses = new ArrayList<>();
+        for (Tag tag : tags) {
+            TagResponse tagResponse = new TagResponse();
+            List<Category> cates = categoryService.getCategoryByTag(tag.getTagID());
+            tagResponse.setTag(tag);
+            tagResponse.setCates(cates);
+            tagResponses.add(tagResponse);
+        }
+        return tagResponses;
     }
 
-    public Tag createTag(TagRequest request) {
+    public TagResponse createTag(TagRequest request) {
         if (tagRepository.existsByTagName(request.getTagName()))
             throw new AppException(ErrorCode.TAG_NAME_DUPLICATED);
         Tag tag = tagMapper.toTag(request);
         tag.setStatus(1);
-        return tagRepository.save(tag);
+        tagRepository.save(tag);
+        List<Category> cates = categoryService.getCategoryByTag(tag.getTagID());
+        TagResponse tagResponse = new TagResponse();
+        tagResponse.setTag(tag);
+        tagResponse.setCates(cates);
+        return tagResponse;
     }
 
-    public Tag updateTag(int id, TagRequest request){
+    public TagResponse updateTag(int id, TagRequest request){
         Tag tag = tagRepository.findById(id)
                 .orElseThrow( () -> new AppException(ErrorCode.TAG_NOTFOUND));
         tag.setTagName(request.getTagName());
         tag.setDescription(request.getDescription());
         tag.setStatus(request.getStatus());
-        return tagRepository.save(tag);
+        tagRepository.save(tag);
+        List<Category> cates = categoryService.getCategoryByTag(tag.getTagID());
+        TagResponse tagResponse = new TagResponse();
+        tagResponse.setTag(tag);
+        tagResponse.setCates(cates);
+        return tagResponse;
     }
 
     @Transactional
