@@ -165,7 +165,10 @@ public enum ErrorCode {
 
     // Payment Errors
     PAYMENT_FAIL(1048, "Payment failed!!"),
-    PAYMENT_INVALID_SIGN(1049, "Invalid payment sign!!");
+    PAYMENT_INVALID_SIGN(1049, "Invalid payment sign!!"),
+
+    // Lab Guide
+    LAB_GUIDE_NOT_FOUND (1050, "Lab guide not found !!");
 
     private int code;
     private String message;

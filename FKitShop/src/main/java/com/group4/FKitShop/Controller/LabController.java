@@ -4,8 +4,11 @@ import com.group4.FKitShop.Entity.Lab;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Request.CreateFilePDFRequest;
 import com.group4.FKitShop.Request.DownloadLabRequest;
 import com.group4.FKitShop.Request.LabRequest;
+import com.group4.FKitShop.Response.CKEditorResponse;
+import com.group4.FKitShop.Service.AmazonClient;
 import com.group4.FKitShop.Service.LabService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -25,6 +28,8 @@ import java.util.List;
 public class LabController {
     @Autowired
     private LabService labService;
+    @Autowired
+    private AmazonClient amazonClient;
 //    String productID;
 //    String name;
 //    String description;
@@ -40,6 +45,15 @@ public class LabController {
         LabRequest request = new LabRequest(productID, name, description, level);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(1000, "Create Successfully !!", labService.addLabRequest(request, file))
+        );
+    }
+
+    @PostMapping("/pdf/create/{labID}")
+    ResponseEntity<ResponseObject> createFilePDF(@PathVariable("labID") String labID,
+                                                 @RequestBody CreateFilePDFRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(1000, "Create Successfully !!",
+                        labService.createFilePDF(labID, request))
         );
     }
 
@@ -134,6 +148,13 @@ public class LabController {
     ResponseEntity<ResponseObject> getLabByProductID(@PathVariable String productID) {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get lab successfully !!", labService.getLabByProductID(productID))
+        );
+    }
+
+    @PostMapping("/upload-img")
+    ResponseEntity<CKEditorResponse> uploadImg(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            new CKEditorResponse(true, amazonClient.uploadFile(file, "Lab-img"))
         );
     }
 }

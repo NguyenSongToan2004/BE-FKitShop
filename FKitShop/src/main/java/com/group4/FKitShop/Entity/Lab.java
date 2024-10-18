@@ -1,5 +1,6 @@
 package com.group4.FKitShop.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.constraints.NotNull;
@@ -8,9 +9,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -44,4 +43,7 @@ public class Lab {
 
     @OneToMany (mappedBy = "lab")
     Set<Supporting> supportings = new HashSet<>();
+
+    @OneToMany(mappedBy = "lab")
+    List<LabGuide> labGuides = new ArrayList<>();
 }

@@ -31,7 +31,7 @@ public class ProductController {
     CategoryService categoryService;
 
     // create product & cateProduct relation tuong ung
-    @PostMapping("/")
+    @PostMapping("/add")
     public ResponseObject addProduct(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
@@ -191,6 +191,13 @@ public class ProductController {
     ResponseEntity<ResponseObject> addImages(@RequestParam("images") MultipartFile[] images, @PathVariable("productID") String productID) {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Upload images successully !!", service.addImages(images, productID))
+        );
+    }
+
+    @GetMapping("/by-category/{cateID}")
+    ResponseEntity<ResponseObject> getProductByCategory(@PathVariable String cateID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", service.getProductByCategory(cateID))
         );
     }
 

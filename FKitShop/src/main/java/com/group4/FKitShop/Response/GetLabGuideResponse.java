@@ -1,15 +1,18 @@
-package com.group4.FKitShop.Request;
+package com.group4.FKitShop.Response;
 
+import com.group4.FKitShop.Entity.LabGuide;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LabGuideRequest {
+@Builder
+public class GetLabGuideResponse {
     String labID;
-    String description;
-    String content;
+    List<LabGuide> labGuides;
 }

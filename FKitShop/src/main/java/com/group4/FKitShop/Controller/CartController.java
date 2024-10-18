@@ -48,7 +48,7 @@ public class CartController {
                 .build();
     }
 
-    @PutMapping("/")
+    @PutMapping()
     public ResponseObject updateCart(@RequestBody @Valid CartRequest request) {
         String accountID = request.getAccountID();
         String productID = request.getProductID();

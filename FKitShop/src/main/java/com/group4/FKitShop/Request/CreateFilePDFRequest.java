@@ -8,8 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LabGuideRequest {
-    String labID;
-    String description;
-    String content;
+public class CreateFilePDFRequest {
+    String labGuideIDs;
 }
