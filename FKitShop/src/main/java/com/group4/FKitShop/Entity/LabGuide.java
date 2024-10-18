@@ -1,13 +1,14 @@
 package com.group4.FKitShop.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,11 +21,15 @@ public class LabGuide {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int labGuideID;
     @NotNull
-    @Length(max = 30, message = "LabID length is not more than 30 characters")
-    String labID;
     @NotNull
-    String stepDescription;
+    String description;
     @NotNull
-    int stepNumber;
-    String stepImage;
+    int step;
+    @NotNull
+    String content;
+    @ManyToOne
+    @JoinColumn(name = "labID")
+    @JsonBackReference
+    Lab lab;
+
 }

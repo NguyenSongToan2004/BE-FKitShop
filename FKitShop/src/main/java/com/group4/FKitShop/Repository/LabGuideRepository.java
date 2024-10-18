@@ -13,22 +13,22 @@ import java.util.Optional;
 public interface LabGuideRepository extends JpaRepository<LabGuide, Integer> {
 
     // Lấy ra step number hiện tại
-    @Query(value = "select stepNumber\n" +
+    @Query(value = "select step\n" +
             "from LabGuide\n" +
             "where labID = :id\n" +
-            "order by stepNumber desc\n" +
+            "order by step desc\n" +
             "limit 1", nativeQuery = true)
     Optional<Integer> getStepNumber(String id);
 
     // Lấy những lab guide thuộc 1 LabID cụ thể
-    List<LabGuide> findByLabID(String id);
+    // List<LabGuide> findByLabID(String id);
 
 
     // Lấy những lab guild có stepNumber lớn hơn để xóa
     @Query(value = "select * \n" +
             "from LabGuide\n" +
-            "where labID = :labID and stepNumber > :stepDelete\n" +
-            "order by stepNumber desc", nativeQuery = true)
+            "where labID = :labID and step > :stepDelete\n" +
+            "order by step desc", nativeQuery = true)
     List<LabGuide> findByLabID(@Param("labID") String id, @Param("stepDelete") int step);
 
 }

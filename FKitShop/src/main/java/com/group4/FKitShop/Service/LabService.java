@@ -5,11 +5,14 @@ import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.LabMapper;
 import com.group4.FKitShop.Repository.*;
+import com.group4.FKitShop.Request.CreateFilePDFRequest;
 import com.group4.FKitShop.Request.DownloadLabRequest;
 import com.group4.FKitShop.Request.LabRequest;
 import com.group4.FKitShop.Request.OrderLab;
 import com.group4.FKitShop.Response.GetLabByAccountIDResponse;
 import com.group4.FKitShop.Response.GetLabResponse;
+import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.svg.renderers.impl.ISvgTextNodeRenderer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +23,9 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.Document;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -36,6 +41,7 @@ public class LabService {
     OrdersRepository ordersRepository;
     OrderDetailsRepository orderDetailsRepository;
     ProductRepository productRepository;
+    LabGuideRepository labGuideRepository;
 
     public Lab addLabRequest(LabRequest request, MultipartFile file) {
         if(labRepository.existsByName(request.getName()))
@@ -171,6 +177,26 @@ public class LabService {
                 .build();
     }
 
+    public Lab createFilePDF(String labID, CreateFilePDFRequest request) {
+        Lab lab = labRepository.findById(labID).orElseThrow(
+                () -> new AppException(ErrorCode.LAB_NOTFOUND)
+        );
+        String[] token = request.getLabGuideIDs().split(",");
+        System.out.println(token.length);
+        String htmlScript = "<h2><strong>Lab name</strong> : " + lab.getName()+"</h2>"+
+                "<h4><strong>Description</strong> : "+lab.getDescription()+"</h4>"+
+                "<h4><strong>Level</strong> : "+lab.getLevel()+"</h4>";
+        for (String g : token) {
+            int guideID = Integer.parseInt(g);
+            LabGuide labGuide = labGuideRepository.findById(guideID).orElseThrow(
+                    () -> new AppException(ErrorCode.LAB_GUIDE_NOT_FOUND)
+            );
+            htmlScript += labGuide.getContent();
+        }
+        lab.setFileNamePDF(generatePdfFromHtml(htmlScript, lab.getName()));
+        return labRepository.save(lab);
+    }
+
     private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
         Orders orders = ordersRepository.findById(orderID).orElseThrow(
                 () ->  new AppException(ErrorCode.ORDERS_NOTFOUND)
@@ -223,6 +249,18 @@ public class LabService {
             e.printStackTrace();
             throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
         }
+    }
+
+    private String generatePdfFromHtml(String htmlContent, String name) {
+        String fileNamePDF = name + ".pdf";
+        try {
+            // Chuyển đổi HTML thành PDF
+            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY+File.separator+fileNamePDF)));
+            System.out.println("PDF đã được tạo thành công tại: " + STORAGE_DIRECTORY + File.separator + fileNamePDF);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return fileNamePDF;
     }
 
     String generateID(){

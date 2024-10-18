@@ -11,57 +11,98 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/labguide")
+@RequestMapping("/lab-guide")
 @CrossOrigin(origins = "http://localhost:5173")
 public class LabGuideController {
 
     @Autowired
     private LabGuideService service;
 
-    @PostMapping("/")
-    ResponseEntity<ResponseObject> addLabGuide(
-            @RequestParam("labID") String labID,
-            @RequestParam("stepDescription") String stepDescription,
-            @RequestParam("image") MultipartFile image
-    ) {
-        LabGuideRequest request = new LabGuideRequest(labID, stepDescription);
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                new ResponseObject(1000, "Create new lab guide successfully !!", service.addLabGuide(request, image))
+//    @PostMapping("/")
+//    ResponseEntity<ResponseObject> addLabGuide(
+//            @RequestParam("labID") String labID,
+//            @RequestParam("stepDescription") String stepDescription,
+//            @RequestParam("image") MultipartFile image
+//    ) {
+//        LabGuideRequest request = new LabGuideRequest(labID, stepDescription);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(
+//                new ResponseObject(1000, "Create new lab guide successfully !!", service.addLabGuide(request, image))
+//        );
+//    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ResponseObject> createLabGuide(@RequestBody LabGuideRequest labGuideRequest) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Create lab guide successfully !!", service.addLabGuide(labGuideRequest))
         );
     }
 
-    @GetMapping("/get/{id}")
-    ResponseEntity<ResponseObject> getOneLabGuide(@PathVariable int id) {
+    @GetMapping("/guide/{guideID}")
+    public ResponseEntity<ResponseObject> getGuideByID(@PathVariable int guideID) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Found Successfully !!", service.getLabGuide(id))
+                new ResponseObject(1000, "Get a lab guide by labGuideID successfully !!", service.getGuideByID(guideID))
         );
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<ResponseObject> getLabGuides(@PathVariable String id) {
+    @GetMapping("/guide-by-labID/{labID}")
+    public ResponseEntity<ResponseObject> getLabGuidesByLabID(@PathVariable String labID ) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Found Successfully !!", service.getLabGuides(id))
+                new ResponseObject(1000, "Get lab guides by labID successfully !!", service.getLabGuidesByLabID(labID))
         );
     }
 
-    @DeleteMapping("{id}")
-    ResponseEntity<ResponseObject> deleteLabGuide(@PathVariable int id) {
+    @GetMapping("/all")
+    public ResponseEntity<ResponseObject> getAll() {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Delete Successfully !!", service.deleteLabGuide(id))
+                new ResponseObject(1000, "Get all lab guides successfully !!", service.getAll())
         );
     }
 
-    @PutMapping("/{id}")
-    ResponseEntity<ResponseObject> updateLabGuide(
-            @PathVariable int id,
-            @RequestParam("labID") String labID,
-            @RequestParam("stepDescription") String stepDescription,
-            @RequestParam("stepNumber") int stepNumber,
-            @RequestParam("image") MultipartFile image
-    ) {
-        LabGuideUpdateRequest request = new LabGuideUpdateRequest(labID, stepDescription, stepNumber);
+    @PutMapping("/info/{guideID}")
+    public ResponseEntity<ResponseObject> updateInfoLabGuide(@PathVariable int guideID, @RequestBody LabGuideRequest request) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Update Lab Guide Successfully !!", service.updateLabGuide(request, image, id))
+                new ResponseObject(1000, "Update a lab guide successfully !!", service.updateInfoLabGuide(guideID, request))
         );
     }
+
+    @DeleteMapping("/{guideID}")
+    public ResponseEntity<ResponseObject> deleteLabGuide(@PathVariable int guideID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Delete a lab guide successfully !!", service.deleteLabGuide(guideID))
+        );
+    }
+//    @GetMapping("/get/{id}")
+//    ResponseEntity<ResponseObject> getOneLabGuide(@PathVariable int id) {
+//        return ResponseEntity.ok(
+//                new ResponseObject(1000, "Found Successfully !!", service.getLabGuide(id))
+//        );
+//    }
+//
+//    @GetMapping("/{id}")
+//    ResponseEntity<ResponseObject> getLabGuides(@PathVariable String id) {
+//        return ResponseEntity.ok(
+//                new ResponseObject(1000, "Found Successfully !!", service.getLabGuides(id))
+//        );
+//    }
+//
+//    @DeleteMapping("{id}")
+//    ResponseEntity<ResponseObject> deleteLabGuide(@PathVariable int id) {
+//        return ResponseEntity.ok(
+//                new ResponseObject(1000, "Delete Successfully !!", service.deleteLabGuide(id))
+//        );
+//    }
+//
+//    @PutMapping("/{id}")
+//    ResponseEntity<ResponseObject> updateLabGuide(
+//            @PathVariable int id,
+//            @RequestParam("labID") String labID,
+//            @RequestParam("stepDescription") String stepDescription,
+//            @RequestParam("stepNumber") int stepNumber,
+//            @RequestParam("image") MultipartFile image
+//    ) {
+//        LabGuideUpdateRequest request = new LabGuideUpdateRequest(labID, stepDescription, stepNumber);
+//        return ResponseEntity.ok(
+//                new ResponseObject(1000, "Update Lab Guide Successfully !!", service.updateLabGuide(request, image, id))
+//        );
+//    }
 }

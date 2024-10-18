@@ -152,6 +152,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+
+<!--        Tạo file PDF cho bài Lab-->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>html2pdf</artifactId>
+            <version>3.0.4</version> <!-- Hoặc phiên bản mới hơn -->
+        </dependency>
     </dependencies>
 
     <build>
