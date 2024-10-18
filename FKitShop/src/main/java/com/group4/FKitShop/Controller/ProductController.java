@@ -194,5 +194,12 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/by-category/{cateID}")
+    ResponseEntity<ResponseObject> getProductByCategory(@PathVariable String cateID) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", service.getProductByCategory(cateID))
+        );
+    }
+
 
 }

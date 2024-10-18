@@ -224,6 +224,10 @@ public class ProductService {
         return repository.save(product);
     }
 
+    public List<Product> getProductByCategory(String cateID) {
+        return repository.getProductByCate(cateID);
+    }
+
     //    //private static final String UPLOAD_DIRECTORY = "FKitShop" +File.separator+ "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"uploads";
 //    @Value("${upload.directory}")
 //    private String UPLOAD_DIRECTORY;

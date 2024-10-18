@@ -19,16 +19,16 @@ public class LabGuideController {
     private LabGuideService service;
 
 //    @PostMapping("/")
-//    ResponseEntity<ResponseObject> addLabGuide(
-//            @RequestParam("labID") String labID,
-//            @RequestParam("stepDescription") String stepDescription,
-//            @RequestParam("image") MultipartFile image
-//    ) {
-//        LabGuideRequest request = new LabGuideRequest(labID, stepDescription);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(
-//                new ResponseObject(1000, "Create new lab guide successfully !!", service.addLabGuide(request, image))
-//        );
-//    }
+////    ResponseEntity<ResponseObject> addLabGuide(
+////            @RequestParam("labID") String labID,
+////            @RequestParam("stepDescription") String stepDescription,
+////            @RequestParam("image") MultipartFile image
+////    ) {
+////        LabGuideRequest request = new LabGuideRequest(labID, stepDescription);
+////        return ResponseEntity.status(HttpStatus.CREATED).body(
+////                new ResponseObject(1000, "Create new lab guide successfully !!", service.addLabGuide(request, image))
+////        );
+////    }
 
     @PostMapping("/create")
     public ResponseEntity<ResponseObject> createLabGuide(@RequestBody LabGuideRequest labGuideRequest) {

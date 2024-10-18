@@ -70,4 +70,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "    join Category c on c.categoryID = cp.categoryID\n" +
             "    where c.categoryID = :id", nativeQuery = true)
     List<Product> getProductIDList(@Param("id") String id);
+
+@Query(value = "select stem.*\n" +
+        "from StemProduct stem join CateProduct cate\n" +
+        "\t on stem.productID = cate.productID\n" +
+        "where cate.categoryID = :cateID", nativeQuery = true)
+    List<Product> getProductByCate(@Param("cateID") String cateID);
 }
