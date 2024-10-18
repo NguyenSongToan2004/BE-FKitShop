@@ -31,7 +31,7 @@ public class ProductController {
     CategoryService categoryService;
 
     // create product & cateProduct relation tuong ung
-    @PostMapping("/")
+    @PostMapping("/add")
     public ResponseObject addProduct(
             @RequestParam("name") String name,
             @RequestParam("description") String description,

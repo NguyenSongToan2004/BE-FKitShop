@@ -1,5 +1,6 @@
 package com.group4.FKitShop.Service;
 
+import com.group4.FKitShop.Entity.Category;
 import com.group4.FKitShop.Entity.Image;
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Exception.AppException;
@@ -9,6 +10,7 @@ import com.group4.FKitShop.Mapper.ProductMapper;
 import com.group4.FKitShop.Repository.ImageRepository;
 import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.ProductRequest;
+import com.group4.FKitShop.Response.GetProductResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +35,8 @@ public class ProductService {
     private AmazonClient amazonClient;
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private CategoryService categoryService;
 
     public Product addProduct(ProductRequest request, MultipartFile[] images) {
         if (repository.existsByName(request.getName()))
@@ -57,10 +61,30 @@ public class ProductService {
         return repository.save(product);
     }
 
-    public Product getProduct(String id) {
-        return repository.findById(id).orElseThrow(
+    public GetProductResponse getProduct(String id) {
+        Product product = repository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
+        List<Category> categories = categoryService.getCategoryList(id);
+        GetProductResponse response = GetProductResponse.builder()
+                .productID(product.getProductID())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .images(product.getImages())
+                .type(product.getType())
+                .material(product.getMaterial())
+                .discount(product.getDiscount())
+                .publisher(product.getPublisher())
+                .weight(product.getWeight())
+                .dimension(product.getDimension())
+                .quantity(product.getQuantity())
+                .unitOnOrder(product.getUnitOnOrder())
+                .createDate(product.getCreateDate())
+                .status(product.getStatus())
+                .categories(categories)
+                .build();
+        return response;
     }
 
     public Product updateProduct(String id, ProductRequest request) {

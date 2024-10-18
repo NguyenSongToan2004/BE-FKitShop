@@ -2,6 +2,7 @@ package com.group4.FKitShop.Mapper;
 
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Request.ProductRequest;
+import com.group4.FKitShop.Response.GetProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
@@ -13,4 +14,5 @@ public interface ProductMapper {
 
     void toProduct(ProductRequest request, @MappingTarget Product product);
 
+    void toProduct(Product request, @MappingTarget GetProductResponse product);
 }

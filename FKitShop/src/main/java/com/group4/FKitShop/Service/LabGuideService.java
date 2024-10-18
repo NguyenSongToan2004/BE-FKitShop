@@ -7,6 +7,7 @@ import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.LabGuideRepository;
 import com.group4.FKitShop.Repository.LabRepository;
 import com.group4.FKitShop.Request.LabGuideRequest;
+import com.group4.FKitShop.Response.GetLabGuideResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,11 +88,15 @@ public class LabGuideService {
 //        return repository.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND"));
 //    }
 
-    public List<LabGuide> getLabGuidesByLabID(String labID) {
+    public GetLabGuideResponse getLabGuidesByLabID(String labID) {
         Lab lab = labRepository.findById(labID).orElseThrow(
                 () -> new AppException(ErrorCode.LAB_NOTFOUND)
         );
-        return lab.getLabGuides();
+        GetLabGuideResponse response = GetLabGuideResponse.builder()
+                .labID(lab.getLabID())
+                .labGuides(lab.getLabGuides())
+                .build();
+        return response;
     }
 
     public List<LabGuide> getAll() {

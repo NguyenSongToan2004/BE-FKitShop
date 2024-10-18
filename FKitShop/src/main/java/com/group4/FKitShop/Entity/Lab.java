@@ -1,5 +1,6 @@
 package com.group4.FKitShop.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.constraints.NotNull;
