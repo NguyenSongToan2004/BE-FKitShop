@@ -32,4 +32,6 @@ public class LabGuide {
     @JsonBackReference
     Lab lab;
 
+    int isUsed; // 0 : is not used ; 1 : is used
+
 }

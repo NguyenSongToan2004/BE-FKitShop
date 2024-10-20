@@ -183,17 +183,22 @@ public class LabService {
         );
         String[] token = request.getLabGuideIDs().split(",");
         System.out.println(token.length);
-        String htmlScript = "<h2><strong>Lab name</strong> : " + lab.getName()+"</h2>"+
-                "<h4><strong>Description</strong> : "+lab.getDescription()+"</h4>"+
-                "<h4><strong>Level</strong> : "+lab.getLevel()+"</h4>";
+        StringBuilder htmlScript = new StringBuilder("<h2><strong>Lab name</strong> : " + lab.getName() + "</h2>" +
+                "<h4><strong>Description</strong> : " + lab.getDescription() + "</h4>" +
+                "<h4><strong>Level</strong> : " + lab.getLevel() + "</h4>");
+        List<Integer> labGuideIDs = new ArrayList<>();
         for (String g : token) {
             int guideID = Integer.parseInt(g);
+            labGuideIDs.add(guideID);
+            System.out.println("Lab guide ID : " + guideID);
             LabGuide labGuide = labGuideRepository.findById(guideID).orElseThrow(
                     () -> new AppException(ErrorCode.LAB_GUIDE_NOT_FOUND)
             );
-            htmlScript += labGuide.getContent();
+            labGuide.setIsUsed(1);
+            htmlScript.append(labGuide.getContent());
         }
-        lab.setFileNamePDF(generatePdfFromHtml(htmlScript, lab.getName()));
+        labGuideRepository.updateLabGuide(labID, labGuideIDs);
+        lab.setFileNamePDF(generatePdfFromHtml(htmlScript.toString(), lab.getName()));
         return labRepository.save(lab);
     }
 

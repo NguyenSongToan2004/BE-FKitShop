@@ -1,7 +1,9 @@
 package com.group4.FKitShop.Repository;
 
 import com.group4.FKitShop.Entity.LabGuide;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -30,5 +32,12 @@ public interface LabGuideRepository extends JpaRepository<LabGuide, Integer> {
             "where labID = :labID and step > :stepDelete\n" +
             "order by step desc", nativeQuery = true)
     List<LabGuide> findByLabID(@Param("labID") String id, @Param("stepDelete") int step);
+
+    @Modifying
+    @Transactional
+    @Query (value = "update LabGuide\n" +
+            "set isUsed = 0\n" +
+            "where labID = :labID and labGuideID not in (:labGuideIDs)", nativeQuery = true)
+    void updateLabGuide(@Param("labID") String labID, @Param("labGuideIDs") List<Integer> labGuideIDs);
 
 }

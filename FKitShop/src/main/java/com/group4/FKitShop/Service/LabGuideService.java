@@ -44,7 +44,7 @@ public class LabGuideService {
           guide.setDescription(request.getDescription());
           guide.setStep(repository.getStepNumber(request.getLabID()).orElseGet(() -> 0) + 1);
           guide.setContent(request.getContent());
-
+          guide.setIsUsed(0);
           return repository.save(guide);
     }
     public LabGuide getGuideByID(int guideID) {
