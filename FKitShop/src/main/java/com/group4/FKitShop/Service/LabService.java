@@ -43,32 +43,21 @@ public class LabService {
     ProductRepository productRepository;
     LabGuideRepository labGuideRepository;
 
-//    public Lab addLabRequest(LabRequest request, MultipartFile file) {
-//        if(labRepository.existsByName(request.getName()))
-//            throw new AppException(ErrorCode.LAB_NAMEDUPLICATED);
-//        if(labRepository.findByFileNamePDF(file.getOriginalFilename()) != null)
-//            throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
-//        Lab lab = LabMapper.INSTANCE.toLab(request);
-//        lab.setLabID(generateID());
-//        // create current Date
-//        lab.setCreateDate(new Date());
-//        lab.setFileNamePDF(saveLabPDF(file));
-//        return labRepository.save(lab);
-//    }
-        public Lab addLabRequest(LabRequest request, MultipartFile file) {
-            if(labRepository.existsByName(request.getName()))
-                throw new AppException(ErrorCode.LAB_NAMEDUPLICATED);
-            if(file != null){
-                if(labRepository.findByFileNamePDF(file.getOriginalFilename()) != null)
-                    throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
-            }
-            Lab lab = LabMapper.INSTANCE.toLab(request);
-            lab.setLabID(generateID());
-            // create current Date
-            lab.setCreateDate(new Date());
-            lab.setFileNamePDF(file != null ? saveLabPDF(file) : null);
-            return labRepository.save(lab);
+    public Lab addLabRequest(LabRequest request, MultipartFile file) {
+        if (labRepository.existsByName(request.getName()))
+            throw new AppException(ErrorCode.LAB_NAMEDUPLICATED);
+        if (file != null) {
+            if (labRepository.findByFileNamePDF(file.getOriginalFilename()) != null)
+                throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
         }
+        Lab lab = LabMapper.INSTANCE.toLab(request);
+        lab.setLabID(generateID());
+        // create current Date
+        lab.setCreateDate(new Date());
+        lab.setStatus(1);
+        lab.setFileNamePDF(file != null ? saveLabPDF(file) : null);
+        return labRepository.save(lab);
+    }
 
     public Lab getLab(String id) {
         return labRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LAB_NOTFOUND));
@@ -79,21 +68,26 @@ public class LabService {
             throw new AppException(ErrorCode.LAB_NOTFOUND);
         }
         Lab lab = labRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LAB_NOTFOUND));
-        LabMapper.INSTANCE.updateLab(request,lab);
+        LabMapper.INSTANCE.updateLab(request, lab);
         String fileNamePDF = file != null ? saveLabPDF(file) : null;
-        if (fileNamePDF != null){
+        if (fileNamePDF != null) {
             lab.setFileNamePDF(fileNamePDF);
         }
         return labRepository.save(lab);
     }
 
-    public String deleteLab(String id) {
+    public Lab deleteLab(String id) {
         Lab lab = labRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LAB_NOTFOUND));
-        return "";
+        lab.setStatus(0);
+        return labRepository.save(lab);
     }
 
     public List<Lab> getAllLab() {
         return labRepository.findAll();
+    }
+
+    public List<Lab> getLabByStatus(int status) {
+        return labRepository.findByStatus(status);
     }
 
     public List<Lab> getLabByProductID(String productID) {
@@ -110,11 +104,11 @@ public class LabService {
 
         var targetFile = new File(System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileToSave.getOriginalFilename());
         // bảo mật tránh hacker lỏ vào file cha
-        if (!Objects.equals(targetFile.getParentFile().toString(), System.getProperty("user.dir")+ File.separator + STORAGE_DIRECTORY))
+        if (!Objects.equals(targetFile.getParentFile().toString(), System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
             throw new AppException(ErrorCode.LAB_UNSUPPORTED_FILENAME);
         try {
             Files.copy(fileToSave.getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new AppException(ErrorCode.LAB_UPLOAD_FAILED);
         }
@@ -127,7 +121,7 @@ public class LabService {
         if (fileToSave.isEmpty()) {
             return null;
         }
-        if(labRepository.findByFileNamePDF(fileToSave.getOriginalFilename()) != null)
+        if (labRepository.findByFileNamePDF(fileToSave.getOriginalFilename()) != null)
             throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
 
         Lab lab = labRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LAB_NOTFOUND));
@@ -136,11 +130,11 @@ public class LabService {
         System.out.println(targetFile.getParentFile());
 
         // bảo mật tránh hacker lỏ vào file cha
-        if (!Objects.equals(targetFile.getParentFile().toString(),System.getProperty("user.dir")+ File.separator + STORAGE_DIRECTORY))
+        if (!Objects.equals(targetFile.getParentFile().toString(), System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
             throw new AppException(ErrorCode.LAB_UNSUPPORTED_FILENAME);
         try {
             Files.copy(fileToSave.getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new AppException(ErrorCode.LAB_UPLOAD_FAILED);
         }
@@ -150,26 +144,26 @@ public class LabService {
         return fileToSave.getOriginalFilename();
     }
 
-    public File downloadFilePDF(DownloadLabRequest request){
+    public File downloadFilePDF(DownloadLabRequest request) {
         var fileToDownload = new File(System.getProperty("user.dir") + File.separator +
                 STORAGE_DIRECTORY + File.separator + request.getFileName());
-        if(request.getFileName().isEmpty())
+        if (request.getFileName().isEmpty())
             throw new NullPointerException("File Named Null!!");
 
-        if(!fileToDownload.exists())
+        if (!fileToDownload.exists())
             throw new NullPointerException("File Does Not Exist!!");
-        if(!Objects.equals(fileToDownload.getParentFile().toString(),System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
+        if (!Objects.equals(fileToDownload.getParentFile().toString(), System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
             throw new SecurityException("Unsupported Filename !!");
         return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductID());
     }
 
-    public GetLabByAccountIDResponse getLabByAccountID(String accountID){
+    public GetLabByAccountIDResponse getLabByAccountID(String accountID) {
         Accounts accounts = accountsRepository.findById(accountID).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
         Set<OrderLab> setOrderLab = new HashSet<>();
         List<Orders> ordersList = ordersRepository.findOrdersByAccountID(accountID);
-        for(Orders orders : ordersList){
+        for (Orders orders : ordersList) {
             List<OrderDetails> orderDetailsList = orderDetailsRepository.findActiveOrderDetails(orders.getOrdersID(), 1);
             for (OrderDetails orderDetails : orderDetailsList) {
                 List<Lab> listLabTmp = labRepository.findByProductID(orderDetails.getProductID());
@@ -218,7 +212,7 @@ public class LabService {
 
     private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
         Orders orders = ordersRepository.findById(orderID).orElseThrow(
-                () ->  new AppException(ErrorCode.ORDERS_NOTFOUND)
+                () -> new AppException(ErrorCode.ORDERS_NOTFOUND)
         );
         Accounts accounts = accountsRepository.findById(orders.getAccountID()).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
@@ -247,11 +241,11 @@ public class LabService {
             contentStream.newLineAtOffset(50, 750);  // Tọa độ y cao để ghi ở đầu trang
             // Nội dung văn bản cần thêm vào
             contentStream.setLeading(20);
-            contentStream.showText("OrderID: "+orders.getOrdersID()+"                    ShipDate: " + orders.getShipDate());
+            contentStream.showText("OrderID: " + orders.getOrdersID() + "                    ShipDate: " + orders.getShipDate());
             contentStream.newLine();
-            contentStream.showText("Customer Name: "+accounts.getFullName());
+            contentStream.showText("Customer Name: " + accounts.getFullName());
             contentStream.newLine();
-            contentStream.showText("Kit STEM: "+product.getName()+"                      Lab Name: " + lab.getName() );
+            contentStream.showText("Kit STEM: " + product.getName() + "                      Lab Name: " + lab.getName());
             contentStream.newLine();
             contentStream.showText("Level : " + lab.getLevel());
             contentStream.newLine();
@@ -260,7 +254,7 @@ public class LabService {
             // Kết thúc việc ghi văn bản
             contentStream.endText();
             contentStream.close();
-            File pdfDownload =  new File("download");
+            File pdfDownload = new File("download");
             // Lưu file PDF đã cập nhật
             documentReplace.save(pdfDownload);
             return pdfDownload;
@@ -274,7 +268,7 @@ public class LabService {
         String fileNamePDF = name + ".pdf";
         try {
             // Chuyển đổi HTML thành PDF
-            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY+File.separator+fileNamePDF)));
+            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY + File.separator + fileNamePDF)));
             System.out.println("PDF đã được tạo thành công tại: " + STORAGE_DIRECTORY + File.separator + fileNamePDF);
         } catch (Exception e) {
             e.printStackTrace();
@@ -282,12 +276,12 @@ public class LabService {
         return fileNamePDF;
     }
 
-    String generateID(){
+    String generateID() {
         String num = labRepository.getNumberLab();
-        if(num == null)
-           return num = String.format("L%05d", 1);
+        if (num == null)
+            return num = String.format("L%05d", 1);
 
-        int max = Integer.parseInt(num.substring(1,6))+1;
+        int max = Integer.parseInt(num.substring(1, 6)) + 1;
         num = String.format("L%05d", max);
         return num;
     }

@@ -91,6 +91,14 @@ public class LabController {
         return ResponseEntity.ok(labService.getAllLab());
     }
 
+    @GetMapping("/status-labs/{status}")
+    ResponseEntity<ResponseObject> getActiveLabs(@PathVariable int status) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get lab by status "+ status + " successfully !!",
+                        labService.getLabByStatus(status))
+        );
+    }
+
     @PostMapping("/upload-lab/{labID}")
     ResponseEntity<ResponseObject> uploadLab(@RequestParam("file") MultipartFile file, @PathVariable("labID") String id) {
             return ResponseEntity.status(HttpStatus.OK).body(

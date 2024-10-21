@@ -39,6 +39,9 @@ public class Lab {
     @NotNull
     Date createDate;
 
+    @NotNull
+    int status;
+
     String fileNamePDF;
 
     @OneToMany (mappedBy = "lab")
