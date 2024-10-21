@@ -12,16 +12,24 @@ import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.ProductRequest;
 import com.group4.FKitShop.Response.GetProductResponse;
 import jakarta.transaction.Transactional;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class ProductService {
@@ -226,6 +234,46 @@ public class ProductService {
 
     public List<Product> getProductByCategory(String cateID) {
         return repository.getProductByCate(cateID);
+    }
+
+    public byte[] getSaleReportFile() throws IOException {
+        List<Product> allProducts = repository.getActiveProducts();
+
+        // Workbook workbook = new XSSFWorkbook();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Sales Report");
+        XSSFCellStyle rowStyle = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setColor(IndexedColors.BROWN.getIndex());
+        font.setBold(true);  // In đậm
+        rowStyle.setFont(font);
+        Row headerRow = sheet.createRow(0);
+        String[] columnHeaders = {"Product ID", "Name", "Quantity Sold", "Original Price" ,"Revenue", "Create Date"};
+        for (int i = 0; i < columnHeaders.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(columnHeaders[i]);
+            cell.setCellStyle(rowStyle);
+        }
+
+
+        // Thêm dữ liệu sản phẩm vào các dòng
+        NumberFormat format = NumberFormat.getInstance(new Locale("vi-VN"));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        int rowIdx = 1;
+        for (Product product : allProducts) {
+            Row row = sheet.createRow(rowIdx++);
+            row.createCell(0).setCellValue(product.getProductID());
+            row.createCell(1).setCellValue(product.getName());
+            row.createCell(2).setCellValue(product.getUnitOnOrder());
+            row.createCell(3).setCellValue(format.format(product.getPrice()));
+            row.createCell(4).setCellValue(format.format(product.getPrice() * product.getUnitOnOrder())); // Doanh thu = giá * số lượng bán
+            row.createCell(5).setCellValue(simpleDateFormat.format(product.getCreateDate()).toString());
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        return outputStream.toByteArray();
     }
 
     //    //private static final String UPLOAD_DIRECTORY = "FKitShop" +File.separator+ "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"uploads";

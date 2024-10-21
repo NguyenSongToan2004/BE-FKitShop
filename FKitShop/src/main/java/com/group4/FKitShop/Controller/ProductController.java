@@ -11,11 +11,15 @@ import com.group4.FKitShop.Service.CateProductService;
 import com.group4.FKitShop.Service.CategoryService;
 import com.group4.FKitShop.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 @RestController
@@ -199,6 +203,14 @@ public class ProductController {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Found successfully", service.getProductByCategory(cateID))
         );
+    }
+
+    @GetMapping("/report/sales")
+    ResponseEntity<byte[]> getSalesReport(OutputStream outputStream) throws IOException {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=sales_report.xlsx")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(service.getSaleReportFile());
     }
 
 
