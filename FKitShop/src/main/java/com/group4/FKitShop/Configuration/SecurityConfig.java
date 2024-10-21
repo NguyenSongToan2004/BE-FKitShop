@@ -1,13 +1,20 @@
 package com.group4.FKitShop.Configuration;
 
 
+import com.group4.FKitShop.Exception.AuthEntryPointJwt;
+import com.group4.FKitShop.Service.AccountsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -16,6 +23,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -45,26 +53,37 @@ public class  SecurityConfig {
     @Value("${jwt.signerKey}")
     private String signerKey;
 
+    @Autowired
+    AccountsService userDetailsService;
+
+//    @Autowired
+//    private AuthEntryPointJwt unauthorizedHandler;
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
-        // Enable CORS and disable CSRF
-        httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
-
-        httpSecurity.authorizeHttpRequests(request ->
-//                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
-//                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
-//                        .anyRequest().authenticated()
-                        request.anyRequest().permitAll()
-        );
-//        //register authentication provider supporting jwt token
-//        httpSecurity.oauth2ResourceServer(oauth2 ->
-//                //jwt decoder: decode jwt truyen vao
-//                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
-//        );
-        return httpSecurity.build();
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
     }
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+//
+//        // Enable CORS and disable CSRF
+//        httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
+//
+//        httpSecurity.authorizeHttpRequests(request ->
+////                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+////                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+////                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
+////                        .anyRequest().authenticated()
+//                        request.anyRequest().permitAll()
+//        );
+////        //register authentication provider supporting jwt token
+////        httpSecurity.oauth2ResourceServer(oauth2 ->
+////                //jwt decoder: decode jwt truyen vao
+////                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+////        );
+//        return httpSecurity.build();
+//    }
 
     //jwt decoder interface
     @Bean
@@ -74,7 +93,6 @@ public class  SecurityConfig {
                 .withSecretKey(secretKeySpec)
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
-
     }
 
     @Bean
@@ -97,37 +115,57 @@ public class  SecurityConfig {
         return new CorsFilter(url);
     }
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-//
-//        // Enable CORS and disable CSRF
-//        httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
-//
-//        httpSecurity.authorizeHttpRequests(request ->
-//                        request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
-//                                .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-//                                .requestMatchers(HttpMethod.GET,"/accounts/admin/**" ).permitAll()
-////                        .hasRole("admin")
-//                                .anyRequest().authenticated()
-////                        request.anyRequest().permitAll()
-//        );
-////        //register authentication provider supporting jwt token
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        // Enable CORS and disable CSRF
+        httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.authorizeHttpRequests(request ->
+                        request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+                                .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+                                .requestMatchers(HttpMethod.GET,"/fkshop/chart/product").hasRole("USER")
+//                        .hasRole("admin")
+                                .anyRequest().authenticated()
+//                        request.anyRequest().permitAll()
+        );
+//        //register authentication provider supporting jwt token
 //        httpSecurity.oauth2ResourceServer(oauth2 ->
 //                //jwt decoder: decode jwt truyen vao
 //                oauth2.jwt(jwtConfigurer ->
-//                        jwtConfigurer.decoder(jwtDecoder()))
+//                        jwtConfigurer.decoder(jwtDecoder())
+//                            .jwtAuthenticationConverter(jwtAuthenticationConverter())
+//                )
 //        );
-//        return httpSecurity.build();
-//    }
+
+        httpSecurity.authenticationProvider(authenticationProvider());
+
+        httpSecurity.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        
+        return httpSecurity.build();
+    }
 
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter(){
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("role");
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        System.out.println("converter : " + converter);
         return converter;
     }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
 
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+        authProvider.setUserDetailsService((UserDetailsService) userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
+    }
 
 }

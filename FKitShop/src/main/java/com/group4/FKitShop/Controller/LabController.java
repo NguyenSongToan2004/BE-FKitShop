@@ -40,7 +40,7 @@ public class LabController {
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("level") String level,
-            @RequestParam("file") MultipartFile file
+            @RequestParam(value = "file", required = false) MultipartFile file
     ) {
         LabRequest request = new LabRequest(productID, name, description, level);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -71,11 +71,11 @@ public class LabController {
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("level") String level,
-            @RequestParam("file") MultipartFile file
+            @RequestParam(value = "file", required = false) MultipartFile file
     ) {
         LabRequest request = new LabRequest(productID, name, description, level);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(1000, "Update Lab Sucessfully !!", labService.updateLab(id, request, file))
+                new ResponseObject(1000, "Update Lab Successfully !!", labService.updateLab(id, request, file))
         );
     }
 

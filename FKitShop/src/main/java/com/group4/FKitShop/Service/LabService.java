@@ -46,13 +46,15 @@ public class LabService {
     public Lab addLabRequest(LabRequest request, MultipartFile file) {
         if(labRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.LAB_NAMEDUPLICATED);
-        if(labRepository.findByFileNamePDF(file.getOriginalFilename()) != null)
-            throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
+        if(file != null){
+            if(labRepository.findByFileNamePDF(file.getOriginalFilename()) != null)
+                throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
+        }
         Lab lab = LabMapper.INSTANCE.toLab(request);
         lab.setLabID(generateID());
         // create current Date
         lab.setCreateDate(new Date());
-        lab.setFileNamePDF(saveLabPDF(file));
+        lab.setFileNamePDF(file != null ? saveLabPDF(file) : null);
         return labRepository.save(lab);
     }
 
@@ -66,7 +68,7 @@ public class LabService {
         }
         Lab lab = labRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LAB_NOTFOUND));
         LabMapper.INSTANCE.updateLab(request,lab);
-        String fileNamePDF = saveLabPDF(file);
+        String fileNamePDF = file != null ? saveLabPDF(file) : null;
         if (fileNamePDF != null){
             lab.setFileNamePDF(fileNamePDF);
         }
