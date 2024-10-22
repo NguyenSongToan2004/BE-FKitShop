@@ -47,17 +47,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-        // Enable CORS and disable CSRF
-        httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
+  //       Enable CORS and disable CSRF
+//        httpSecurity
+//                .cors();
+//                .and()
+//                .csrf(AbstractHttpConfigurer::disable);
+//        httpSecurity
+//               .csrf().disable();
+
+//        httpSecurity
+//                .csrf().disable() // Có thể tắt CSRF cho mục đích thử nghiệm
+//                .authorizeRequests()
+//                .antMatchers("/api/auth/login").permitAll() // Cho phép truy cập vào endpoint này
+//                .anyRequest().authenticated();
 
         httpSecurity.authorizeHttpRequests(request ->
-//                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
 //                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/accounts" )
-//                        .hasRole("admin")
+//                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
 //                        .anyRequest().authenticated()
-                        request.anyRequest().permitAll()
+                        .anyRequest().permitAll()
         );
+
 
 //        //register authentication provider supporting jwt token
         httpSecurity.oauth2ResourceServer(oauth2 ->
@@ -66,14 +77,13 @@ public class SecurityConfig {
         );
         return httpSecurity.build();
     }
-    @Bean
-    JwtAuthenticationConverter converter(){
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-        return converter;
-    }
+//    @Bean
+//    JwtAuthenticationConverter converter(){
+//        JwtGrantedAuthoritiesConverter j
+//
+//        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+//        return converter;
+//    }
 
     //jwt decoder interface
     @Bean

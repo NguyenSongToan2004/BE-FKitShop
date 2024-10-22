@@ -14,6 +14,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -39,13 +42,21 @@ public class AuthenticationController {
     }
 
     //map authenRequest then return to the ResponseObject
+//    @PostMapping("/login")
+//    ResponseObject loginAuthentication(@RequestBody AuthenticationRequest request) {
+//        var result = authenticationService.authenticate(request);
+//        return ResponseObject.builder()
+//                .status(1000)
+//                .message("Login successfully")
+//                .data(result)
+//                .build();
+//    }
     @PostMapping("/login")
-    ResponseObject loginAuthentication(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> loginAuthentication(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
-        return ResponseObject.builder()
-                .status(1000)
-                .data(result)
-                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(result);
     }
 
     @PostMapping("/introspect")
