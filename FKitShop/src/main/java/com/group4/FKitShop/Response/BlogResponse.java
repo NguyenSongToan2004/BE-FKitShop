@@ -16,5 +16,5 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlogResponse {
     Blog blog;
-    List<BlogTag> tags;
+    List<Tag> tags;
 }

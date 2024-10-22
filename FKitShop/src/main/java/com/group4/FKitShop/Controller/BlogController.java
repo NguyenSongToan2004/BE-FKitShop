@@ -28,7 +28,7 @@ public class BlogController {
     BlogTagService blogTagService;
 
     @GetMapping()
-    public List<Blog> allBlog() {
+    public List<BlogResponse> allBlog() {
         return blogService.allBlog();
     }
 
@@ -96,7 +96,7 @@ public class BlogController {
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create blog successfully")
-                .data(new BlogResponse(blog, bt) )
+                .data(blogService.getBlogByID(blog.getBlogID()))
                 .build();
 
     }
@@ -127,7 +127,7 @@ public class BlogController {
         return ResponseObject.builder()
                 .status(1000)
                 .message("Update blog successfully")
-                .data(new BlogResponse(blog, bt) )
+                .data(blogService.getBlogByID(blog.getBlogID()))
                 .build();
     }
 
