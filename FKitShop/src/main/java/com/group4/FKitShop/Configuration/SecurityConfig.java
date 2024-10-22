@@ -1,6 +1,8 @@
 package com.group4.FKitShop.Configuration;
 
 
+import com.group4.FKitShop.Filters.AuthTokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +49,11 @@ public class  SecurityConfig {
     @Value("${jwt.signerKey}")
     private String signerKey;
 
+
+    AuthTokenFilter authTokenFilter(){
+        return new AuthTokenFilter();
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
@@ -65,9 +72,9 @@ public class  SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
-                );
+                )
                 //.authenticationProvider(authenticationProvider())
-                //.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
 //        //register authentication provider supporting jwt token
 //        httpSecurity.oauth2ResourceServer(oauth2 ->
