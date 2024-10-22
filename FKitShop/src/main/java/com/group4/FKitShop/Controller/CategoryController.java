@@ -76,27 +76,27 @@ public class CategoryController {
     // create cate & create cateProduct relationship tuong ung
     @PostMapping()
     public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request) {
-        Category cate = categoryService.createCategory(request);
-        cateProductService.createCateProduct_Category(request);
-        List<CateProduct> cateProducts = cateProductService.getCateProductByCategoryID(cate.getCategoryID());
+        //Category cate = categoryService.createCategory(request);
+        //cateProductService.createCateProduct_Category(request);
+        //List<CateProduct> cateProducts = cateProductService.getCateProductByCategoryID(cate.getCategoryID());
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create category successfully")
-                .data(new CategoryResponse(cate, cateProducts))
+                .data(categoryService.createCategory(request))
                 .build();
     }
 
     @PutMapping("/{categoryID}")
     public  ResponseObject updateCategory(@RequestBody @Valid CategoryRequest request, @PathVariable String categoryID) {
-        cateProductService.deleteCateProduct_Category(categoryID);
-        Category cate = categoryService.updateCategory(categoryID, request);
-        cateProductService.updateCateProduct_Category(categoryID, request);
-        List<CateProduct> cateProducts = cateProductService.getCateProductByCategoryID(cate.getCategoryID());
+        //cateProductService.deleteCateProduct_Category(categoryID);
+        //Category cate = categoryService.updateCategory(categoryID, request);
+        //cateProductService.updateCateProduct_Category(categoryID, request);
+        //List<CateProduct> cateProducts = cateProductService.getCateProductByCategoryID(cate.getCategoryID());
 
         return ResponseObject.builder()
                 .status(1000)
                 .message("Update category successfully")
-                .data(new CategoryResponse(cate, cateProducts))
+                .data(categoryService.updateCategory(categoryID, request))
                 .build();
     }
 

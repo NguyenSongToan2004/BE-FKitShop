@@ -46,33 +46,33 @@ public class CateProductService {
         return id;
     }
 
-    public boolean createCateProduct_Category(CategoryRequest request) {
-        List<String> productIDs = request.getProductID();
+//    public boolean createCateProduct_Category(CategoryRequest request) {
+//        List<String> productIDs = request.getProductID();
+//
+//        String categoryID = generateCategoryID();
+//
+//        // Loop through all product IDs
+//        for (String productID : productIDs) {
+//            CateProduct cateProduct = new CateProduct();
+//            cateProduct.setCategoryID(categoryID);
+//            cateProduct.setProductID(productID);
+//            cateProductRepository.save(cateProduct);
+//        }
+//        return true;
+//    }
 
-        String categoryID = generateCategoryID();
-
-        // Loop through all product IDs
-        for (String productID : productIDs) {
-            CateProduct cateProduct = new CateProduct();
-            cateProduct.setCategoryID(categoryID);
-            cateProduct.setProductID(productID);
-            cateProductRepository.save(cateProduct);
-        }
-        return true;
-    }
-
-    public boolean updateCateProduct_Category(String categoryID, CategoryRequest request) {
-        List<String> productIDs = request.getProductID();
-
-        // Loop through all product IDs
-        for (String productID : productIDs) {
-            CateProduct cateProduct = new CateProduct();
-            cateProduct.setCategoryID(categoryID);
-            cateProduct.setProductID(productID);
-            cateProductRepository.save(cateProduct);
-        }
-        return true;
-    }
+//    public boolean updateCateProduct_Category(String categoryID, CategoryRequest request) {
+//        List<String> productIDs = request.getProductID();
+//
+//        // Loop through all product IDs
+//        for (String productID : productIDs) {
+//            CateProduct cateProduct = new CateProduct();
+//            cateProduct.setCategoryID(categoryID);
+//            cateProduct.setProductID(productID);
+//            cateProductRepository.save(cateProduct);
+//        }
+//        return true;
+//    }
 
     public void deleteCateProduct_Category(String categoryID) {
         List<CateProduct> cateProducts = cateProductRepository.findByCategoryID(categoryID);

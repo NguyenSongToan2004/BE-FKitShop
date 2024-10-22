@@ -18,6 +18,6 @@ public class CategoryRequest {
     private int status;
 
     // crud CateProduct table
-    private List<String> productID;
+    //private List<String> productID;
 
 }
