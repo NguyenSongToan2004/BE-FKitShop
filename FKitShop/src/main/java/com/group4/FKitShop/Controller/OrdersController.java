@@ -45,7 +45,7 @@ public class OrdersController {
                 .build();
     }
 
-    @GetMapping("/allorders")
+    @GetMapping("/admin/allorders")
     public ResponseObject allOrders(@RequestHeader("Authorization") String authorization) {
         return ResponseObject.builder()
                 .status(1000)

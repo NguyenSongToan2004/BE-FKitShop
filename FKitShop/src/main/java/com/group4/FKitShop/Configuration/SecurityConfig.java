@@ -1,14 +1,21 @@
 package com.group4.FKitShop.Configuration;
 
 
+import com.group4.FKitShop.JWT.AuthEntryPointJwt;
+import com.group4.FKitShop.filters.AuthTokenFilter;
+import com.group4.FKitShop.Service.AccountsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -16,7 +23,10 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,8 +35,7 @@ import org.springframework.web.filter.CorsFilter;
 import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
+@EnableWebSecurity(debug = true)
 @CrossOrigin(origins = "http://localhost:5173")
 public class  SecurityConfig {
 
@@ -47,26 +56,60 @@ public class  SecurityConfig {
     @Value("${jwt.signerKey}")
     private String signerKey;
 
+    @Autowired
+    AccountsService accountsService;
+
+    @Autowired
+    private AuthEntryPointJwt unauthorizedHandler;
+
+
+    @Bean
+    public AuthTokenFilter authTokenFilter(){
+        return new AuthTokenFilter();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(accountsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
-        // Enable CORS and disable CSRF
-        httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
-
-        httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
-                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-                        .requestMatchers(HttpMethod.GET,"/accounts/admin/**" ).permitAll()
-//                        .hasRole("admin")
-                        .anyRequest().authenticated()
-//                        request.anyRequest().permitAll()
-        );
+//        httpSecurity
+//                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+//                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+//                        .requestMatchers("/**/admin/**").hasRole("admin")
+//                        .anyRequest().authenticated()
+//                )
+//                .oauth2ResourceServer(oauth2 -> oauth2
+//                        .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+//                )
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authenticationProvider(authenticationProvider())
+//                .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+//
+//
 //        //register authentication provider supporting jwt token
-        httpSecurity.oauth2ResourceServer(oauth2 ->
-                //jwt decoder: decode jwt truyen vao
-                oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder()))
-        );
+//
+//        httpSecurity.authenticationProvider(authenticationProvider());
+//        httpSecurity.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        httpSecurity
+                .cors().and().csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request -> {
+                    request.requestMatchers("/auth/login").permitAll();
+                    request.anyRequest().authenticated();
+                })
+                .addFilterBefore(authTokenFilter(), BasicAuthenticationFilter.class);
+
+
         return httpSecurity.build();
     }
     //jwt decoder interface

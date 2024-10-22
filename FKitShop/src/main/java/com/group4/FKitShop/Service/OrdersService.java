@@ -109,7 +109,7 @@ public class OrdersService {
         }
     }
 
-    @PreAuthorize("hasRole('manager' || 'admin')")
+//    @PreAuthorize("hasRole('manager' || 'admin')")
     public List<Orders> getOrders() {
         return ordersRepository.findAll();
     }
