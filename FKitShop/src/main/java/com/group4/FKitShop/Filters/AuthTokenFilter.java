@@ -73,16 +73,18 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     //skip JWT validation for public api
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request)
-            throws ServletException {
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
+        log.info("Checking path in shouldNotFilter: {}", path);  // Log the request path
+
         AntPathMatcher matcher = new AntPathMatcher();
-        // Allow wildcard matching for endpoints like /auth/**
-        if (matcher.match("/fkshop/auth/**", path) || matcher.match("fkshop/product/**", path)) {
+        if (matcher.match("/fkshop/auth/**", path) || matcher.match("/fkshop/product/**", path)) {
             return true;
         }
+
         return false;
     }
+
 
 
     private String parseJwt(HttpServletRequest request) {

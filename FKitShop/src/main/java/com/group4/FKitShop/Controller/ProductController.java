@@ -99,7 +99,7 @@ public class ProductController {
         );
     }
 
-    @GetMapping("/products")
+    @GetMapping("/admin/products")
     ResponseEntity<ResponseObject> getALlProduct() {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get ALl Product Successfully", service.getAllProduct())

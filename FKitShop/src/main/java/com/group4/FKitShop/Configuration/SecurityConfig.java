@@ -31,7 +31,7 @@ import org.springframework.web.filter.CorsFilter;
 import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @CrossOrigin(origins = "http://localhost:5173")
 public class SecurityConfig {
 
