@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -61,20 +62,37 @@ public class SecurityConfig {
 //                .antMatchers("/api/auth/login").permitAll() // Cho phép truy cập vào endpoint này
 //                .anyRequest().authenticated();
 
-        httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
-//                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
-//                        .anyRequest().authenticated()
-                        .anyRequest().permitAll()
-        );
+//        httpSecurity.authorizeHttpRequests(request ->
+//                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+////                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+////                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
+////                        .anyRequest().authenticated()
+//                        .anyRequest().permitAll()
+//        );
+//
+//
+////        //register authentication provider supporting jwt token
+//        httpSecurity.oauth2ResourceServer(oauth2 ->
+//                //jwt decoder: decode jwt truyen vao
+//                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+//        );
 
-
-//        //register authentication provider supporting jwt token
-        httpSecurity.oauth2ResourceServer(oauth2 ->
-                //jwt decoder: decode jwt truyen vao
-                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
-        );
+        httpSecurity
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+                        .requestMatchers("/**/admin/**").hasRole("admin")
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                )
+                .csrf(AbstractHttpConfigurer::disable)
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 //    @Bean
