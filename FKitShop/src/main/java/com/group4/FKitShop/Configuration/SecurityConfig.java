@@ -1,10 +1,15 @@
 package com.group4.FKitShop.Configuration;
 
 
+import com.group4.FKitShop.Filters.AuthTokenFilter;
+import com.group4.FKitShop.JWT.AuthEntryPointJwt;
+import com.group4.FKitShop.Service.AccountsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,6 +22,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -44,6 +50,26 @@ public class SecurityConfig {
 //    //secretkey
     @Value("${jwt.signerKey}")
     private String signerKey;
+
+    @Autowired
+    private AuthEntryPointJwt unauthorizedHandler;
+
+    @Autowired
+    AccountsService accountsService;
+
+
+    @Bean
+    public AuthTokenFilter authTokenFilter(){
+        return new AuthTokenFilter();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(accountsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
