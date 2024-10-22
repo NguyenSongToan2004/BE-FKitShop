@@ -50,15 +50,19 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "limit 8", nativeQuery = true)
     List<Product> getHotProducts();
 
-    @Query(value = "select *\n" +
-            "from StemProduct\n" +
+    @Query(value = "select stem.*\n" +
+            "from StemProduct stem join CateProduct cate\n" +
+            "\ton stem.productID = cate.productID\n" +
+            "where cate.categoryID = :cateID\n" +
             "order by price asc", nativeQuery = true)
-    List<Product> getPriceAscProducts();
+    List<Product> getPriceAscProducts(@Param("cateID") String cateID);
 
-    @Query(value = "select *\n" +
-            "from StemProduct\n" +
+    @Query(value = "select stem.*\n" +
+            "from StemProduct stem join CateProduct cate\n" +
+            "\ton stem.productID = cate.productID\n" +
+            "where cate.categoryID = :cateID\n" +
             "order by price desc", nativeQuery = true)
-    List<Product> getPriceDescProducts();
+    List<Product> getPriceDescProducts(@Param("cateID") String cateID);
 
     @Query(value = "select true\n" +
             "from StemProduct s left join Image i on s.productID = i.productID\n" +
@@ -71,9 +75,14 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "    where c.categoryID = :id", nativeQuery = true)
     List<Product> getProductIDList(@Param("id") String id);
 
-@Query(value = "select stem.*\n" +
+    @Query(value = "select stem.*\n" +
         "from StemProduct stem join CateProduct cate\n" +
         "\t on stem.productID = cate.productID\n" +
         "where cate.categoryID = :cateID", nativeQuery = true)
     List<Product> getProductByCate(@Param("cateID") String cateID);
+
+    @Query(value = "select *\n" +
+        "from StemProduct\n" +
+        "where name like :name", nativeQuery = true)
+    List<Product> getByName(@Param("name") String name);
 }

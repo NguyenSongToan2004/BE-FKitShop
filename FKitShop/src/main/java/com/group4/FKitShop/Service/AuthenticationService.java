@@ -7,6 +7,7 @@ import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.AccountsRepository;
 import com.group4.FKitShop.Request.AuthenticationRequest;
 import com.group4.FKitShop.Request.IntrospectRequest;
+import com.group4.FKitShop.Request.LoginGoogleRequest;
 import com.group4.FKitShop.Response.AccountsResponse;
 import com.group4.FKitShop.Response.AuthenticationResponse;
 import com.group4.FKitShop.Response.IntrospectResponse;
@@ -55,6 +56,28 @@ public class AuthenticationService {
         // sai mật khẩu
         if (!auth)
             throw new AppException(ErrorCode.UNAUTHENTICATED);
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .accounts(user)
+                .token(token)
+                .isAutheticated(true)
+                .build();
+    }
+
+    public AuthenticationResponse authenticate(LoginGoogleRequest request) {
+        var user = accountsRepository.findByemail(request.getEmail())
+                .orElseGet(() -> Accounts.builder()
+                        .email(request.getEmail())
+                        .image(request.getPicture())
+                        .fullName(request.getName())
+                        .createDate(new java.sql.Date(System.currentTimeMillis()))
+                        .status(1)
+                        .role("user")
+                        .build());
+        if (!accountsRepository.existsByemail(request.getEmail()))
+            accountsRepository.save(user);
+        // sai mật khẩu
         var token = generateToken(user);
 
         return AuthenticationResponse.builder()

@@ -1,11 +1,8 @@
 package com.group4.FKitShop.Controller;
 
 import com.group4.FKitShop.Entity.ResponseObject;
-import com.group4.FKitShop.Request.AccountCustomerRequest;
+import com.group4.FKitShop.Request.*;
 import com.group4.FKitShop.Exception.MultiAppException;
-import com.group4.FKitShop.Request.AccountsRequest;
-import com.group4.FKitShop.Request.AuthenticationRequest;
-import com.group4.FKitShop.Request.IntrospectRequest;
 import com.group4.FKitShop.Service.AccountsService;
 import com.group4.FKitShop.Service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
@@ -52,6 +49,15 @@ public class AuthenticationController {
     //map authenRequest then return to the ResponseObject
     @PostMapping("/login")
     ResponseObject loginAuthentication(@RequestBody AuthenticationRequest request) {
+        var result = authenticationService.authenticate(request);
+        return ResponseObject.builder()
+                .status(1000)
+                .data(result)
+                .build();
+    }
+
+    @PostMapping("/login-google")
+    ResponseObject loginAuthentication(@RequestBody LoginGoogleRequest request) {
         var result = authenticationService.authenticate(request);
         return ResponseObject.builder()
                 .status(1000)

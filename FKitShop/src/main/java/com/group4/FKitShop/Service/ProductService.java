@@ -5,8 +5,8 @@ import com.group4.FKitShop.Entity.Image;
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
-import com.group4.FKitShop.File.FileManagement;
 import com.group4.FKitShop.Mapper.ProductMapper;
+import com.group4.FKitShop.Repository.CategoryRepository;
 import com.group4.FKitShop.Repository.ImageRepository;
 import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.ProductRequest;
@@ -45,6 +45,8 @@ public class ProductService {
     private ImageRepository imageRepository;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     public Product addProduct(ProductRequest request, MultipartFile[] images) {
         if (repository.existsByName(request.getName()))
@@ -74,7 +76,7 @@ public class ProductService {
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
         List<Category> categories = categoryService.getCategoryList(id);
-        GetProductResponse response = GetProductResponse.builder()
+        return GetProductResponse.builder()
                 .productID(product.getProductID())
                 .name(product.getName())
                 .description(product.getDescription())
@@ -92,7 +94,6 @@ public class ProductService {
                 .status(product.getStatus())
                 .categories(categories)
                 .build();
-        return response;
     }
 
     public Product updateProduct(String id, ProductRequest request) {
@@ -185,12 +186,18 @@ public class ProductService {
         return repository.getHotProducts();
     }
 
-    public List<Product> getPriceAscProducts() {
-        return repository.getPriceAscProducts();
+    public List<Product> getPriceAscProducts(String cateID) {
+        categoryRepository.findById(cateID).orElseThrow(
+                () -> new AppException(ErrorCode.CATEGORY_NOTFOUND)
+        );
+        return repository.getPriceAscProducts(cateID);
     }
 
-    public List<Product> getPriceDescProducts() {
-        return repository.getPriceDescProducts();
+    public List<Product> getPriceDescProducts(String cateID) {
+        categoryRepository.findById(cateID).orElseThrow(
+                () -> new AppException(ErrorCode.CATEGORY_NOTFOUND)
+        );
+        return repository.getPriceDescProducts(cateID);
     }
 
     private static final String UPLOAD_DIRECTORY = "uploads" + File.separator + "products";
@@ -304,7 +311,7 @@ public class ProductService {
 //        }
 //    }
 
-    //    public Product updateProduct(String id, ProductRequest request, MultipartFile[] image) {
+//    public Product updateProduct(String id, ProductRequest request, MultipartFile[] image) {
 //
 //        Product product = repository.findById(id).orElseThrow(
 //                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
@@ -326,5 +333,9 @@ public class ProductService {
     // get lis product by categoryID
     public List<Product> getProductIDList(String id){
         return repository.getProductIDList(id);
+    }
+
+    public List<Product> getByName(String name) {
+        return repository.getByName("%" + name + "%");
     }
 }

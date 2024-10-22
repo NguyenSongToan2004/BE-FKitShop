@@ -1,15 +1,11 @@
 package com.group4.FKitShop.Entity;
 
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

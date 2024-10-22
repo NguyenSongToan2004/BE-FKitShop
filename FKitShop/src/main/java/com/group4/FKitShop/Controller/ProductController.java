@@ -177,17 +177,17 @@ public class ProductController {
         );
     }
 
-    @GetMapping("/price-asc")
-    ResponseEntity<ResponseObject> getPriceAscProducts() {
+    @GetMapping("/price-asc/{cateID}")
+    ResponseEntity<ResponseObject> getPriceAscProducts(@PathVariable String cateID) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get products by asc price successfully !!", service.getPriceAscProducts())
+                new ResponseObject(1000, "Get products by asc price successfully !!", service.getPriceAscProducts(cateID))
         );
     }
 
-    @GetMapping("/price-desc")
-    ResponseEntity<ResponseObject> getPriceDescProducts(){
+    @GetMapping("/price-desc/{cateID}")
+    ResponseEntity<ResponseObject> getPriceDescProducts(@PathVariable String cateID) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get products by asc price successfully !!", service.getPriceDescProducts())
+                new ResponseObject(1000, "Get products by asc price successfully !!", service.getPriceDescProducts(cateID))
         );
     }
 
@@ -213,5 +213,10 @@ public class ProductController {
                 .body(service.getSaleReportFile());
     }
 
-
+    @GetMapping("/by-name/{name}")
+    ResponseEntity<ResponseObject> getByName(@PathVariable("name") String name) throws IOException {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Product By Name", service.getByName(name))
+        );
+    }
 }

@@ -18,9 +18,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,5 +116,13 @@ public class OrdersController {
                 .message("Order Status List")
                 .data(ordersService.findOrderbyStatus(status))
                 .build();
+    }
+
+    @GetMapping("/report/{time}")
+    public ResponseEntity<byte[]> getReport(OutputStream outputStream, @PathVariable("time") String time) throws IOException {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=order_report.xlsx")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(ordersService.getOrderReportFile(time));
     }
 }
