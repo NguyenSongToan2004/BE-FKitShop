@@ -3,9 +3,11 @@ package com.group4.FKitShop.Configuration;
 import com.group4.FKitShop.Entity.Accounts;
 import com.group4.FKitShop.Repository.AccountsRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.Date;
@@ -18,6 +20,9 @@ public class ApplicationConfig {
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Bean
     ApplicationRunner runner(AccountsRepository accountsRepository) {

@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -16,6 +17,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -24,7 +26,7 @@ import org.springframework.web.filter.CorsFilter;
 import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @CrossOrigin(origins = "http://localhost:5173")
 public class  SecurityConfig {
 
@@ -49,21 +51,38 @@ public class  SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         // Enable CORS and disable CSRF
-        httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable);
-
-        httpSecurity.authorizeHttpRequests(request ->
-//                request.requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
-//                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/accounts" ).hasAnyAuthority("SCOPE_")
-//                        .anyRequest().authenticated()
-                        request.anyRequest().permitAll()
-        );
+        httpSecurity
+                .cors().and()
+                .csrf(AbstractHttpConfigurer::disable)
+                //.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+                        .requestMatchers("/**/accounts/**").hasRole("admin")
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                );
+                //.authenticationProvider(authenticationProvider())
+                //.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        return httpSecurity.build();
 //        //register authentication provider supporting jwt token
 //        httpSecurity.oauth2ResourceServer(oauth2 ->
 //                //jwt decoder: decode jwt truyen vao
 //                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
 //        );
-        return httpSecurity.build();
+
+    }
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter(){
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        return converter;
     }
 
     //jwt decoder interface
@@ -120,14 +139,7 @@ public class  SecurityConfig {
 //        return httpSecurity.build();
 //    }
 
-    @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter(){
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-        return converter;
-    }
+
 
 
 }
