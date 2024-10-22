@@ -32,24 +32,27 @@ import javax.crypto.spec.SecretKeySpec;
 @CrossOrigin(origins = "http://localhost:5173")
 public class  SecurityConfig {
 
-    private static final String[] POST_PUBLIC_API = {
-            "/accounts/signup",
-            "/auth/login",
-            "/auth/introspect",
-            "/carts/create"
-    };
-    private static final String[] GET_PUBLIC_API = {
-            "/product/latest",
-            "/product/{id}",
-            "/product/aproducts",
-            "/carts/view/{accountID}",
-            "/"
-    };
+//    private static final String[] POST_PUBLIC_API = {
+//            "/accounts/signup",
+//            "/auth/login",
+//            "/auth/introspect",
+//            "/carts/create"
+//    };
+//    private static final String[] GET_PUBLIC_API = {
+//            "/product/latest",
+//            "/product/{id}",
+//            "/product/aproducts",
+//            "/carts/view/{accountID}",
+//            "/"
+//    };
+
+
 //    //secretkey
     @Value("${jwt.signerKey}")
     private String signerKey;
 
 
+    @Bean
     AuthTokenFilter authTokenFilter(){
         return new AuthTokenFilter();
     }
@@ -64,23 +67,18 @@ public class  SecurityConfig {
                 //.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
-                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-                        .requestMatchers("/**/accounts/**").hasRole("admin")
+                        .requestMatchers("auth/**").permitAll()
+                        .requestMatchers("/accounts/allAccounts").hasAnyRole("admin","staff","manager")
+                        .requestMatchers("/product/by-category/**").hasRole("user")
                         .anyRequest().authenticated()
                 )
+                //register authentication provider supporting jwt token
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
                 )
                 //.authenticationProvider(authenticationProvider())
                 .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
-//        //register authentication provider supporting jwt token
-//        httpSecurity.oauth2ResourceServer(oauth2 ->
-//                //jwt decoder: decode jwt truyen vao
-//                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
-//        );
 
     }
     @Bean
