@@ -102,14 +102,22 @@ public class  SecurityConfig {
 //        httpSecurity.authenticationProvider(authenticationProvider());
 //        httpSecurity.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         httpSecurity
-                .cors().and().csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> {
-                    request.requestMatchers("/auth/login").permitAll();
-                    request.anyRequest().authenticated();
-                })
-                .addFilterBefore(authTokenFilter(), BasicAuthenticationFilter.class);
-
-
+                .cors().and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, POST_PUBLIC_API).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+                        .requestMatchers("/**/admin/**").hasRole("admin")
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
     //jwt decoder interface
