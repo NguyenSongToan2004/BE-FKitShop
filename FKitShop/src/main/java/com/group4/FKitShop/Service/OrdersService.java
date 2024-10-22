@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -32,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
@@ -257,19 +259,37 @@ public class OrdersService {
     }
 
     public byte[] getOrderReportFile(String time) throws IOException {
-        System.out.println("tgian : " + time);
+        LocalDate now = LocalDate.now();
         List<Orders> orders = getListOrderByTime(time);
         // List<Orders> orders = ordersRepository.findAll(); // Lấy danh sách đơn hàng từ database
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFCellStyle rowStyle = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
+        //======================
+        Font titleFont = workbook.createFont();
+        titleFont.setColor(IndexedColors.BLACK.getIndex());
+        titleFont.setBold(true);  // In đậm
+        titleFont.setFontHeightInPoints((short) 20);
+        //========================
         font.setColor(IndexedColors.BROWN.getIndex());
         font.setBold(true);  // In đậm
         rowStyle.setFont(font);
+        //======================
+        CellStyle titleStyle = workbook.createCellStyle();
+        titleStyle.setFont(titleFont);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER); // Căn giữa
+        titleStyle.setFillBackgroundColor(IndexedColors.WHITE.getIndex());
+        //======================
         Sheet sheet = workbook.createSheet("Order Report");
+        Row titleRow = sheet.createRow(0);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue(getTitle(time)); // Nội dung tiêu đề
+        titleCell.setCellStyle(titleStyle);
 
+        // Merging cells để tiêu đề nằm giữa các cột (giả sử có 5 cột dữ liệu)
+        sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 11)); // Merge từ cột 0 đến cột 4
         // Tạo tiêu đề cột
-        Row headerRow = sheet.createRow(0);
+        Row headerRow = sheet.createRow(3);
 
         String[] columnHeaders = {"Order ID", "AccountID", "Customer Name", "Address", "Paying Method",
                 "Phone Number", "Ship Fee", "Total Price", "Order Date", "Ship Date", "Note", "Status"};
@@ -282,7 +302,8 @@ public class OrdersService {
         // Thêm dữ liệu đơn hàng vào các dòng
         NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi-VN"));
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-        int rowIdx = 1;
+        int rowIdx = 4;
+        double totalPrice = 0;
         for (Orders order : orders) {
             String address = order.getAddress() + ", " + order.getWard() + ", " + order.getDistrict() + ", " + order.getProvince();
             Row row = sheet.createRow(rowIdx++);
@@ -299,7 +320,15 @@ public class OrdersService {
                     dateFormat.format(order.getShipDate()) : "unUpdated");
             row.createCell(10).setCellValue(order.getNote());
             row.createCell(11).setCellValue(order.getStatus());
+            totalPrice += order.getTotalPrice();
         }
+        sheet.addMergedRegion(new CellRangeAddress(rowIdx, rowIdx, 6, 8));
+        Row row = sheet.createRow(rowIdx++);
+        row.setHeightInPoints(17);
+        Cell cell = row.createCell(6);
+        cell.setCellStyle(rowStyle);
+        cell.setCellValue("Total Price : " + numberFormat.format(totalPrice));
+        //sheet.addMergedRegion(new CellRangeAddress(rowIdx, rowIdx, 7, 8)); // Merge từ cột 0 đến cột 4
 
         // Ghi workbook vào output stream
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -332,24 +361,35 @@ public class OrdersService {
                 break;
             }
             case "month": {
-                int currentMonth = now.getMonthValue();
-                int currentYear = now.getYear();
-                orders = ordersRepository.findAll().stream().filter(
-                        order -> {
-                            LocalDate orderDate = new java.sql.Date(order.getOrderDate().getTime())
-                                    .toLocalDate();
-                            return orderDate.getMonthValue() == currentMonth && orderDate.getYear() == currentYear;
-                        }).toList();
+                int currentMonth = now.getMonthValue(); // Lấy tháng hiện tại
+                int currentYear = now.getYear(); // Lấy năm hiện tại
+                try {
+                    orders = ordersRepository.findAll().stream().filter(
+                            order -> {
+                                // Chuyển đổi từ java.util.Date (hoặc java.sql.Date) sang LocalDate
+                                LocalDate orderDate = new java.sql.Date(order.getOrderDate().getTime())
+                                        .toLocalDate();
+                                // Kiểm tra tháng và năm có khớp với tháng và năm hiện tại không
+                                return orderDate.getMonthValue() == currentMonth && orderDate.getYear() == currentYear;
+                            }).toList();
+
+                    // In ra số lượng đơn hàng đã lọc
+                    System.out.println("Size of list: " + orders.size());
+                } catch (Exception e) {
+                    e.printStackTrace(); // Bắt và in ra lỗi nếu có
+                }
                 break;
             }
             case "quarter": {
                 int currentQuarter = (now.getMonthValue() - 1) / 3 + 1;
+                System.out.println("current quarter: " + currentQuarter);
                 int currentYear = now.getYear();
                 orders = ordersRepository.findAll().stream().filter(
                         order -> {
                             LocalDate orderDate = new java.sql.Date(order.getOrderDate().getTime())
                                     .toLocalDate();
                             int orderQuarter = (orderDate.getMonthValue() - 1) / 3 + 1;
+                            System.out.println("order quarter: " + orderQuarter);
                             return orderQuarter == currentQuarter && orderDate.getYear() == currentYear;
                         }).toList();
                 break;
@@ -360,6 +400,34 @@ public class OrdersService {
                 break;
         }
         return orders;
+    }
+
+    private String getTitle(String time) {
+        String title = "SALES REPORT FOR " + time.toUpperCase();
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        switch (time) {
+            case "week": {
+                LocalDate startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                LocalDate endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+                title += "FROM " + format.format(startOfWeek) + " TO " + format.format(endOfWeek);
+                break;
+            }
+            case "month": {
+                int currentMonth = now.getMonthValue(); // Lấy tháng hiện tại
+                int currentYear = now.getYear(); // Lấy năm hiện tại
+                title += " IN " + currentMonth + "/" + currentYear;
+                break;
+            }
+            case "quarter": {
+                int currentQuarter = (now.getMonthValue() - 1) / 3 + 1;
+                title += "IN QUARTER " + currentQuarter;
+                break;
+            }
+            default:
+                break;
+        }
+        return title;
     }
 
 }
