@@ -29,7 +29,7 @@ public class AccountsController {
     AccountsService accountsService;
     AuthenticationService authenticationService;
 
-    @GetMapping
+    @GetMapping("/admin/allAccounts")
     public ResponseObject allAccounts(){
         //manager & admin moi dc truy cap trang nay
         var authentication = SecurityContextHolder.getContext().getAuthentication();

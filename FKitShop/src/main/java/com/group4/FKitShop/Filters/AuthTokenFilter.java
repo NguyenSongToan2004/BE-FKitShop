@@ -27,6 +27,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
+    @Autowired
     private AuthenticationService authenticationService;
 
     @Override
@@ -44,7 +45,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 if (accountsResponse != null) {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(accountsResponse, null, null); // Add roles if applicable
-
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
@@ -78,7 +78,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         AntPathMatcher matcher = new AntPathMatcher();
         // Allow wildcard matching for endpoints like /auth/**
-        if (matcher.match("/auth/login", path)) {
+        if (matcher.match("/fkshop/auth/**", path) || matcher.match("fkshop/product/**", path)) {
             return true;
         }
         return false;
