@@ -126,7 +126,7 @@ public class AccountsController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}") // check
     ResponseEntity<ResponseObject> activeAccount(@PathVariable String id) {
         return ResponseEntity.ok(
                 ResponseObject.builder()

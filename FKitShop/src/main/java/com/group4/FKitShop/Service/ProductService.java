@@ -9,6 +9,7 @@ import com.group4.FKitShop.Mapper.ProductMapper;
 import com.group4.FKitShop.Repository.CategoryRepository;
 import com.group4.FKitShop.Repository.ImageRepository;
 import com.group4.FKitShop.Repository.ProductRepository;
+import com.group4.FKitShop.Request.DeleteImageRequest;
 import com.group4.FKitShop.Request.ProductRequest;
 import com.group4.FKitShop.Response.GetProductResponse;
 import jakarta.transaction.Transactional;
@@ -137,10 +138,10 @@ public class ProductService {
         );
 
         for (MultipartFile file : images) {
-            if(repository.existsByUrl(productID, "%"+file.getOriginalFilename()) == null){
+            if (repository.existsByUrl(productID, "%" + file.getOriginalFilename()) == null) {
                 String url = existFileName(file.getOriginalFilename());
                 Image image = new Image();
-                if(url == null)
+                if (url == null)
                     image.setUrl(amazonClient.uploadFile(file, uploadDirectory));
                 else
                     image.setUrl(url);
@@ -182,7 +183,7 @@ public class ProductService {
         return imgUrl;
     }
 
-    public List<Product> getHotProduct(){
+    public List<Product> getHotProduct() {
         return repository.getHotProducts();
     }
 
@@ -210,7 +211,7 @@ public class ProductService {
         try {
             // Lấy đường dẫn tương đối đến thư mục uploads (có thể thay đổi tùy môi trường)
             String uploadDir = System.getProperty("user.dir") + File.separator + UPLOAD_DIRECTORY;
-            System.out.println("upload dir : "+ uploadDir);
+            System.out.println("upload dir : " + uploadDir);
             // System.getProperty("user.dir") : lấy ra đường dẫn đến thư mục hiện tại
             // Tạo thư mục nếu chưa tồn tại
             File directory = new File(uploadDir);
@@ -255,7 +256,7 @@ public class ProductService {
         font.setBold(true);  // In đậm
         rowStyle.setFont(font);
         Row headerRow = sheet.createRow(0);
-        String[] columnHeaders = {"Product ID", "Name", "Quantity Sold", "Original Price" ,"Revenue", "Create Date"};
+        String[] columnHeaders = {"Product ID", "Name", "Quantity Sold", "Original Price", "Revenue", "Create Date"};
         for (int i = 0; i < columnHeaders.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(columnHeaders[i]);
@@ -327,11 +328,26 @@ public class ProductService {
 //        ProductMapper.INSTANCE.toProduct(request,product);
 //        return repository.save(product);
 //    }
-    
+
+    public Product deleteImages(DeleteImageRequest request) {
+        String[] token = request.getImageIDs().split(",");
+        Product product = repository.findById(request.getProductID()).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+        );
+        System.out.println("token length : " + token.length);
+        for (int i = 0; i < token.length; i++) {
+            int imageID = Integer.parseInt(token[i]);
+            Image image = imageRepository.findById(imageID).orElseThrow(
+                    () -> new AppException(ErrorCode.IMAGE_NOT_FOUND)
+            );
+            product.getImages().remove(image);
+        }
+        return repository.save(product);
+    }
 
 
     // get lis product by categoryID
-    public List<Product> getProductIDList(String id){
+    public List<Product> getProductIDList(String id) {
         return repository.getProductIDList(id);
     }
 

@@ -3,6 +3,7 @@ package com.group4.FKitShop.Controller;
 import com.group4.FKitShop.Entity.CateProduct;
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Entity.ResponseObject;
+import com.group4.FKitShop.Request.DeleteImageRequest;
 import com.group4.FKitShop.Request.ProductRequest;
 import com.group4.FKitShop.Response.CategoryResponse;
 import com.group4.FKitShop.Response.ProductResponse;
@@ -86,19 +87,19 @@ public class ProductController {
 
     @PutMapping("/{productID}")
     public ResponseObject getProduct(@PathVariable String productID,
-                                              @RequestParam("name") String name,
-                                              @RequestParam("description") String description,
-                                              @RequestParam("publisher") String publisher,
-                                              @RequestParam("quantity") int quantity,
-                                              @RequestParam("price") double price,
-                                              @RequestParam("discount") int discount,
-                                              @RequestParam("status") String status,
-                                              @RequestParam("weight") double weight,
-                                              @RequestParam("material") String material,
-                                              @RequestParam("dimension") String dimension,
-                                              @RequestParam("type") String type,
-                                              @RequestParam("categoryID") List<String> categoryID
-                                              ) {
+                                     @RequestParam("name") String name,
+                                     @RequestParam("description") String description,
+                                     @RequestParam("publisher") String publisher,
+                                     @RequestParam("quantity") int quantity,
+                                     @RequestParam("price") double price,
+                                     @RequestParam("discount") int discount,
+                                     @RequestParam("status") String status,
+                                     @RequestParam("weight") double weight,
+                                     @RequestParam("material") String material,
+                                     @RequestParam("dimension") String dimension,
+                                     @RequestParam("type") String type,
+                                     @RequestParam("categoryID") List<String> categoryID
+    ) {
         ProductRequest request = ProductRequest.builder()
                 .name(name)
                 .description(description)
@@ -135,12 +136,21 @@ public class ProductController {
         );
     }
 
+    @DeleteMapping("/images")
+    ResponseEntity<ResponseObject> deleteImages(@RequestBody DeleteImageRequest request) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Delete image(s) successfully !!", service.deleteImages(request)
+                )
+        );
+    }
+
     @PutMapping("/image/{productID}/{imageID}")
     ResponseEntity<ResponseObject> updateImage(@RequestParam("image") MultipartFile image, @PathVariable String productID, @PathVariable int imageID) {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Update image successfully !!", service.updateImage(image, productID, imageID) + " row affeted")
         );
     }
+
     // get list product by categoryID
     @GetMapping("/byCategoryID/{categoryID}")
     ResponseEntity<ResponseObject> getProductByCategoryID(@PathVariable String categoryID) {
