@@ -44,10 +44,17 @@ public class QuestionService {
         return responses;
     }
 
-    public Question getQuestionByID(int id){
+    public QuestionResponse getQuestionByID(int id){
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOTFOUND));
-        return question;
+        QuestionResponse questionResponse = questionMapper.toQuestionResponse(question);
+        String customerName = (accountsService.getAccountByID(question.getAccountID())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+        String labName = labService.getLab(question.getLabID()).getName();
+        questionResponse.setCustomerName(customerName);
+        questionResponse.setLabName(labName);
+        return questionResponse;
+
     }
 
     public QuestionResponse createQuestion(QuestionRequest request) {
