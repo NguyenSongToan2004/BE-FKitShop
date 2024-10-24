@@ -77,7 +77,6 @@ public class BlogController {
             @RequestParam("content") String content,
             @RequestParam("status") String status,
             @RequestParam("accountID") String accountID,
-            @RequestParam("image") MultipartFile image,
             @RequestParam("tagID") List<Integer> tagID
     ) {
         BlogRequest request = BlogRequest.builder()
@@ -87,7 +86,7 @@ public class BlogController {
                 .accountID(accountID)
                 .tagID(tagID)
                 .build();
-        Blog blog = blogService.createBlog(request, image);
+        Blog blog = blogService.createBlog(request);
         blogTagService.createBlogTag_Blog(request);
         List<BlogTag> bt = blogTagService.getBlogTagsByBlogId(blog.getBlogID());
 //        return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -107,7 +106,6 @@ public class BlogController {
                                               @RequestParam("content") String content,
                                               @RequestParam("status") String status,
                                               @RequestParam("accountID") String accountID,
-                                              @RequestParam("image") MultipartFile image,
                                               @RequestParam("toDelete") int toDelete,
                                               @RequestParam("tagID") List<Integer> tagID
     ) {
@@ -119,7 +117,7 @@ public class BlogController {
                 .toDelete(toDelete)
                 .tagID(tagID)
                 .build();
-        Blog blog = blogService.updateBlog(blogID, request, image);
+        Blog blog = blogService.updateBlog(blogID, request);
         blogTagService.deleteBlogTag_Blog(blogID);
         blogTagService.updateBlogTag_Blog(blogID, request);
         List<BlogTag> bt = blogTagService.getBlogTagsByBlogId(blog.getBlogID());

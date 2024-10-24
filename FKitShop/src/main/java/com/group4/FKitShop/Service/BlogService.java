@@ -40,6 +40,8 @@ public class BlogService {
 
     TagRepository tagRepository;
 
+    AmazonClient amazonClient;
+
 
     public List<BlogResponse> allBlog(){
         List<Blog> blogs = blogRepository.findAll();
@@ -179,19 +181,19 @@ public class BlogService {
         return code;
     }
 
-    public Blog createBlog(BlogRequest request, MultipartFile image) {
+    public Blog createBlog(BlogRequest request) {
         if (blogRepository.existsByBlogName(request.getBlogName()))
             throw new AppException(ErrorCode.BLOG_DUPLICATED);
 
+
         Blog blog = blogMapper.toBlog(request);
         blog.setBlogID(generateUniqueCode());
-        blog.setImage(uploadImage(image));
         blog.setCreateDate(new Date());
         blog.setToDelete(1);
         return blogRepository.save(blog);
     }
 
-    public Blog updateBlog(String id, BlogRequest request, MultipartFile image) {
+    public Blog updateBlog(String id, BlogRequest request) {
 
         if (!blogRepository.existsById(id))
             throw new AppException(ErrorCode.BLOG_NOTFOUND);
@@ -202,10 +204,6 @@ public class BlogService {
         Blog blog = blogMapper.toBlog(request);
         blog.setBlogID(id);
         blog.setCreateDate(blogGetDate.getCreateDate());
-        String imageUrl = uploadImage(image);
-        if(imageUrl != ""){
-            blog.setImage(imageUrl);
-        }
         return blogRepository.save(blog);
     }
 
