@@ -28,7 +28,7 @@ public class BlogController {
     BlogTagService blogTagService;
 
     @GetMapping()
-    public List<Blog> allBlog() {
+    public List<BlogResponse> allBlog() {
         return blogService.allBlog();
     }
 
@@ -77,7 +77,6 @@ public class BlogController {
             @RequestParam("content") String content,
             @RequestParam("status") String status,
             @RequestParam("accountID") String accountID,
-            @RequestParam("image") MultipartFile image,
             @RequestParam("tagID") List<Integer> tagID
     ) {
         BlogRequest request = BlogRequest.builder()
@@ -87,7 +86,7 @@ public class BlogController {
                 .accountID(accountID)
                 .tagID(tagID)
                 .build();
-        Blog blog = blogService.createBlog(request, image);
+        Blog blog = blogService.createBlog(request);
         blogTagService.createBlogTag_Blog(request);
         List<BlogTag> bt = blogTagService.getBlogTagsByBlogId(blog.getBlogID());
 //        return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -96,20 +95,19 @@ public class BlogController {
         return ResponseObject.builder()
                 .status(1000)
                 .message("Create blog successfully")
-                .data(new BlogResponse(blog, bt) )
+                .data(blogService.getBlogByID(blog.getBlogID()))
                 .build();
 
     }
 
     @PutMapping("/{blogID}")
     public ResponseObject updateBlog(@PathVariable String blogID,
-                                              @RequestParam("blogName") String blogName,
-                                              @RequestParam("content") String content,
-                                              @RequestParam("status") String status,
-                                              @RequestParam("accountID") String accountID,
-                                              @RequestParam("image") MultipartFile image,
-                                              @RequestParam("toDelete") int toDelete,
-                                              @RequestParam("tagID") List<Integer> tagID
+                                     @RequestParam("blogName") String blogName,
+                                     @RequestParam("content") String content,
+                                     @RequestParam("status") String status,
+                                     @RequestParam("accountID") String accountID,
+                                     @RequestParam("toDelete") int toDelete,
+                                     @RequestParam("tagID") List<Integer> tagID
     ) {
         BlogRequest request = BlogRequest.builder()
                 .blogName(blogName)
@@ -119,7 +117,7 @@ public class BlogController {
                 .toDelete(toDelete)
                 .tagID(tagID)
                 .build();
-        Blog blog = blogService.updateBlog(blogID, request, image);
+        Blog blog = blogService.updateBlog(blogID, request);
         blogTagService.deleteBlogTag_Blog(blogID);
         blogTagService.updateBlogTag_Blog(blogID, request);
         List<BlogTag> bt = blogTagService.getBlogTagsByBlogId(blog.getBlogID());
@@ -127,13 +125,13 @@ public class BlogController {
         return ResponseObject.builder()
                 .status(1000)
                 .message("Update blog successfully")
-                .data(new BlogResponse(blog, bt) )
+                .data(blogService.getBlogByID(blog.getBlogID()))
                 .build();
     }
 
     @DeleteMapping("/{blogID}")
     public ResponseObject deleteBlog(@PathVariable String blogID) {
-       // blogTagService.deleteBlogTag_Blog(blogID);
+        // blogTagService.deleteBlogTag_Blog(blogID);
         blogService.deleteBlog(blogID);
         return ResponseObject.builder()
                 .status(1000)

@@ -32,9 +32,6 @@ public class Blog {
     @Column(name = "status")
     String status;
 
-    @Column(name = "image")
-    String image;
-
     @Column(name = "accountID")
     String accountID;
 

@@ -3,11 +3,15 @@ package com.group4.FKitShop.Service;
 
 
 import com.group4.FKitShop.Entity.Blog;
+import com.group4.FKitShop.Entity.BlogTag;
+import com.group4.FKitShop.Entity.Tag;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.BlogMapper;
 import com.group4.FKitShop.Repository.BlogRepository;
+import com.group4.FKitShop.Repository.TagRepository;
 import com.group4.FKitShop.Request.BlogRequest;
+import com.group4.FKitShop.Response.BlogResponse;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,46 +22,126 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BlogService {
 
-    @Autowired
+
     BlogRepository blogRepository;
-    @Autowired
+
     BlogMapper blogMapper;
 
-    public List<Blog> allBlog(){
-        return blogRepository.findAll();
+    BlogTagService blogTagService;
+
+    TagRepository tagRepository;
+
+    AmazonClient amazonClient;
+
+
+    public List<BlogResponse> allBlog(){
+        List<Blog> blogs = blogRepository.findAll();
+        List<BlogResponse> blogResponses = new ArrayList<>();
+        for (Blog blog : blogs) {
+            BlogResponse blogResponse = new BlogResponse();
+            blogResponse.setBlog(blog);
+            List<BlogTag> blogTags = blogTagService.getBlogTagsByBlogId(blog.getBlogID());
+            List<Tag> tags = new ArrayList<>();
+            for (BlogTag blogTag : blogTags) {
+                tags.add(tagRepository.findById(blogTag.getTagID()).get());
+            }
+            blogResponse.setTags(tags);
+            blogResponses.add(blogResponse);
+        }
+        return blogResponses;
     }
 
-    public Blog getBlogByID(String id){
+    public BlogResponse getBlogByID(String id){
         Blog blog = blogRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOTFOUND));
-
-        return blog;
+        BlogResponse blogResponse = new BlogResponse();
+        blogResponse.setBlog(blog);
+        List<BlogTag> blogTags = blogTagService.getBlogTagsByBlogId(blog.getBlogID());
+        List<Tag> tags = new ArrayList<>();
+        for (BlogTag blogTag : blogTags) {
+            tags.add(tagRepository.findById(blogTag.getTagID()).get());
+        }
+        blogResponse.setTags(tags);
+        return blogResponse;
     }
 
     // get blog by tagID
-    public List<Blog> getBlogByTag(int id){
-        return blogRepository.getBlogList(id);
+    public List<BlogResponse> getBlogByTag(int id){
+        List<Blog> blogs = blogRepository.getBlogList(id);
+        List<BlogResponse> blogResponses = new ArrayList<>();
+        for (Blog blog : blogs) {
+            BlogResponse blogResponse = new BlogResponse();
+            blogResponse.setBlog(blog);
+            List<BlogTag> blogTags = blogTagService.getBlogTagsByBlogId(blog.getBlogID());
+            List<Tag> tags = new ArrayList<>();
+            for (BlogTag blogTag : blogTags) {
+                tags.add(tagRepository.findById(blogTag.getTagID()).get());
+            }
+            blogResponse.setTags(tags);
+            blogResponses.add(blogResponse);
+        }
+        return blogResponses;
     }
 
     // get blog active
-    public List<Blog> getBlogActive(){
-        return blogRepository.getBlogActive();
+    public List<BlogResponse> getBlogActive(){
+        List<Blog> blogs = blogRepository.getBlogActive();
+        List<BlogResponse> blogResponses = new ArrayList<>();
+        for (Blog blog : blogs) {
+            BlogResponse blogResponse = new BlogResponse();
+            blogResponse.setBlog(blog);
+            List<BlogTag> blogTags = blogTagService.getBlogTagsByBlogId(blog.getBlogID());
+            List<Tag> tags = new ArrayList<>();
+            for (BlogTag blogTag : blogTags) {
+                tags.add(tagRepository.findById(blogTag.getTagID()).get());
+            }
+            blogResponse.setTags(tags);
+            blogResponses.add(blogResponse);
+        }
+        return blogResponses;
     }
 
     // filter by date
-    public List<Blog> getBlogDateDesc(){
-        return blogRepository.getBlogListDesc();
+    public List<BlogResponse> getBlogDateDesc(){
+        List<Blog> blogs = blogRepository.getBlogListDesc();
+        List<BlogResponse> blogResponses = new ArrayList<>();
+        for (Blog blog : blogs) {
+            BlogResponse blogResponse = new BlogResponse();
+            blogResponse.setBlog(blog);
+            List<BlogTag> blogTags = blogTagService.getBlogTagsByBlogId(blog.getBlogID());
+            List<Tag> tags = new ArrayList<>();
+            for (BlogTag blogTag : blogTags) {
+                tags.add(tagRepository.findById(blogTag.getTagID()).get());
+            }
+            blogResponse.setTags(tags);
+            blogResponses.add(blogResponse);
+        }
+        return blogResponses;
     }
-    public List<Blog> getBlogDateAsc(){
-        return blogRepository.getBlogListAsc();
+    public List<BlogResponse> getBlogDateAsc(){
+        List<Blog> blogs = blogRepository.getBlogListAsc();
+        List<BlogResponse> blogResponses = new ArrayList<>();
+        for (Blog blog : blogs) {
+            BlogResponse blogResponse = new BlogResponse();
+            blogResponse.setBlog(blog);
+            List<BlogTag> blogTags = blogTagService.getBlogTagsByBlogId(blog.getBlogID());
+            List<Tag> tags = new ArrayList<>();
+            for (BlogTag blogTag : blogTags) {
+                tags.add(tagRepository.findById(blogTag.getTagID()).get());
+            }
+            blogResponse.setTags(tags);
+            blogResponses.add(blogResponse);
+        }
+        return blogResponses;
     }
 
     private static final String UPLOAD_DIRECTORY = "uploads" + File.separator + "blogs";
@@ -97,19 +181,19 @@ public class BlogService {
         return code;
     }
 
-    public Blog createBlog(BlogRequest request, MultipartFile image) {
+    public Blog createBlog(BlogRequest request) {
         if (blogRepository.existsByBlogName(request.getBlogName()))
             throw new AppException(ErrorCode.BLOG_DUPLICATED);
 
+
         Blog blog = blogMapper.toBlog(request);
         blog.setBlogID(generateUniqueCode());
-        blog.setImage(uploadImage(image));
         blog.setCreateDate(new Date());
         blog.setToDelete(1);
         return blogRepository.save(blog);
     }
 
-    public Blog updateBlog(String id, BlogRequest request, MultipartFile image) {
+    public Blog updateBlog(String id, BlogRequest request) {
 
         if (!blogRepository.existsById(id))
             throw new AppException(ErrorCode.BLOG_NOTFOUND);
@@ -120,10 +204,6 @@ public class BlogService {
         Blog blog = blogMapper.toBlog(request);
         blog.setBlogID(id);
         blog.setCreateDate(blogGetDate.getCreateDate());
-        String imageUrl = uploadImage(image);
-        if(imageUrl != ""){
-            blog.setImage(imageUrl);
-        }
         return blogRepository.save(blog);
     }
 
