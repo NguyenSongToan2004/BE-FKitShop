@@ -12,7 +12,6 @@ import com.group4.FKitShop.Request.OrderLab;
 import com.group4.FKitShop.Response.GetLabByAccountIDResponse;
 import com.group4.FKitShop.Response.GetLabResponse;
 import com.itextpdf.html2pdf.HtmlConverter;
-import com.itextpdf.svg.renderers.impl.ISvgTextNodeRenderer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,12 +22,12 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.Document;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -191,7 +190,7 @@ public class LabService {
         );
         String[] token = request.getLabGuideIDs().split(",");
         System.out.println(token.length);
-        StringBuilder htmlScript = new StringBuilder("<h2><strong>Lab name</strong> : " + lab.getName() + "</h2>" +
+        StringBuilder htmlScript = new StringBuilder("<h2 style ='margin-top : 200px;'><strong>Lab name</strong> : " + lab.getName() + "</h2>" +
                 "<h4><strong>Description</strong> : " + lab.getDescription() + "</h4>" +
                 "<h4><strong>Level</strong> : " + lab.getLevel() + "</h4>");
         List<Integer> labGuideIDs = new ArrayList<>();
@@ -205,10 +204,71 @@ public class LabService {
             labGuide.setIsUsed(1);
             htmlScript.append(labGuide.getContent());
         }
+        htmlScript.append("<hr/>");
         labGuideRepository.updateLabGuide(labID, labGuideIDs);
         lab.setFileNamePDF(generatePdfFromHtml(htmlScript.toString(), lab.getName()));
         return labRepository.save(lab);
     }
+
+//    private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
+//        Orders orders = ordersRepository.findById(orderID).orElseThrow(
+//                () -> new AppException(ErrorCode.ORDERS_NOTFOUND)
+//        );
+//        Accounts accounts = accountsRepository.findById(orders.getAccountID()).orElseThrow(
+//                () -> new AppException(ErrorCode.USER_NOT_EXIST)
+//        );
+//        Lab lab = labRepository.findById(labID).orElseThrow(
+//                () -> new AppException(ErrorCode.LAB_NOTFOUND)
+//        );
+//        Product product = productRepository.findById(productID).orElseThrow(
+//                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+//        );
+//        String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
+//        try (PDDocument document = PDDocument.load(new File(pdfPath))) {
+//            PDDocument documentReplace = document;
+//            PDType0Font font = PDType0Font.load(documentReplace, new File("Arial Unicode MS Bold.ttf"));
+//            // Lấy trang đầu tiên của tài liệu PDF
+//            PDPage page = documentReplace.getPage(0);
+//
+//            // Tạo ContentStream để thêm nội dung vào trang
+//            PDPageContentStream contentStream = new PDPageContentStream(documentReplace, page, PDPageContentStream.AppendMode.APPEND, false, true);
+//
+//            contentStream.setFont(font, 12); // Đặt font và cỡ chữ
+//            //  Bắt đầu ghi văn bản vào trang
+//            contentStream.beginText();
+//
+//            // Đặt vị trí để thêm văn bản (ví dụ: tọa độ x = 50, y = 750)
+//            contentStream.newLineAtOffset(50, 750);  // Tọa độ y cao để ghi ở đầu trang
+//            // Nội dung văn bản cần thêm vào
+//            contentStream.setLeading(20);
+//            contentStream.showText("OrderID: " + orders.getOrdersID() + "                    ShipDate: " + orders.getShipDate());
+//            contentStream.newLine();
+//            contentStream.showText("Customer Name: " + accounts.getFullName());
+//            contentStream.newLine();
+//            contentStream.showText("Kit STEM: " + product.getName() + "                      Lab Name: " + lab.getName());
+//            contentStream.newLine();
+//            contentStream.showText("Level : " + lab.getLevel());
+//            contentStream.newLine();
+//
+//            // Kết thúc việc ghi văn bản
+//            contentStream.endText();
+//            contentStream.close();
+//            contentStream.setFont(PDType1Font.HELVETICA, 12);
+//            contentStream.beginText();
+//            contentStream.setFont(PDType1Font.HELVETICA, 12);
+//            contentStream.newLineAtOffset(50, 500); // Vị trí chèn
+//            contentStream.showText("Nội dung mới được thêm vào");
+//            contentStream.endText();
+//            contentStream.close();
+//            File pdfDownload = new File("download");
+//            // Lưu file PDF đã cập nhật
+//            documentReplace.save(pdfDownload);
+//            return pdfDownload;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
+//        }
+//    }
 
     private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
         Orders orders = ordersRepository.findById(orderID).orElseThrow(
@@ -225,43 +285,91 @@ public class LabService {
         );
         String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
         try (PDDocument document = PDDocument.load(new File(pdfPath))) {
-            PDDocument documentReplace = document;
-            PDType0Font font = PDType0Font.load(documentReplace, new File("Arial Unicode MS Bold.ttf"));
-            // Lấy trang đầu tiên của tài liệu PDF
-            PDPage page = documentReplace.getPage(0);
+            PDType0Font font = PDType0Font.load(document, new File("Arial Unicode MS Bold.ttf"));
+            PDPage page = document.getPage(0);
 
             // Tạo ContentStream để thêm nội dung vào trang
-            PDPageContentStream contentStream = new PDPageContentStream(documentReplace, page, PDPageContentStream.AppendMode.PREPEND, false);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
+                contentStream.setFont(font, 12); // Đặt font và cỡ chữ
 
-            // Bắt đầu ghi văn bản vào trang
-            contentStream.beginText();
-            contentStream.setFont(font, 12); // Đặt font và cỡ chữ
+                // Bắt đầu ghi văn bản vào trang
+                //contentStream.beginText();
+                contentStream.setLeading(20); // Đặt khoảng cách giữa các dòng
 
-            // Đặt vị trí để thêm văn bản (ví dụ: tọa độ x = 50, y = 750)
-            contentStream.newLineAtOffset(50, 750);  // Tọa độ y cao để ghi ở đầu trang
-            // Nội dung văn bản cần thêm vào
-            contentStream.setLeading(20);
-            contentStream.showText("OrderID: " + orders.getOrdersID() + "                    ShipDate: " + orders.getShipDate());
-            contentStream.newLine();
-            contentStream.showText("Customer Name: " + accounts.getFullName());
-            contentStream.newLine();
-            contentStream.showText("Kit STEM: " + product.getName() + "                      Lab Name: " + lab.getName());
-            contentStream.newLine();
-            contentStream.showText("Level : " + lab.getLevel());
-            contentStream.newLine();
-            contentStream.newLine();
+                // Đặt vị trí để thêm văn bản ở đầu trang
+                //contentStream.newLineAtOffset(50, page.getMediaBox().getHeight() - 50); // Vị trí bắt đầu (50 điểm từ bên trái và 50 điểm từ trên cùng)
 
-            // Kết thúc việc ghi văn bản
-            contentStream.endText();
-            contentStream.close();
-            File pdfDownload = new File("download");
+                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+                // Nội dung văn bản cần thêm vào
+//                contentStream.showText("OrderID: " + orders.getOrdersID() + "                    ShipDate: " + formatter.format(orders.getShipDate()));
+//                contentStream.newLine();
+//                contentStream.showText("Customer Name: " + accounts.getFullName());
+//                contentStream.newLine();
+//                contentStream.showText("Kit STEM: " + product.getName() + "                      Lab Name: " + lab.getName());
+//                contentStream.newLine();
+//                contentStream.showText("Level: " + lab.getLevel());
+//                contentStream.newLine();
+                float textWidth = 600; // Chiều rộng tối đa cho văn bản
+                float startY = page.getMediaBox().getHeight() - 50; // Vị trí Y bắt đầu
+                int countBreak = 1;
+                countBreak = drawTextWithLineBreaks(contentStream, "OrderID: " + orders.getOrdersID() + "                    ShipDate: " + formatter.format(orders.getShipDate()),
+                        50, startY, font, 12, textWidth);
+                System.out.println("count break 1 : "  + countBreak);
+                countBreak = drawTextWithLineBreaks(contentStream, "Customer Name: " + accounts.getFullName(),
+                        50, startY - 25 - countBreak * 25, font, 12, textWidth);
+                System.out.println("count break 2 : "  + countBreak);
+                countBreak = drawTextWithLineBreaks(contentStream, "Kit STEM: " + product.getName() + "                 Lab Name: " + lab.getName(),
+                        50, startY - 50 - countBreak * 25, font, 12, textWidth);
+                System.out.println("count break 3 : "  + countBreak);
+                countBreak = drawTextWithLineBreaks(contentStream, "Level: " + lab.getLevel(),
+                        50, startY - 75 - countBreak * 25, font, 12, textWidth);
+                System.out.println("count break 4 : "  + countBreak);
+                // Kết thúc việc ghi văn bản
+                // contentStream.endText();
+            }
+
             // Lưu file PDF đã cập nhật
-            documentReplace.save(pdfDownload);
+            File pdfDownload = new File("download"); // Đảm bảo rằng đường dẫn tồn tại
+            document.save(pdfDownload);
             return pdfDownload;
         } catch (IOException e) {
             e.printStackTrace();
             throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
         }
+    }
+
+    private int drawTextWithLineBreaks(PDPageContentStream contentStream, String text, float x, float y, PDType0Font font, float fontSize, float width) throws IOException {
+        int countBreak = 0;
+        System.out.println("Float y : " + y);
+        contentStream.beginText();
+        contentStream.setFont(font, fontSize);
+        contentStream.newLineAtOffset(x, y);
+
+        // Phân tách văn bản thành các từ
+        String[] words = text.split(" ");
+        StringBuilder line = new StringBuilder();
+
+        for (String word : words) {
+            // Kiểm tra chiều dài của dòng
+            if (font.getStringWidth(line.toString() + word + " ") / 1000 * fontSize > width) {
+                // Nếu vượt quá chiều rộng, ghi dòng hiện tại và bắt đầu một dòng mới
+                contentStream.showText(line.toString());
+                System.out.println("line : " + line.toString());
+                contentStream.newLineAtOffset(0, -25); // Di chuyển xuống cho dòng mới
+                line = new StringBuilder(word + " "); // Bắt đầu dòng mới với từ hiện tại
+                countBreak++;
+            } else {
+                line.append(word).append(" ");
+            }
+        }
+
+        // Ghi dòng cuối cùng nếu có
+        if (!line.isEmpty()) {
+            contentStream.showText(line.toString());
+        }
+        contentStream.endText();
+        System.out.println("count break : " + countBreak);
+        return countBreak;
     }
 
     private String generatePdfFromHtml(String htmlContent, String name) {

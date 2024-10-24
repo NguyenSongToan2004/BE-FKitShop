@@ -141,6 +141,7 @@ public class OrdersService {
         Orders orders = ordersRepository.findById(ordersID)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDERS_NOTFOUND));
         if (status.equals("delivered")) {
+            orders.setShipDate(new java.sql.Date(System.currentTimeMillis()));
             List<OrderDetails> orderDetailsList = orderDetailsRepository.findByOrdersID(ordersID);
             for (OrderDetails orderDetails : orderDetailsList) {
                 Product product = productRepository.findById(orderDetails.getProductID()).orElseThrow(
@@ -189,7 +190,7 @@ public class OrdersService {
             count++;
         }
 
-        String fullAddress = orders.getAddress() + " " + orders.getWard() + " " + orders.getDistrict() + " " + orders.getProvince();
+        String fullAddress = orders.getAddress() + ", " + orders.getWard() + ", " + orders.getDistrict() + ", " + orders.getProvince();
         String body = "<p>Cảm ơn quý khách <strong>" + accounts.getFullName() + "</strong> đã đặt hàng tại FKShop.</p>" +
                 "<p>Đơn hàng <strong>" + orders.getOrdersID() + "</strong> của quý khách đã được tiếp nhận, chúng tôi sẽ xử lý trong khoảng thời gian sớm nhất. Sau đây là thông tin đơn hàng.</p>" +
                 "<h3>Thông tin đơn hàng " + orders.getOrdersID() + " vào ngày " + orders.getOrderDate() + " " + "</h3>" +
