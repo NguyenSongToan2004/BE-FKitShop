@@ -149,6 +149,21 @@ public class QuestionService {
         return responses;
     }
 
+    public List<QuestionResponse> getQuestionByStatus(int st){
+        List<QuestionResponse> responses = new ArrayList<>();
+        List<Question> questions = questionRepository.getQuestionByStatus(st);
+        for (Question question : questions) {
+            QuestionResponse questionResponse = questionMapper.toQuestionResponse(question);
+            String customerName = (accountsService.getAccountByID(question.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            String labName = labService.getLab(question.getLabID()).getName();
+            questionResponse.setCustomerName(customerName);
+            questionResponse.setLabName(labName);
+            responses.add(questionResponse);
+        }
+        return responses;
+    }
+
 }
 
 

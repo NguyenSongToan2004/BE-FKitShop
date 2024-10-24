@@ -21,5 +21,4 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Integer> {
 
     @Query(value = "select * from Wishlist where accountID = :accountID and productID = :productID", nativeQuery = true)
     Wishlist checkWishlistByAccountIDAndProductID(@Param("accountID") String accountID, @Param("productID") String productID);
-
 }

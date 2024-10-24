@@ -1,20 +1,23 @@
 package com.group4.FKitShop.Service;
 
 
-import com.group4.FKitShop.Entity.Feedback;
+import com.group4.FKitShop.Entity.Product;
+import com.group4.FKitShop.Entity.Question;
 import com.group4.FKitShop.Entity.Wishlist;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Repository.WishlistRepository;
-import com.group4.FKitShop.Request.FeedbackRequest;
 import com.group4.FKitShop.Request.WishlistRequest;
+import com.group4.FKitShop.Response.QuestionResponse;
+import com.group4.FKitShop.Response.WishlistResponse;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,41 +26,111 @@ import java.util.List;
 public class WishlistService {
 
     WishlistRepository wishlistRepository;
+    AccountsService accountsService;
+    ProductRepository productRepository;
 
-    public List<Wishlist> allWishlists(){
-        return wishlistRepository.findAll();
+
+    public List<WishlistResponse> allWishlists(){
+        List<WishlistResponse> responses = new ArrayList<>();
+        List<Wishlist> wishlists = wishlistRepository.findAll();
+        for (Wishlist wishlist : wishlists) {
+            WishlistResponse wishlistResponse = new WishlistResponse();
+            String customerName = (accountsService.getAccountByID(wishlist.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            Product product = productRepository.findById(wishlist.getProductID()).orElseThrow(
+                    () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+            wishlistResponse.setWishlist(wishlist);
+            wishlistResponse.setCustomerName(customerName);
+            wishlistResponse.setProducts(product);
+            responses.add(wishlistResponse);
+        }
+        return responses;
     }
 
-    public Wishlist getWishlistByID(int id){
+    public WishlistResponse getWishlistByID(int id){
         Wishlist wishlist = wishlistRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.WISHLIST_NOTFOUND));
-        return wishlist;
+        WishlistResponse wishlistResponse = new WishlistResponse();
+        String customerName = (accountsService.getAccountByID(wishlist.getAccountID())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+        Product product = productRepository.findById(wishlist.getProductID()).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+        wishlistResponse.setWishlist(wishlist);
+        wishlistResponse.setCustomerName(customerName);
+        wishlistResponse.setProducts(product);
+        return wishlistResponse;
     }
 
-    public List<Wishlist> getWishlistByAccountID(String id){
-        return wishlistRepository.getWishlistByAccountID(id);
+    public List<WishlistResponse> getWishlistByAccountID(String id){
+        List<WishlistResponse> responses = new ArrayList<>();
+        List<Wishlist> wishlists = wishlistRepository.getWishlistByAccountID(id);
+        for (Wishlist wishlist : wishlists) {
+            WishlistResponse wishlistResponse = new WishlistResponse();
+            String customerName = (accountsService.getAccountByID(wishlist.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            Product product = productRepository.findById(wishlist.getProductID()).orElseThrow(
+                    () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+            wishlistResponse.setWishlist(wishlist);
+            wishlistResponse.setCustomerName(customerName);
+            wishlistResponse.setProducts(product);
+            responses.add(wishlistResponse);
+        }
+        return responses;
     }
 
-    public List<Wishlist> getWishlistByProductID(String id){
-        return wishlistRepository.getWishlistByProductID(id);
+    public List<WishlistResponse> getWishlistByProductID(String id){
+        List<WishlistResponse> responses = new ArrayList<>();
+        List<Wishlist> wishlists = wishlistRepository.getWishlistByProductID(id);
+        for (Wishlist wishlist : wishlists) {
+            WishlistResponse wishlistResponse = new WishlistResponse();
+            String customerName = (accountsService.getAccountByID(wishlist.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            Product product = productRepository.findById(wishlist.getProductID()).orElseThrow(
+                    () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+            wishlistResponse.setWishlist(wishlist);
+            wishlistResponse.setCustomerName(customerName);
+            wishlistResponse.setProducts(product);
+            responses.add(wishlistResponse);
+        }
+        return responses;
     }
 
-    public Wishlist createWishlist(WishlistRequest request) {
+    public WishlistResponse createWishlist(WishlistRequest request) {
        if(wishlistRepository.checkWishlistByAccountIDAndProductID(request.getAccountID(), request.getProductID()) != null){
            throw new AppException(ErrorCode.WISHLIST_EXIST);
        }
         Wishlist wishlist = new Wishlist();
         wishlist.setAccountID(request.getAccountID());
         wishlist.setProductID(request.getProductID());
-        return wishlistRepository.save(wishlist);
+        wishlistRepository.save(wishlist);
+
+        WishlistResponse wishlistResponse = new WishlistResponse();
+        String customerName = (accountsService.getAccountByID(wishlist.getAccountID())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+        Product product = productRepository.findById(wishlist.getProductID()).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+        wishlistResponse.setWishlist(wishlist);
+        wishlistResponse.setCustomerName(customerName);
+        wishlistResponse.setProducts(product);
+        return wishlistResponse;
     }
 
-    public Wishlist updateWish(int id, WishlistRequest request){
+    public WishlistResponse updateWish(int id, WishlistRequest request){
         Wishlist wishlist = wishlistRepository.findById(id)
                 .orElseThrow( () -> new AppException(ErrorCode.WISHLIST_NOTFOUND));
         wishlist.setAccountID(request.getAccountID());
         wishlist.setProductID(request.getProductID());
-        return wishlistRepository.save(wishlist);
+        wishlistRepository.save(wishlist);
+
+        WishlistResponse wishlistResponse = new WishlistResponse();
+        String customerName = (accountsService.getAccountByID(wishlist.getAccountID())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+        Product product = productRepository.findById(wishlist.getProductID()).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+        wishlistResponse.setWishlist(wishlist);
+        wishlistResponse.setCustomerName(customerName);
+        wishlistResponse.setProducts(product);
+        return wishlistResponse;
     }
 
     @Transactional
