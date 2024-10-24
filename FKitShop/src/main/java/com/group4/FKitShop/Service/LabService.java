@@ -51,9 +51,9 @@ public class LabService {
         }
         Lab lab = LabMapper.INSTANCE.toLab(request);
         lab.setLabID(generateID());
-        // create current Date
         lab.setCreateDate(new Date());
         lab.setStatus(1);
+        System.out.println("Is empty : " + file.isEmpty());
         lab.setFileNamePDF(file != null ? saveLabPDF(file) : null);
         return labRepository.save(lab);
     }
@@ -96,10 +96,12 @@ public class LabService {
     private static final String STORAGE_DIRECTORY = "uploads" + File.separator + "lab";
 
     public String saveLabPDF(MultipartFile fileToSave) {
-
         if (fileToSave.isEmpty()) {
             return null;
         }
+        System.out.println("End with : " + fileToSave.getOriginalFilename());
+        if (!fileToSave.getOriginalFilename().endsWith(".pdf"))
+            throw new AppException(ErrorCode.LAB_END_NOT_PDF);
 
         var targetFile = new File(System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileToSave.getOriginalFilename());
         // bảo mật tránh hacker lỏ vào file cha
@@ -120,8 +122,12 @@ public class LabService {
         if (fileToSave.isEmpty()) {
             return null;
         }
+
+        if (!fileToSave.getOriginalFilename().endsWith(".pdf"))
+            throw new AppException(ErrorCode.LAB_END_NOT_PDF);
+
         if (labRepository.findByFileNamePDF(fileToSave.getOriginalFilename()) != null)
-            throw new AppException(ErrorCode.LAB_FILENAME_DUPLICATED);
+            throw new AppException(ErrorCode.LAB_END_NOT_PDF);
 
         Lab lab = labRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.LAB_NOTFOUND));
 
@@ -134,7 +140,6 @@ public class LabService {
         try {
             Files.copy(fileToSave.getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new AppException(ErrorCode.LAB_UPLOAD_FAILED);
         }
 
@@ -210,66 +215,6 @@ public class LabService {
         return labRepository.save(lab);
     }
 
-//    private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
-//        Orders orders = ordersRepository.findById(orderID).orElseThrow(
-//                () -> new AppException(ErrorCode.ORDERS_NOTFOUND)
-//        );
-//        Accounts accounts = accountsRepository.findById(orders.getAccountID()).orElseThrow(
-//                () -> new AppException(ErrorCode.USER_NOT_EXIST)
-//        );
-//        Lab lab = labRepository.findById(labID).orElseThrow(
-//                () -> new AppException(ErrorCode.LAB_NOTFOUND)
-//        );
-//        Product product = productRepository.findById(productID).orElseThrow(
-//                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
-//        );
-//        String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
-//        try (PDDocument document = PDDocument.load(new File(pdfPath))) {
-//            PDDocument documentReplace = document;
-//            PDType0Font font = PDType0Font.load(documentReplace, new File("Arial Unicode MS Bold.ttf"));
-//            // Lấy trang đầu tiên của tài liệu PDF
-//            PDPage page = documentReplace.getPage(0);
-//
-//            // Tạo ContentStream để thêm nội dung vào trang
-//            PDPageContentStream contentStream = new PDPageContentStream(documentReplace, page, PDPageContentStream.AppendMode.APPEND, false, true);
-//
-//            contentStream.setFont(font, 12); // Đặt font và cỡ chữ
-//            //  Bắt đầu ghi văn bản vào trang
-//            contentStream.beginText();
-//
-//            // Đặt vị trí để thêm văn bản (ví dụ: tọa độ x = 50, y = 750)
-//            contentStream.newLineAtOffset(50, 750);  // Tọa độ y cao để ghi ở đầu trang
-//            // Nội dung văn bản cần thêm vào
-//            contentStream.setLeading(20);
-//            contentStream.showText("OrderID: " + orders.getOrdersID() + "                    ShipDate: " + orders.getShipDate());
-//            contentStream.newLine();
-//            contentStream.showText("Customer Name: " + accounts.getFullName());
-//            contentStream.newLine();
-//            contentStream.showText("Kit STEM: " + product.getName() + "                      Lab Name: " + lab.getName());
-//            contentStream.newLine();
-//            contentStream.showText("Level : " + lab.getLevel());
-//            contentStream.newLine();
-//
-//            // Kết thúc việc ghi văn bản
-//            contentStream.endText();
-//            contentStream.close();
-//            contentStream.setFont(PDType1Font.HELVETICA, 12);
-//            contentStream.beginText();
-//            contentStream.setFont(PDType1Font.HELVETICA, 12);
-//            contentStream.newLineAtOffset(50, 500); // Vị trí chèn
-//            contentStream.showText("Nội dung mới được thêm vào");
-//            contentStream.endText();
-//            contentStream.close();
-//            File pdfDownload = new File("download");
-//            // Lưu file PDF đã cập nhật
-//            documentReplace.save(pdfDownload);
-//            return pdfDownload;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
-//        }
-//    }
-
     private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
         Orders orders = ordersRepository.findById(orderID).orElseThrow(
                 () -> new AppException(ErrorCode.ORDERS_NOTFOUND)
@@ -300,30 +245,22 @@ public class LabService {
                 //contentStream.newLineAtOffset(50, page.getMediaBox().getHeight() - 50); // Vị trí bắt đầu (50 điểm từ bên trái và 50 điểm từ trên cùng)
 
                 SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-                // Nội dung văn bản cần thêm vào
-//                contentStream.showText("OrderID: " + orders.getOrdersID() + "                    ShipDate: " + formatter.format(orders.getShipDate()));
-//                contentStream.newLine();
-//                contentStream.showText("Customer Name: " + accounts.getFullName());
-//                contentStream.newLine();
-//                contentStream.showText("Kit STEM: " + product.getName() + "                      Lab Name: " + lab.getName());
-//                contentStream.newLine();
-//                contentStream.showText("Level: " + lab.getLevel());
-//                contentStream.newLine();
+
                 float textWidth = 600; // Chiều rộng tối đa cho văn bản
                 float startY = page.getMediaBox().getHeight() - 50; // Vị trí Y bắt đầu
-                int countBreak = 1;
+                int countBreak;
                 countBreak = drawTextWithLineBreaks(contentStream, "OrderID: " + orders.getOrdersID() + "                    ShipDate: " + formatter.format(orders.getShipDate()),
                         50, startY, font, 12, textWidth);
-                System.out.println("count break 1 : "  + countBreak);
+                System.out.println("count break 1 : " + countBreak);
                 countBreak = drawTextWithLineBreaks(contentStream, "Customer Name: " + accounts.getFullName(),
                         50, startY - 25 - countBreak * 25, font, 12, textWidth);
-                System.out.println("count break 2 : "  + countBreak);
+                System.out.println("count break 2 : " + countBreak);
                 countBreak = drawTextWithLineBreaks(contentStream, "Kit STEM: " + product.getName() + "                 Lab Name: " + lab.getName(),
                         50, startY - 50 - countBreak * 25, font, 12, textWidth);
-                System.out.println("count break 3 : "  + countBreak);
+                System.out.println("count break 3 : " + countBreak);
                 countBreak = drawTextWithLineBreaks(contentStream, "Level: " + lab.getLevel(),
                         50, startY - 75 - countBreak * 25, font, 12, textWidth);
-                System.out.println("count break 4 : "  + countBreak);
+                System.out.println("count break 4 : " + countBreak);
                 // Kết thúc việc ghi văn bản
                 // contentStream.endText();
             }

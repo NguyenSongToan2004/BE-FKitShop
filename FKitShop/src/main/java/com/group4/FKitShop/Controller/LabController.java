@@ -30,10 +30,7 @@ public class LabController {
     private LabService labService;
     @Autowired
     private AmazonClient amazonClient;
-//    String productID;
-//    String name;
-//    String description;
-//    String level;
+
     @PostMapping("/addLab")
     ResponseEntity<ResponseObject> addLab(
             @RequestParam("productID") String productID,
@@ -94,28 +91,28 @@ public class LabController {
     @GetMapping("/status-labs/{status}")
     ResponseEntity<ResponseObject> getActiveLabs(@PathVariable int status) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get lab by status "+ status + " successfully !!",
+                new ResponseObject(1000, "Get lab by status " + status + " successfully !!",
                         labService.getLabByStatus(status))
         );
     }
 
     @PostMapping("/upload-lab/{labID}")
     ResponseEntity<ResponseObject> uploadLab(@RequestParam("file") MultipartFile file, @PathVariable("labID") String id) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    ResponseObject.builder()
-                            .status(1000)
-                            .message("Upload Successfully !!")
-                            .data(labService.saveLabPDF(file, id))
-                            .build()
-            );
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(1000)
+                        .message("Upload Successfully !!")
+                        .data(labService.saveLabPDF(file, id))
+                        .build()
+        );
     }
 
     @GetMapping("/get-link-download")
     ResponseEntity<ResponseObject> getLinkDownLoad(@RequestParam("accountID") String accountID,
-                                         @RequestParam("orderID") String orderID,
-                                         @RequestParam("labID") String labID,
-                                         @RequestParam("productID") String productID,
-                                         @RequestParam("fileName") String fileName) {
+                                                   @RequestParam("orderID") String orderID,
+                                                   @RequestParam("labID") String labID,
+                                                   @RequestParam("productID") String productID,
+                                                   @RequestParam("fileName") String fileName) {
         String link = String.format("http://localhost:8080/fkshop/lab/download/accountID=%s/" +
                 "orderID=%s/labID=%s/productID=%s/fileName=%s", accountID, orderID, labID, productID, fileName);
         return ResponseEntity.ok(
@@ -128,8 +125,7 @@ public class LabController {
                                          @RequestParam("orderID") String orderID,
                                          @RequestParam("labID") String labID,
                                          @RequestParam("productID") String productID,
-                                         @RequestParam("fileName") String fileName
-                                         ) {
+                                         @RequestParam("fileName") String fileName) {
         DownloadLabRequest request = new DownloadLabRequest(accountID, orderID, labID, productID, fileName);
         try {
             var fileToDownload = labService.downloadFilePDF(request);
@@ -140,14 +136,13 @@ public class LabController {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(new FileSystemResource(fileToDownload));
         } catch (Exception e) {
-            e.printStackTrace();
             throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
         }
     }
 
     @GetMapping("/account/{accountID}")
     ResponseEntity<ResponseObject> getLabByAccountID(@PathVariable String accountID) {
-        return  ResponseEntity.ok(
+        return ResponseEntity.ok(
                 new ResponseObject(1000, "Get labs successfully !!", labService.getLabByAccountID(accountID))
         );
     }
@@ -162,7 +157,7 @@ public class LabController {
     @PostMapping("/upload-img")
     ResponseEntity<CKEditorResponse> uploadImg(@RequestParam("file") MultipartFile file) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            new CKEditorResponse(true, amazonClient.uploadFile(file, "Lab-img"))
+                new CKEditorResponse(true, amazonClient.uploadFile(file, "Lab-img"))
         );
     }
 }

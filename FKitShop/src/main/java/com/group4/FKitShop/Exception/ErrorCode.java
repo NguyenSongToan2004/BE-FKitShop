@@ -28,6 +28,7 @@ public enum ErrorCode {
     LAB_UNSUPPORTED_FILENAME(1013, "Unsupported filename!!"),
     LAB_DOWNLOAD_FAILED(1014, "Download failed"),
     LAB_FILENAME_DUPLICATED(1015, "This file PDF already exists!!"),
+    LAB_END_NOT_PDF(1015, "Unsupported File Format!!"),
 
     // Product Errors
     PRODUCT_NAMEDUPLICATED(1016, "This product name has already been taken!!"),
