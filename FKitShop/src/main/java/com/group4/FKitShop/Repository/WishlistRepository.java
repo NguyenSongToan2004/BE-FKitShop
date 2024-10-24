@@ -11,14 +11,17 @@ import java.util.List;
 @Repository
 public interface WishlistRepository extends JpaRepository<Wishlist, Integer> {
 
+    // get wishlist by accountid
     @Query(value = "select * from Wishlist\n" +
             "    where accountID = :id", nativeQuery = true)
     List<Wishlist> getWishlistByAccountID(@Param("id") String id);
 
+    // get wishlist by productid
     @Query(value = "select * from Wishlist\n" +
             "    where productID = :id", nativeQuery = true)
     List<Wishlist> getWishlistByProductID(@Param("id") String id);
 
+    // check wishlist existed
     @Query(value = "select * from Wishlist where accountID = :accountID and productID = :productID", nativeQuery = true)
     Wishlist checkWishlistByAccountIDAndProductID(@Param("accountID") String accountID, @Param("productID") String productID);
 }

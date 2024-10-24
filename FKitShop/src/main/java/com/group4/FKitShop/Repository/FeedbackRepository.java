@@ -11,10 +11,12 @@ import java.util.List;
 @Repository
 public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
+    // get feedback by accountid
     @Query(value = "select * from Feedback\n" +
             "    where accountID = :id", nativeQuery = true)
     List<Feedback> getFeedbackByAccountID(@Param("id") String id);
 
+    // get feedback by productid
     @Query(value = "select * from Feedback\n" +
             "    where productID = :id", nativeQuery = true)
     List<Feedback> getFeedbackByProductID(@Param("id") String id);

@@ -40,7 +40,6 @@ public class QuestionService {
             questionResponse.setLabName(labName);
             responses.add(questionResponse);
         }
-
         return responses;
     }
 
@@ -55,53 +54,6 @@ public class QuestionService {
         questionResponse.setLabName(labName);
         return questionResponse;
 
-    }
-
-    public QuestionResponse createQuestion(QuestionRequest request) {
-        QuestionResponse questionResponse = new QuestionResponse();
-        Question question = questionMapper.toQuestion(request);
-        question.setStatus(0);
-        question.setPostDate(new Date());
-        questionRepository.save(question);
-        questionResponse = questionMapper.toQuestionResponse(question);
-        String customerName = (accountsService.getAccountByID(question.getAccountID())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
-        String labName = labService.getLab(question.getLabID()).getName();
-        questionResponse.setCustomerName(customerName);
-        questionResponse.setLabName(labName);
-        return questionResponse;
-    }
-
-    public QuestionResponse updateQuestion(int id, QuestionRequest request){
-        QuestionResponse questionResponse = new QuestionResponse();
-        Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOTFOUND));
-        Question ques = questionMapper.toQuestion(request);
-        ques.setAccountID(question.getAccountID());
-        ques.setPostDate(question.getPostDate());
-        ques.setQuestionID(id);
-        if(!request.getResponse().isEmpty()){
-            ques.setResponseDate(new Date());
-            ques.setStatus(1);
-        }else{
-            ques.setStatus(0);
-            ques.setResponseDate(null);
-        }
-        questionRepository.save(ques);
-        questionResponse = questionMapper.toQuestionResponse(question);
-        String customerName = (accountsService.getAccountByID(question.getAccountID())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
-        String labName = labService.getLab(question.getLabID()).getName();
-        questionResponse.setCustomerName(customerName);
-        questionResponse.setLabName(labName);
-        return questionResponse;
-    }
-
-    @Transactional
-    public void deleteQuestion(int id) {
-        if (!questionRepository.existsById(id))
-            throw new AppException(ErrorCode.FEEDBACK_NOTFOUND);
-        questionRepository.deleteById(id);
     }
 
     public List<QuestionResponse> getQuestionByAccountID(String id){
@@ -162,6 +114,53 @@ public class QuestionService {
             responses.add(questionResponse);
         }
         return responses;
+    }
+
+    public QuestionResponse createQuestion(QuestionRequest request) {
+        QuestionResponse questionResponse = new QuestionResponse();
+        Question question = questionMapper.toQuestion(request);
+        question.setStatus(0);
+        question.setPostDate(new Date());
+        questionRepository.save(question);
+        questionResponse = questionMapper.toQuestionResponse(question);
+        String customerName = (accountsService.getAccountByID(question.getAccountID())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+        String labName = labService.getLab(question.getLabID()).getName();
+        questionResponse.setCustomerName(customerName);
+        questionResponse.setLabName(labName);
+        return questionResponse;
+    }
+
+    public QuestionResponse updateQuestion(int id, QuestionRequest request){
+        QuestionResponse questionResponse = new QuestionResponse();
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOTFOUND));
+        Question ques = questionMapper.toQuestion(request);
+        ques.setAccountID(question.getAccountID());
+        ques.setPostDate(question.getPostDate());
+        ques.setQuestionID(id);
+        if(!request.getResponse().isEmpty()){
+            ques.setResponseDate(new Date());
+            ques.setStatus(1);
+        }else{
+            ques.setStatus(0);
+            ques.setResponseDate(null);
+        }
+        questionRepository.save(ques);
+        questionResponse = questionMapper.toQuestionResponse(question);
+        String customerName = (accountsService.getAccountByID(question.getAccountID())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+        String labName = labService.getLab(question.getLabID()).getName();
+        questionResponse.setCustomerName(customerName);
+        questionResponse.setLabName(labName);
+        return questionResponse;
+    }
+
+    @Transactional
+    public void deleteQuestion(int id) {
+        if (!questionRepository.existsById(id))
+            throw new AppException(ErrorCode.FEEDBACK_NOTFOUND);
+        questionRepository.deleteById(id);
     }
 
 }

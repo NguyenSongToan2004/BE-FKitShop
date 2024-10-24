@@ -16,18 +16,19 @@ public interface TagRepository extends JpaRepository<Tag, Integer> {
 
     boolean existsByTagName(String name);
 
-    // get tag by name
+    // get tag by character(s) contained in name
     @Query(value = "SELECT * FROM Tag\n" +
             "where tagName like :character", nativeQuery = true)
     List<Tag> getTagByName(@Param("character") String character);
 
-    // get tag by blogID
+    // get tag by blogid
     @Query(value = "SELECT t.* FROM Tag t \n" +
             "join BlogTag bt on bt.tagID = t.tagID\n" +
             "join Blog b on b.blogID = bt.blogID\n" +
             "where b.blogID = :id", nativeQuery = true)
     List<Tag> getTagList(@Param("id") String id);
 
+    // get active tag (active tag has status = 1)
     @Query(value = "SELECT * FROM Tag\n" +
             "where status = 1", nativeQuery = true)
     List<Tag> getTagActive();

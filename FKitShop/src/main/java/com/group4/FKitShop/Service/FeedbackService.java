@@ -2,17 +2,23 @@ package com.group4.FKitShop.Service;
 
 
 import com.group4.FKitShop.Entity.Feedback;
+import com.group4.FKitShop.Entity.Product;
+import com.group4.FKitShop.Entity.Question;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.FeedbackMapper;
 import com.group4.FKitShop.Repository.FeedbackRepository;
+import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.FeedbackRequest;
+import com.group4.FKitShop.Response.FeedbackResponse;
+import com.group4.FKitShop.Response.QuestionResponse;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,9 +29,24 @@ public class FeedbackService {
 
     FeedbackRepository feedbackRepository;
     FeedbackMapper feedbackMapper;
+    AccountsService accountsService;
+    ProductRepository productRepository;
 
-    public List<Feedback> allFeedbacks(){
-        return feedbackRepository.findAll();
+    public List<FeedbackResponse> allFeedbacks(){
+        List<Feedback> feedbacks = feedbackRepository.findAll();
+        List<FeedbackResponse> feedbackResponses = new ArrayList<>();
+        for (Feedback feedback : feedbacks) {
+            FeedbackResponse feedbackResponse = new FeedbackResponse();
+            String customerName = (accountsService.getAccountByID(feedback.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            Product product = productRepository.findById(feedback.getProductID()).orElseThrow(
+                    () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+            feedbackResponse.setFeedback(feedback);
+            feedbackResponse.setCustomerName(customerName);
+            feedbackResponse.setProduct(product);
+            feedbackResponses.add(feedbackResponse);
+        }
+        return feedbackResponses;
     }
 
     public Feedback getFeedbackByID(int id){

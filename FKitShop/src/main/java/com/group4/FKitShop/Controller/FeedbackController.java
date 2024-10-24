@@ -3,6 +3,7 @@ package com.group4.FKitShop.Controller;
 import com.group4.FKitShop.Entity.Feedback;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.FeedbackRequest;
+import com.group4.FKitShop.Response.FeedbackResponse;
 import com.group4.FKitShop.Service.FeedbackService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class FeedbackController {
 
     // get all feedback
     @GetMapping()
-    public List<Feedback> allFeedbacks() {
+    public List<FeedbackResponse> allFeedbacks() {
         return feedbackService.allFeedbacks();
     }
 
