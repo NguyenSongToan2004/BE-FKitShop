@@ -52,6 +52,14 @@ public class QuestionController {
         );
     }
 
+    // get list question by status
+    @GetMapping("/byStatus/{st}")
+    ResponseEntity<ResponseObject> getQuestionByStatus(@PathVariable int st) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found successfully", questionService.getQuestionByStatus(st))
+        );
+    }
+
     // create question
     @PostMapping()
     public ResponseObject createQuestion(@RequestBody QuestionRequest request) {

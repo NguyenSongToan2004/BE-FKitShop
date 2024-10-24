@@ -23,4 +23,7 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     @Query(value = "select * from Question where accountID = :accountID and labID = :labID", nativeQuery = true)
     List<Question> getQuesByAccountAndLab(@Param("accountID") String accountID, @Param("labID") String labID);
 
+    @Query(value = "select * from Question\n" +
+            "    where status = :st", nativeQuery = true)
+    List<Question> getQuestionByStatus(@Param("st") int st);
 }

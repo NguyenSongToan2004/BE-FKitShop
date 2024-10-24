@@ -5,6 +5,7 @@ import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Entity.Wishlist;
 import com.group4.FKitShop.Request.FeedbackRequest;
 import com.group4.FKitShop.Request.WishlistRequest;
+import com.group4.FKitShop.Response.WishlistResponse;
 import com.group4.FKitShop.Service.WishlistService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class WishlistController {
 
     // get all wish
     @GetMapping()
-    public List<Wishlist> allWishlists() {
+    public List<WishlistResponse> allWishlists() {
         return wishlistService.allWishlists();
     }
 
