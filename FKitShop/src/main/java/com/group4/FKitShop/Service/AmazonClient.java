@@ -17,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class AmazonClient {
@@ -70,6 +72,34 @@ public class AmazonClient {
             e.printStackTrace();
         }
         return fileUrl;
+    }
+
+    public List<String> uploadFiles(List<MultipartFile> multipartFiles, String folderName) {
+        List<String> fileUrls = new ArrayList<>();  // List to store URLs of uploaded files
+
+        if (multipartFiles == null || multipartFiles.isEmpty()) {
+            return fileUrls;  // Return empty list if no files were provided
+        }
+
+        try {
+            for (MultipartFile multipartFile : multipartFiles) {
+                if (!multipartFile.isEmpty()) {
+                    File file = convertMultiPartToFile(multipartFile);  // Convert each file
+                    String fileName = generateFileName(multipartFile);  // Generate unique file name
+
+                    // Include folder name in the S3 object key
+                    String fileUrl = endpointUrl + "/" + bucketName + "/" + folderName + "/" + fileName;
+                    uploadFileTos3bucket(folderName + "/" + fileName, file);  // Upload with folder name
+
+                    fileUrls.add(fileUrl);  // Add uploaded file URL to list
+                    file.delete();  // Delete temporary file after upload
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return fileUrls;  // Return the list of uploaded file URLs
     }
 
     //convert MultipartFile -> File

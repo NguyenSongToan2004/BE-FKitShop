@@ -52,6 +52,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     List<GrantedAuthority> authorities = new ArrayList<>();
                     authorities.add(new SimpleGrantedAuthority("ROLE_" + accountsResponse.getRole())); // Role from token
 
+                    log.info(authorities.toString());
+
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(accountsResponse,
                                     null,
@@ -66,7 +68,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
                         "error", "Unauthorized",
-                        "message", "Unauthorized",
+                        "message", "you are my fire",
                         "status", HttpServletResponse.SC_UNAUTHORIZED
                 )));
             }
@@ -89,7 +91,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         log.info("Checking path in shouldNotFilter: {}", path);  // Log the request path
 
         AntPathMatcher matcher = new AntPathMatcher();
-        if (matcher.match("/fkshop/auth/**", path) || matcher.match("/fkshop/product/**", path)) {
+        if (matcher.match("/fkshop/auth/**", path)
+                || matcher.match("/fkshop/api/storage/uploadMultiFile", path)
+                || matcher.match("/fkshop/api/storage/uploadFile", path)
+                || matcher.match("/fkshop/product/**", path)
+                || matcher.match("/fkshop/tags/**", path)
+                || matcher.match("/fkshop/categories/**", path)
+        ) {
             return true;
         }
 

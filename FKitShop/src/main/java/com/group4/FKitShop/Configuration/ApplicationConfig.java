@@ -33,7 +33,7 @@ public class ApplicationConfig {
                         .dob(new Date(new java.util.Date().getTime()))
                         .createDate(new Date(new java.util.Date().getTime()))
                         .email("admin@gmail.com")
-                        .password(passwordEncoder.encode("admin"))
+                        .password(passwordEncoder.encode("admin@gmail.com"))
                         .fullName("Admin")
                         .phoneNumber("0123456789")
                         .image("")
@@ -42,7 +42,7 @@ public class ApplicationConfig {
                         .build();
                 accountsRepository.save(accounts);
                 log.warn("admin accounts has been created with default email: admin@gmail.com");
-                log.warn("default admin password: 'admin', please change it later ");
+                log.warn("default admin password: 'admin@gmail.com', please change it later ");
             }
         };
     }

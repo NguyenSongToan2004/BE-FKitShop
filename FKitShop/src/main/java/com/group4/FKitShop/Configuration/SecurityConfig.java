@@ -2,11 +2,15 @@ package com.group4.FKitShop.Configuration;
 
 
 import com.group4.FKitShop.Filters.AuthTokenFilter;
+import com.group4.FKitShop.JWT.AuthEntryPointJwt;
+import com.group4.FKitShop.Service.AccountsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -29,32 +33,53 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity(debug = true)
+@EnableMethodSecurity
 @CrossOrigin(origins = "http://localhost:5173")
 public class  SecurityConfig {
 
-//    private static final String[] POST_PUBLIC_API = {
-//            "/accounts/signup",
-//            "/auth/login",
-//            "/auth/introspect",
-//            "/carts/create"
-//    };
-//    private static final String[] GET_PUBLIC_API = {
-//            "/product/latest",
-//            "/product/{id}",
-//            "/product/aproducts",
-//            "/carts/view/{accountID}",
-//            "/"
-//    };
+    private static final String[] POST_PUBLIC_API = {
+            "/accounts/signup",
+            "/auth/login",
+            "/auth/introspect",
+            "/carts/create"
+    };
+    private static final String[] GET_PUBLIC_API = {
+            "/product/latest",
+            "/product/{id}",
+            "/product/products",
+            "/carts/view/{accountID}",
+            "/carts/viewCart",
+            "/tags/**",
+            "/categories/**"
+    };
+    private static final String[] GET_ADMIN_API = {
+            "/orders/allOrders"
+    };
 
 
 //    //secretkey
     @Value("${jwt.signerKey}")
     private String signerKey;
 
+    @Autowired
+    AccountsService accountsService;
+
+    @Autowired
+    AuthEntryPointJwt unauthorizedHandler;
+
+
 
     @Bean
     AuthTokenFilter authTokenFilter(){
         return new AuthTokenFilter();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(accountsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 
     @Bean
@@ -64,19 +89,28 @@ public class  SecurityConfig {
         httpSecurity
                 .cors().and()
                 .csrf(AbstractHttpConfigurer::disable)
-                //.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                //session creation is stateless, so each request is authenticated via JWT
+                // and doesn't use an old session with different roles
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("auth/**").permitAll()
-                        .requestMatchers("/accounts/allAccounts").hasAnyRole("admin","staff","manager")
-                        .requestMatchers("/product/by-category/**").hasRole("user")
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/storage/uploadFile").permitAll()
+                        .requestMatchers("/api/storage/uploadMultiFile").permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
+                        .requestMatchers("/accounts/allAccounts").hasAnyRole("admin","manager")
+                        .requestMatchers(HttpMethod.GET, GET_ADMIN_API).hasRole("admin")
                         .anyRequest().authenticated()
                 )
                 //register authentication provider supporting jwt token
+                //jwt decoder: decode jwt truyen vao
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                        .jwt(jwtConfigurer -> jwtConfigurer
+                                .decoder(jwtDecoder())
+                                //change the scope prefix to ROLE_{}
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
-                //.authenticationProvider(authenticationProvider())
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
 
@@ -85,6 +119,8 @@ public class  SecurityConfig {
     JwtAuthenticationConverter jwtAuthenticationConverter(){
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        //customize claim scope to role
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("role");
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return converter;

@@ -100,7 +100,7 @@ public class AuthenticationService {
                 .claim("dob",a.getDob())
                 .claim("status", a.getStatus())
                 //account role: scope
-                .claim("scope", buildScope(a))
+                .claim("role", buildScope(a))
                 .claim("createDate", a.getCreateDate())
                 .claim("adminID", a.getAdminID())
                 .issueTime(new Date())
@@ -139,7 +139,7 @@ public class AuthenticationService {
 
             // Verify the signature using the secret key
             if (jwsObject.verify(new MACVerifier(SIGNER_KEY.getBytes(StandardCharsets.UTF_8)))) {
-                log.info("Token signature is valid");
+                log.info("tokenResponse: Token signature is valid");
 
                 // Extract the payload
                 JWTClaimsSet claimsSet = JWTClaimsSet.parse(jwsObject.getPayload().toJSONObject());
@@ -152,7 +152,7 @@ public class AuthenticationService {
                 String email = claimsSet.getStringClaim("email");
                 Date dob = claimsSet.getDateClaim("dob");
                 int status = claimsSet.getIntegerClaim("status");
-                String role = claimsSet.getStringClaim("scope");
+                String role = claimsSet.getStringClaim("role");
                 Date createDate = claimsSet.getDateClaim("createDate");
                 String adminID = claimsSet.getStringClaim("adminID");
 

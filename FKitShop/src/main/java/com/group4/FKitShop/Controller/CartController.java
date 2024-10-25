@@ -3,6 +3,7 @@ package com.group4.FKitShop.Controller;
 
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Request.CartRequest;
+import com.group4.FKitShop.Service.AuthenticationService;
 import com.group4.FKitShop.Service.CartService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class CartController {
 
     CartService cartService;
+    AuthenticationService authenticationService;
 
     @PostMapping("/create")
     public ResponseObject createCart(@RequestBody @Valid CartRequest request) {
@@ -38,7 +40,18 @@ public class CartController {
                 .data(cartService.viewCartByAccountID(accountID))
                 .build();
     }
-//
+
+    @GetMapping("/viewCart")
+    public ResponseObject view(@RequestHeader("Authorization") String authorization) {
+        String token = authorization.replace("Bearer ", "");
+        String accountID = (authenticationService.tokenAccountResponse(token)).getAccountID();
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Cart List")
+                .data(cartService.viewCartByAccountID(accountID))
+                .build();
+    }
+
     @DeleteMapping("/delete")
     public ResponseObject deleteCart(@RequestParam String accountID, @RequestParam String productID) {
         return ResponseObject.builder()

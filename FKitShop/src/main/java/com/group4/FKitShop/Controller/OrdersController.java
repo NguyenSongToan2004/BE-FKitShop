@@ -10,6 +10,7 @@ import com.group4.FKitShop.Request.CheckoutRequest;
 import com.group4.FKitShop.Request.OrderDetailsRequest;
 import com.group4.FKitShop.Request.OrdersRequest;
 import com.group4.FKitShop.Response.CheckoutResponse;
+import com.group4.FKitShop.Service.AuthenticationService;
 import com.group4.FKitShop.Service.OrderDetailsService;
 import com.group4.FKitShop.Service.OrderStatusService;
 import com.group4.FKitShop.Service.OrdersService;
@@ -18,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,7 @@ public class OrdersController {
 
     OrdersService ordersService;
     OrderDetailsService orderDetailsService;
+    AuthenticationService authenticationService;
     private final OrderStatusService orderStatusService;
 
     @PostMapping("/checkout")
@@ -46,6 +49,7 @@ public class OrdersController {
     }
 
     @GetMapping("/allorders")
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     public ResponseObject allOrders() {
         return ResponseObject.builder()
                 .status(1000)
@@ -56,6 +60,31 @@ public class OrdersController {
 
     @GetMapping("/find/{accountID}")
     public ResponseObject getOrdersByAccountID(@PathVariable String accountID) {
+        try {
+            List<Orders> ordersList = ordersService.findByAccountID(accountID);
+            List<CheckoutResponse> checkoutResponses = new ArrayList<>();
+            for (Orders orders : ordersList) {
+                CheckoutResponse checkout = new CheckoutResponse();
+                checkout.setOrders(orders);
+                List<OrderDetails> orderDetails = orderDetailsService.findByOrderID(orders.getOrdersID());
+                checkout.setOrderDetails(orderDetails);
+                checkoutResponses.add(checkout);
+            }
+            return ResponseObject.builder()
+                    .status(1000)
+                    .data(checkoutResponses)
+                    .build();
+        } catch (DataIntegrityViolationException e) {
+            // Catch DataIntegrityViolationException and rethrow as AppException
+            //e.getMostSpecificCause().getMessage()
+            throw new AppException(ErrorCode.EXECUTED_FAILED);
+        }
+    }
+
+    @GetMapping("/findOrder")
+    public ResponseObject findOrder(@RequestHeader("Authorization") String authorization) {
+        String token = authorization.replace("Bearer ", "");
+        String accountID = (authenticationService.tokenAccountResponse(token)).getAccountID();
         try {
             List<Orders> ordersList = ordersService.findByAccountID(accountID);
             List<CheckoutResponse> checkoutResponses = new ArrayList<>();
