@@ -30,4 +30,5 @@ public interface AccountsRepository extends JpaRepository<Accounts, String> {
             "where status = 1", nativeQuery = true)
     List<Accounts> getActiveAccounts();
 
+    Optional<Accounts> findByrole(String role);
 }

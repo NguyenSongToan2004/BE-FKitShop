@@ -35,10 +35,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -138,8 +135,23 @@ public class OrdersService {
     }
 
     public Orders updateOrderStatus(String ordersID, String status) {
+        String[] ostatus = {"pending", "in-progress", "delivering", "delivered"};
+        List<String> statusSequence = Arrays.asList(ostatus);
         Orders orders = ordersRepository.findById(ordersID)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDERS_NOTFOUND));
+
+        // Check if the new status is in the allowed sequence and follows the current status
+        //Cannot downdate status
+        int currentIndex = statusSequence.indexOf(orders.getStatus().toLowerCase());
+        int newIndex = statusSequence.indexOf(status.toLowerCase());
+        if (newIndex == -1 || newIndex <= currentIndex) {
+                throw new AppException(ErrorCode.INVALID_UPDATE_STATUS_DOWNDATE);
+        }
+        //Update status by following flow: pending, in-progress, delivering, delivered
+        if (newIndex - currentIndex > 1){
+            throw new AppException(ErrorCode.INVALID_UPDATE_STATUS_UPDATE);
+        }
+
         if (status.equals("delivered")) {
             orders.setShipDate(new java.sql.Date(System.currentTimeMillis()));
             List<OrderDetails> orderDetailsList = orderDetailsRepository.findByOrdersID(ordersID);
