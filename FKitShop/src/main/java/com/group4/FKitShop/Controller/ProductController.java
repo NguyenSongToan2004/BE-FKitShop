@@ -52,7 +52,6 @@ public class ProductController {
             @RequestParam("images") MultipartFile[] image,
             @RequestParam("categoryID") List<String> categoryID
     ) {
-        System.out.println("tới đây");
         ProductRequest request = ProductRequest.builder()
                 .name(name)
                 .description(description)
@@ -82,6 +81,13 @@ public class ProductController {
     ResponseEntity<ResponseObject> getProduct(@PathVariable String id) {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Found Successfully", service.getProduct(id))
+        );
+    }
+
+    @GetMapping("/type/{type}")
+    ResponseEntity<ResponseObject> getProductByType(@PathVariable("type") String type) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Found Successfully", service.getProductsByType(type))
         );
     }
 

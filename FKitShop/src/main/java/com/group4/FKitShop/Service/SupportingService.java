@@ -2,6 +2,7 @@ package com.group4.FKitShop.Service;
 
 import com.group4.FKitShop.Entity.Accounts;
 import com.group4.FKitShop.Entity.Lab;
+import com.group4.FKitShop.Entity.Own;
 import com.group4.FKitShop.Entity.Supporting;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
@@ -50,6 +51,9 @@ public class SupportingService {
     @Autowired
     JavaMailSender mailSender;
 
+    @Autowired
+    OwnService ownService;
+
     public Supporting createSupporting(SupportingRequest request) {
         Supporting supporting = supportingRepository.findSupporting(request.getAccountID(), request.getLabID());
         Accounts accounts = accountsRepository.findById(request.getAccountID()).orElseThrow(
@@ -58,17 +62,18 @@ public class SupportingService {
         Lab lab = labRepository.findById(request.getLabID()).orElseThrow(
                 () -> new AppException(ErrorCode.LAB_NOTFOUND)
         );
+        Own own = ownService.getOwn(request.getAccountID(), request.getLabID());
         if (supporting != null) {
-            if(supporting.getStatus() != 2 && supporting.getStatus() != 3)
+            if (supporting.getStatus() != 2 && supporting.getStatus() != 3)
                 throw new AppException(ErrorCode.SUPPORTING_LAB_EXISTING);
-            if(supporting.getCountSupport() == 0)
+            if (supporting.getCountSupport() == own.getSupportTimes())
                 throw new AppException(ErrorCode.SUPPORTING_LIMITED);
             else {
                 Supporting newSupporting = supportingMapper.toSupporting(supporting);
                 newSupporting.setStatus(0);
                 newSupporting.setDescription(request.getDescription());
                 newSupporting.setPostDate(new Date(System.currentTimeMillis()));
-                newSupporting.setCountSupport(supporting.getCountSupport() - 1);
+                newSupporting.setCountSupport(supporting.getCountSupport() + 1);
                 return supportingRepository.save(newSupporting);
             }
         }
@@ -79,7 +84,7 @@ public class SupportingService {
         newSupporting.setDescription(request.getDescription());
         newSupporting.setStatus(0);
         newSupporting.setPostDate(new Date(System.currentTimeMillis()));
-        newSupporting.setCountSupport(5-1);
+        newSupporting.setCountSupport(1);
         return supportingRepository.save(newSupporting);
     }
 
@@ -90,10 +95,10 @@ public class SupportingService {
         Supporting supporting = supportingRepository.findById(request.getSupportingID()).orElseThrow(
                 () -> new AppException(ErrorCode.SUPPORTING_NOT_FOUND)
         );
-        switch (request.getStatus()){
+        switch (request.getStatus()) {
             case 0:
                 throw new AppException(ErrorCode.SUPPORTING_INVALID_STATUS);
-            case 1:{
+            case 1: {
                 if (supporting.getStatus() != 0)
                     throw new AppException(ErrorCode.SUPPORTING_INVALID_STATUS);
                 else {
@@ -108,7 +113,7 @@ public class SupportingService {
                 }
                 break;
             }
-            case 2:{
+            case 2: {
                 if (supporting.getStatus() != 1)
                     throw new AppException(ErrorCode.SUPPORTING_INVALID_STATUS);
                 else {
@@ -117,10 +122,10 @@ public class SupportingService {
                 }
                 break;
             }
-            case 3:{
+            case 3: {
                 if (supporting.getStatus() < 2) {
                     supporting.setStatus(request.getStatus());
-                    supporting.setCountSupport(supporting.getCountSupport() + 1);
+                    supporting.setCountSupport(supporting.getCountSupport() - 1);
                 } else
                     throw new AppException(ErrorCode.SUPPORTING_LAB_DONE);
                 break;
@@ -136,7 +141,7 @@ public class SupportingService {
                 () -> new AppException(ErrorCode.SUPPORTING_NOT_FOUND)
         );
         Date currentDate = new Date(System.currentTimeMillis());
-        if (supporting.getStatus() == 2){
+        if (supporting.getStatus() == 2) {
             throw new AppException(ErrorCode.SUPPORTING_LAB_DONE);
         }
         if (currentDate.after(request.getExpectedDate()) && !currentDate.toLocalDate().equals(request.getExpectedDate().toLocalDate())) {
@@ -146,14 +151,16 @@ public class SupportingService {
         return supportingRepository.save(supporting);
     }
 
-    public List<AllLabSupport> getAllSupport(){
+    public List<AllLabSupport> getAllSupport() {
         List<AllLabSupport> supportingResponses = new ArrayList<>();
         for (Supporting supporting : supportingRepository.findAll()) {
+            Own own = ownService.getOwn(supporting.getAccount().getAccountID(), supporting.getLab().getLabID());
             AllLabSupport a = AllLabSupport.builder()
                     .accountID(supporting.getAccount().getAccountID())
                     .customerName(supporting.getAccount().getFullName())
                     .labID(supporting.getLab().getLabID())
                     .labName(supporting.getLab().getName())
+                    .maxSupTimes(own.getSupportTimes())
                     .supporting(supporting)
                     .build();
             supportingResponses.add(a);
@@ -161,15 +168,17 @@ public class SupportingService {
         return supportingResponses;
     }
 
-    public LabSupportResponse getSupportByAccount(String accountID){
+    public LabSupportResponse getSupportByAccount(String accountID) {
         Accounts accounts = accountsRepository.findById(accountID).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
         List<LabSupport> labSupports = new ArrayList<>();
         for (Supporting supporting : accounts.getSupportings()) {
+            Own own = ownService.getOwn(supporting.getAccount().getAccountID(), supporting.getLab().getLabID());
             LabSupport l = LabSupport.builder()
                     .labID(supporting.getLab().getLabID())
                     .labName(supporting.getLab().getName())
+                    .maxSupTimes(own.getSupportTimes())
                     .supporting(supporting)
                     .build();
             labSupports.add(l);
@@ -177,8 +186,8 @@ public class SupportingService {
         return new LabSupportResponse(accounts.getAccountID(), accounts.getFullName(), labSupports);
     }
 
-    public List<AllLabSupport> getSupportByStatus(int status){
-        if(status != 0 && status != 1 && status != 2 && status !=3)
+    public List<AllLabSupport> getSupportByStatus(int status) {
+        if (status != 0 && status != 1 && status != 2 && status != 3)
             throw new AppException(ErrorCode.SUPPORTING_UNSUPPORTED_STATUS_CODE);
         List<AllLabSupport> supportingResponses = new ArrayList<>();
         for (Supporting supporting : supportingRepository.findAll()) {
@@ -196,20 +205,22 @@ public class SupportingService {
         return supportingResponses;
     }
 
-    public LabSupportResponse getSupportByAccount(String accountID, int status){
-        if(status != 0 && status != 1 && status != 2)
+    public LabSupportResponse getSupportByAccount(String accountID, int status) {
+        if (status != 0 && status != 1 && status != 2)
             throw new AppException(ErrorCode.SUPPORTING_UNSUPPORTED_STATUS_CODE);
-        if(!accountsRepository.existsById(accountID))
+        if (!accountsRepository.existsById(accountID))
             throw new AppException(ErrorCode.USER_NOT_EXIST);
         Accounts accounts = accountsRepository.findById(accountID).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
         List<LabSupport> labSupports = new ArrayList<>();
         for (Supporting supporting : accounts.getSupportings()) {
-            if(supporting.getStatus() == status){
+            if (supporting.getStatus() == status) {
+                Own own = ownService.getOwn(supporting.getAccount().getAccountID(), supporting.getLab().getLabID());
                 LabSupport l = LabSupport.builder()
                         .labID(supporting.getLab().getLabID())
                         .labName(supporting.getLab().getName())
+                        .maxSupTimes(own.getSupportTimes())
                         .supporting(supporting)
                         .build();
                 labSupports.add(l);
@@ -218,7 +229,7 @@ public class SupportingService {
         return new LabSupportResponse(accountID, accounts.getFullName(), labSupports);
     }
 
-    public Supporting updateSupportDate(UpdateSupportDate request){
+    public Supporting updateSupportDate(UpdateSupportDate request) {
         Supporting supporting = supportingRepository.findById(request.getSupportingID()).orElseThrow(
                 () -> new AppException(ErrorCode.SUPPORTING_NOT_FOUND)
         );
@@ -235,11 +246,11 @@ public class SupportingService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(new InternetAddress("blackpro2k4@gmail.com", "FKShop"));
         SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yyyy");
-        String body = "<p>Xin chào "+supporting.getAccount().getFullName()+" ,</p>\n" +
+        String body = "<p>Xin chào " + supporting.getAccount().getFullName() + " ,</p>\n" +
                 "\n" +
                 "    <p>Your supporting request #" + supporting.getSupportingID() + " is approved</p>\n" +
                 "\n" +
-                "<p><strong>Lab name</strong> : "+supporting.getLab().getName()+"</p>"+
+                "<p><strong>Lab name</strong> : " + supporting.getLab().getName() + "</p>" +
                 "<p><strong>Support Information</strong></p>" +
                 "<table border='1'>\n" +
                 "        <tr>\n" +
@@ -251,18 +262,18 @@ public class SupportingService {
                 "            <th>Status</th>\n" +
                 "        </tr>\n" +
                 "        <tr>\n" +
-                "            <td>"+supporting.getSupportingID()+"</td>\n" +
-                "            <td>"+supporting.getDescription()+"</td>\n" +
-                "            <td>"+formater.format(supporting.getPostDate())+"</td>\n" +
-                "            <td>"+formater.format(expectDate)+"</td>\n" +
-                "            <td>"+supporting.getCountSupport()+"</td>\n" +
+                "            <td>" + supporting.getSupportingID() + "</td>\n" +
+                "            <td>" + supporting.getDescription() + "</td>\n" +
+                "            <td>" + formater.format(supporting.getPostDate()) + "</td>\n" +
+                "            <td>" + formater.format(expectDate) + "</td>\n" +
+                "            <td>" + supporting.getCountSupport() + "</td>\n" +
                 "            <td>approved</td>\n" +
                 "        </tr>\n" +
                 "    </table>" +
                 "\n" +
-                "    <p>FKShop's staff will contact your phone number <strong>"+supporting.getAccount().getPhoneNumber()+"</strong> to make a decision about the support date.</p>\n" +
+                "    <p>FKShop's staff will contact your phone number <strong>" + supporting.getAccount().getPhoneNumber() + "</strong> to make a decision about the support date.</p>\n" +
                 "\n" +
-                "    <p>The expected date was updated on our website. <a href=\"http://localhost:5173/\">Click here</a> to view your supporting request.</p>" ;
+                "    <p>The expected date was updated on our website. <a href=\"http://localhost:5173/\">Click here</a> to view your supporting request.</p>";
         helper.setTo(supporting.getAccount().getEmail());
         helper.setSubject("[FKShop] Your Supporting Request #" + supporting.getSupportingID() + " Is Approved");
         helper.setText(body, true);

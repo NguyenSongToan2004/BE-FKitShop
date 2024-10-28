@@ -93,16 +93,18 @@ public enum ErrorCode {
     SUPPORTING_LAB_DONE(1045, "Your lab supporting request has been completed!!"),
     SUPPORTING_DATE_NULL(1046, "Support date must not be null!!"),
     SUPPORTING_INVALID_STATUS(1047, "Invalid order status (received -> approved -> done)!!"),
-
     // Payment Errors
     PAYMENT_FAIL(1048, "Payment failed!!"),
     PAYMENT_INVALID_SIGN(1049, "Invalid payment sign!!"),
 
     // Lab Guide
-    LAB_GUIDE_NOT_FOUND (1050, "Lab guide not found !!"),
+    LAB_GUIDE_NOT_FOUND(1050, "Lab guide not found !!"),
 
     // Image
-    IMAGE_NOT_FOUND (1051, "Image not found!!"),;
+    IMAGE_NOT_FOUND(1051, "Image not found!!"),
+    // Own
+    OWN_NOT_EXIST(1052, "LabID or AccountID is not correct !!!"),
+    OWN_IS_EXIST(1053, "This LabID and AccountID existed !!!"),;
 
     private int code;
     private String message;

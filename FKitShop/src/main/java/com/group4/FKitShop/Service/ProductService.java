@@ -97,6 +97,10 @@ public class ProductService {
                 .build();
     }
 
+    public List<Product> getProductsByType(String type) {
+        return repository.getProductsByType(type);
+    }
+
     public Product updateProduct(String id, ProductRequest request) {
 
         Product product = repository.findById(id).orElseThrow(

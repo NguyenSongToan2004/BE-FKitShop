@@ -60,4 +60,8 @@ public class Accounts {
     @JsonManagedReference
     private Set<Supporting> supportings = new HashSet<>();
 
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    private Set<Own> labAccounts = new HashSet<>();
+
 }

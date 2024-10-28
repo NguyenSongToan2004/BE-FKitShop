@@ -16,6 +16,4 @@ import java.util.List;
 public class CheckoutResponse {
     Orders orders;
     List<OrderDetails> orderDetails;
-
-
 }

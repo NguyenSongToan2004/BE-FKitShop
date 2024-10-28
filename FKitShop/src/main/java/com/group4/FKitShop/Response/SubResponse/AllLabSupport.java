@@ -15,5 +15,6 @@ public class AllLabSupport {
     String customerName;
     String labID;
     String labName;
+    int maxSupTimes;
     Supporting supporting;
 }

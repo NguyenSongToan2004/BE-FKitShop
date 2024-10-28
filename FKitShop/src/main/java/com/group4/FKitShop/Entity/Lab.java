@@ -49,4 +49,8 @@ public class Lab {
 
     @OneToMany(mappedBy = "lab")
     List<LabGuide> labGuides = new ArrayList<>();
+
+    @OneToMany(mappedBy = "lab")
+    private Set<Own> labAccounts = new HashSet<>();
+
 }
