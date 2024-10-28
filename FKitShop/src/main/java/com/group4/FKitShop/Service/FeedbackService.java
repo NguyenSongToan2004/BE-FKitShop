@@ -49,19 +49,54 @@ public class FeedbackService {
         return feedbackResponses;
     }
 
-    public Feedback getFeedbackByID(int id){
+    public FeedbackResponse getFeedbackByID(int id){
         Feedback feedback = feedbackRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.FEEDBACK_NOTFOUND));
-        return feedback;
+        FeedbackResponse feedbackResponse = new FeedbackResponse();
+        String customerName = (accountsService.getAccountByID(feedback.getAccountID())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+        Product product = productRepository.findById(feedback.getProductID()).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+        feedbackResponse.setFeedback(feedback);
+        feedbackResponse.setCustomerName(customerName);
+        feedbackResponse.setProduct(product);
+        return feedbackResponse;
     }
 
-    public List<Feedback> getFeedbackByAccountID(String id){
-        return feedbackRepository.getFeedbackByAccountID(id);
+    public List<FeedbackResponse> getFeedbackByAccountID(String id){
+        List<Feedback> feedbacks = feedbackRepository.getFeedbackByAccountID(id);
+        List<FeedbackResponse> feedbackResponses = new ArrayList<>();
+        for (Feedback feedback : feedbacks) {
+            FeedbackResponse feedbackResponse = new FeedbackResponse();
+            String customerName = (accountsService.getAccountByID(feedback.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            Product product = productRepository.findById(feedback.getProductID()).orElseThrow(
+                    () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+            feedbackResponse.setFeedback(feedback);
+            feedbackResponse.setCustomerName(customerName);
+            feedbackResponse.setProduct(product);
+            feedbackResponses.add(feedbackResponse);
+        }
+        return feedbackResponses;
     }
 
-    public List<Feedback> getFeedbackByProductID(String id){
-        return feedbackRepository.getFeedbackByProductID(id);
+    public List<FeedbackResponse> getFeedbackByProductID(String id){
+        List<Feedback> feedbacks = feedbackRepository.getFeedbackByProductID(id);
+        List<FeedbackResponse> feedbackResponses = new ArrayList<>();
+        for (Feedback feedback : feedbacks) {
+            FeedbackResponse feedbackResponse = new FeedbackResponse();
+            String customerName = (accountsService.getAccountByID(feedback.getAccountID())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)).getFullName());
+            Product product = productRepository.findById(feedback.getProductID()).orElseThrow(
+                    () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+            feedbackResponse.setFeedback(feedback);
+            feedbackResponse.setCustomerName(customerName);
+            feedbackResponse.setProduct(product);
+            feedbackResponses.add(feedbackResponse);
+        }
+        return feedbackResponses;
     }
+
 
     public Feedback createFeedback(FeedbackRequest request) {
         Feedback feedback = feedbackMapper.toFeedback(request);
@@ -86,5 +121,4 @@ public class FeedbackService {
             throw new AppException(ErrorCode.FEEDBACK_NOTFOUND);
         feedbackRepository.deleteById(id);
     }
-
-   }
+}
