@@ -84,6 +84,7 @@ public enum ErrorCode {
     ORDER_CANCEL_FAILED(1039, "Cancel Order failed. You only able to cancel your Order if your Order is pending"),
     INVALID_UPDATE_STATUS_DOWNDATE(1040, "Cannot downdate Order's status"),
     INVALID_UPDATE_STATUS_UPDATE(1040, "You must update the previous Order's status first"),
+    CANCEL_ORDER_FAILED(1041, "This Order is already cancelled. Cannot change status"),
 
     // Support Errors
     SUPPORTING_NOT_FOUND(1040, "Support not found"),

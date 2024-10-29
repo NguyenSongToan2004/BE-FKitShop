@@ -145,11 +145,20 @@ public class OrdersService {
     }
 
     public Orders updateOrderStatus(String ordersID, String status) {
+        status = status.toLowerCase();
         String[] ostatus = {"pending", "in-progress", "delivering", "delivered"};
         List<String> statusSequence = Arrays.asList(ostatus);
         Orders orders = ordersRepository.findById(ordersID)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDERS_NOTFOUND));
 
+        //check if the order is already canceled => cannot change status
+        if (orders.getStatus().toLowerCase().equals("cancel"))
+            throw new AppException(ErrorCode.CANCEL_ORDER_FAILED);
+        
+        //cancel order
+        if (status.equals("cancel")){
+            return ordersRepository.save(cancelOrder(orders));
+        }
         // Check if the new status is in the allowed sequence and follows the current status
         //Cannot downdate status
         int currentIndex = statusSequence.indexOf(orders.getStatus().toLowerCase());
@@ -182,10 +191,6 @@ public class OrdersService {
             }
             createOwn(orders.getAccountID(), orders.getOrdersID());
         }
-        if (status.equals("cancel")){
-            cancelOrder(orders);
-        }
-
         orders.setStatus(status.toLowerCase());
         // tao order status
         orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
