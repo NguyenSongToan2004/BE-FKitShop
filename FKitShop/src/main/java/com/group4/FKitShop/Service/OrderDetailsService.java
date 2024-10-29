@@ -54,8 +54,11 @@ public class OrderDetailsService {
                         .confirmDate(new Date())
                         .build();
                 orderDetailsRepository.save(orderDetail);
+                //minus product quantity in stock
+                int currentPQuantity = product.getQuantity();
+                product.setQuantity(currentPQuantity - orderDetail.getQuantity());
+                productRepository.save(product);
                 orderDetails.add(orderDetail);
-
             }
             return orderDetails;
         } catch (DataIntegrityViolationException e) {
@@ -72,6 +75,18 @@ public class OrderDetailsService {
     public List<OrderDetails> findByOrderID(String orderID) {
         return orderDetailsRepository.findAllByordersID(orderID);
     }
+
+    public void updatePQuantityWhenCancel(String ordersID){
+        List<OrderDetails> orderDetails = orderDetailsRepository.findAllByordersID(ordersID);
+        for (OrderDetails orderDetail : orderDetails) {
+            Product product = productRepository.findById(orderDetail.getProductID())
+                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+            int orderDetailQuantity = orderDetail.getQuantity();
+            product.setQuantity(product.getQuantity() + orderDetailQuantity);
+            productRepository.save(product);
+        }
+    }
+
 
 //    public OrderDetails updateOrderDetails(String ordersID, OrderDetailsRequest request) {
 //        OrderDetails orderDetails = orderDetailsRepository.findById(ordersID)

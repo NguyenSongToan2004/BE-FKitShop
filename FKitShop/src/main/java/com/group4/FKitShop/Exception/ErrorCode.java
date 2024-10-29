@@ -81,6 +81,7 @@ public enum ErrorCode {
     ORDER_CREATION_FAILED(1037, "Order creation failed"),
     ORDERDETAILS_NOTFOUND(1038, "Order details not found"),
     ORDER_FAILED(1039, "Order failed"),
+    ORDER_CANCEL_FAILED(1039, "Cancel Order failed. You only able to cancel your Order if your Order is pending"),
     INVALID_UPDATE_STATUS_DOWNDATE(1040, "Cannot downdate Order's status"),
     INVALID_UPDATE_STATUS_UPDATE(1040, "You must update the previous Order's status first"),
 
