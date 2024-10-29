@@ -159,10 +159,20 @@ public class OrdersService {
                 Product product = productRepository.findById(orderDetails.getProductID()).orElseThrow(
                         () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
                 );
-                if (product.getType().equals("kit"))
+                if (product.getType().equals("kit")){
                     orderDetails.setIsActive(1);
+                    //set warranty date up to 30 days
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date(System.currentTimeMillis()));
+                    calendar.add(Calendar.DAY_OF_MONTH, 30); // Add 30 days
+
+                    orderDetails.setWarrantyDate(new Date(calendar.getTimeInMillis()));
+                }
                 orderDetailsRepository.save(orderDetails);
             }
+        }
+        if (status.equals("cancel")){
+            cancelOrder(orders);
         }
 
         orders.setStatus(status.toLowerCase());
@@ -170,6 +180,23 @@ public class OrdersService {
         orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
         return ordersRepository.save(orders);
     }
+
+    //cancel order
+    //user can cancel order only if the order's status is "pending"
+    public Orders cancelOrder(Orders orders) {
+        String ordersID = orders.getOrdersID();
+        String defaultOrderStatus = "pending";
+        String currentOrderStatus = orders.getStatus().toLowerCase();
+        if (!currentOrderStatus.equals(defaultOrderStatus)) {
+            throw new AppException(ErrorCode.ORDER_CANCEL_FAILED);
+        }
+        //return product quantity to product's stock
+        orderDetailsService.updatePQuantityWhenCancel(ordersID);
+        //set the order status to cancel
+        orders.setStatus("cancel");
+        return orders;
+    }
+
 
     private Orders updateTotalPrice(Double totalPrice, String ordersID) {
         Orders orders = ordersRepository.findById(ordersID)
