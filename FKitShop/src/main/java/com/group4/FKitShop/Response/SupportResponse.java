@@ -1,4 +1,4 @@
-package com.group4.FKitShop.Response.SubResponse;
+package com.group4.FKitShop.Response;
 
 import com.group4.FKitShop.Entity.Supporting;
 import lombok.*;
@@ -10,9 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LabSupport {
-    String labID;
-    String labName;
-    int maxSupTimes;
+public class SupportResponse {
+    int maxSupportTimes;
     Supporting supporting;
 }

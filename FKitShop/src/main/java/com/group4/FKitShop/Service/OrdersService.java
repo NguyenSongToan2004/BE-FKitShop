@@ -3,11 +3,14 @@ package com.group4.FKitShop.Service;
 import com.group4.FKitShop.Entity.*;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
+import com.group4.FKitShop.Mapper.LabMapper;
 import com.group4.FKitShop.Mapper.OrdersMapper;
 import com.group4.FKitShop.Repository.*;
 import com.group4.FKitShop.Request.CheckoutRequest;
+import com.group4.FKitShop.Request.OrderLab;
 import com.group4.FKitShop.Request.OrdersRequest;
 import com.group4.FKitShop.Response.CheckoutResponse;
+import com.group4.FKitShop.Response.GetLabResponse;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -19,9 +22,13 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -38,6 +45,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Aspect
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -49,9 +57,11 @@ public class OrdersService {
     OrderDetailsRepository orderDetailsRepository;
     OrderStatusService orderStatusService;
     OrderDetailsService orderDetailsService;
+    OwnService ownService;
     ProductRepository productRepository;
     CartRepository cartRepository;
     AccountsRepository accountsRepository;
+    LabRepository labRepository;
 
     public CheckoutResponse checkOut(CheckoutRequest request) {
         try {
@@ -145,10 +155,10 @@ public class OrdersService {
         int currentIndex = statusSequence.indexOf(orders.getStatus().toLowerCase());
         int newIndex = statusSequence.indexOf(status.toLowerCase());
         if (newIndex == -1 || newIndex <= currentIndex) {
-                throw new AppException(ErrorCode.INVALID_UPDATE_STATUS_DOWNDATE);
+            throw new AppException(ErrorCode.INVALID_UPDATE_STATUS_DOWNDATE);
         }
         //Update status by following flow: pending, in-progress, delivering, delivered
-        if (newIndex - currentIndex > 1){
+        if (newIndex - currentIndex > 1) {
             throw new AppException(ErrorCode.INVALID_UPDATE_STATUS_UPDATE);
         }
 
@@ -170,6 +180,7 @@ public class OrdersService {
                 }
                 orderDetailsRepository.save(orderDetails);
             }
+            createOwn(orders.getAccountID(), orders.getOrdersID());
         }
         if (status.equals("cancel")){
             cancelOrder(orders);
@@ -204,6 +215,7 @@ public class OrdersService {
         orders.setTotalPrice(totalPrice);
         return ordersRepository.save(orders);
     }
+
 
     private void sendOrderEmail(Orders orders, List<OrderDetails> orderDetails) throws MessagingException, UnsupportedEncodingException, SQLException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -360,7 +372,8 @@ public class OrdersService {
                     dateFormat.format(order.getShipDate()) : "unUpdated");
             row.createCell(10).setCellValue(order.getNote());
             row.createCell(11).setCellValue(order.getStatus());
-            totalPrice += order.getTotalPrice();
+            if (order.getStatus().equals("delivered"))
+                totalPrice += order.getTotalPrice();
         }
         sheet.addMergedRegion(new CellRangeAddress(rowIdx, rowIdx, 6, 8));
         Row row = sheet.createRow(rowIdx++);
@@ -470,4 +483,16 @@ public class OrdersService {
         return title;
     }
 
+    private void createOwn(String accountID, String orderID) {
+        List<OrderDetails> orderDetailsList = orderDetailsRepository.findActiveOrderDetails(orderID, 1);
+        for (OrderDetails o : orderDetailsList) {
+            List<Lab> listLab = labRepository.findByProductID(o.getProductID());
+            for (Lab labTmp : listLab) {
+                if (ownService.isExist(accountID, labTmp.getLabID()))
+                    ownService.updateSupportTimes(accountID, labTmp.getLabID(), 5 * o.getQuantity());
+                else
+                    ownService.createOwn(accountID, labTmp.getLabID(), 5 * o.getQuantity());
+            }
+        }
+    }
 }

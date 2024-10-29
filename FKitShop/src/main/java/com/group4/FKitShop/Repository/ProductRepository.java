@@ -85,4 +85,6 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         "from StemProduct\n" +
         "where name like :name", nativeQuery = true)
     List<Product> getByName(@Param("name") String name);
+
+    List<Product> getProductsByType(String type);
 }

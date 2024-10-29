@@ -53,7 +53,6 @@ public class LabService {
         lab.setLabID(generateID());
         lab.setCreateDate(new Date());
         lab.setStatus(1);
-        System.out.println("Is empty : " + file.isEmpty());
         lab.setFileNamePDF(file != null ? saveLabPDF(file) : null);
         return labRepository.save(lab);
     }
@@ -172,6 +171,8 @@ public class LabService {
             for (OrderDetails orderDetails : orderDetailsList) {
                 List<Lab> listLabTmp = labRepository.findByProductID(orderDetails.getProductID());
                 for (Lab labTmp : listLabTmp) {
+                    if (isLabExist(labTmp.getLabID(), setOrderLab))
+                        continue;
                     Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
                             () -> new AppException(ErrorCode.USER_NOT_EXIST)
                     );
@@ -213,6 +214,14 @@ public class LabService {
         labGuideRepository.updateLabGuide(labID, labGuideIDs);
         lab.setFileNamePDF(generatePdfFromHtml(htmlScript.toString(), lab.getName()));
         return labRepository.save(lab);
+    }
+
+    private boolean isLabExist(String labID, Set<OrderLab> set) {
+        for (OrderLab orderLab : set) {
+            if (orderLab.getLab().getLabID().equals(labID))
+                return true;
+        }
+        return false;
     }
 
     private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
@@ -321,7 +330,7 @@ public class LabService {
         return fileNamePDF;
     }
 
-    String generateID() {
+    private String generateID() {
         String num = labRepository.getNumberLab();
         if (num == null)
             return num = String.format("L%05d", 1);
