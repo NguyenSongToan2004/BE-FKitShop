@@ -103,8 +103,9 @@ public enum ErrorCode {
     // Image
     IMAGE_NOT_FOUND(1051, "Image not found!!"),
     // Own
-    OWN_NOT_EXIST(1052, "LabID or AccountID is not correct !!!"),
-    OWN_IS_EXIST(1053, "This LabID and AccountID existed !!!"),;
+    OWN_NOT_EXIST(1052, "Account has not this labID !!!"),
+    OWN_IS_EXIST(1053, "This LabID and AccountID existed !!!"),
+    ;
 
     private int code;
     private String message;

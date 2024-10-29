@@ -212,6 +212,7 @@ public class LabService {
         }
         htmlScript.append("<hr/>");
         labGuideRepository.updateLabGuide(labID, labGuideIDs);
+        System.out.println(htmlScript.toString());
         lab.setFileNamePDF(generatePdfFromHtml(htmlScript.toString(), lab.getName()));
         return labRepository.save(lab);
     }
@@ -255,7 +256,7 @@ public class LabService {
 
                 SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 
-                float textWidth = 600; // Chiều rộng tối đa cho văn bản
+                float textWidth = 500; // Chiều rộng tối đa cho văn bản
                 float startY = page.getMediaBox().getHeight() - 50; // Vị trí Y bắt đầu
                 int countBreak;
                 countBreak = drawTextWithLineBreaks(contentStream, "OrderID: " + orders.getOrdersID() + "                    ShipDate: " + formatter.format(orders.getShipDate()),
@@ -323,6 +324,7 @@ public class LabService {
         try {
             // Chuyển đổi HTML thành PDF
             HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY + File.separator + fileNamePDF)));
+
             System.out.println("PDF đã được tạo thành công tại: " + STORAGE_DIRECTORY + File.separator + fileNamePDF);
         } catch (Exception e) {
             e.printStackTrace();
