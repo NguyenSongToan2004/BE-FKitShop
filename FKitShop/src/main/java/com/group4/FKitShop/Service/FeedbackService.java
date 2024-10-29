@@ -11,15 +11,14 @@ import com.group4.FKitShop.Repository.FeedbackRepository;
 import com.group4.FKitShop.Repository.ProductRepository;
 import com.group4.FKitShop.Request.FeedbackRequest;
 import com.group4.FKitShop.Response.FeedbackResponse;
-import com.group4.FKitShop.Response.QuestionResponse;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -100,7 +99,7 @@ public class FeedbackService {
 
     public Feedback createFeedback(FeedbackRequest request) {
         Feedback feedback = feedbackMapper.toFeedback(request);
-        feedback.setCreateDate(new Date());
+        feedback.setCreateDate(new Date(System.currentTimeMillis()));
         return feedbackRepository.save(feedback);
     }
 
@@ -111,7 +110,7 @@ public class FeedbackService {
         fb.setAccountID(feedback.getAccountID());
         fb.setProductID(feedback.getProductID());
         fb.setFeedbackID(id);
-        fb.setCreateDate(new Date());
+        fb.setCreateDate(new Date(System.currentTimeMillis()));
         return feedbackRepository.save(fb);
     }
 
