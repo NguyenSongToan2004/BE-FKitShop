@@ -7,6 +7,7 @@ import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Request.CheckoutRequest;
+import com.group4.FKitShop.Request.DateRequest;
 import com.group4.FKitShop.Request.OrderDetailsRequest;
 import com.group4.FKitShop.Request.OrdersRequest;
 import com.group4.FKitShop.Response.CheckoutResponse;
@@ -124,5 +125,26 @@ public class OrdersController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=order_report.xlsx")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(ordersService.getOrderReportFile(time));
+    }
+
+    @GetMapping("/months")
+    public ResponseEntity<ResponseObject> getMonth() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Months Successfully !!" , ordersService.getMonth())
+        );
+    }
+
+    @GetMapping("/byMonth")
+    public ResponseEntity<ResponseObject> getOrderByMonth(@RequestBody @Valid DateRequest request) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Orders Successfully !!" , ordersService.getOrderByMonth(request))
+        );
+    }
+
+    @GetMapping("/revenue")
+    public ResponseEntity<ResponseObject> getRevenue() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Revenue Successfully !!" , ordersService.getRevenue())
+        );
     }
 }

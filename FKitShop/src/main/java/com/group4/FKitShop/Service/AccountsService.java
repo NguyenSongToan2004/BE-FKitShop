@@ -280,6 +280,4 @@ public class AccountsService {
         return accountsRepository.getCustomerWithOrders();
     }
 
-
-
 }

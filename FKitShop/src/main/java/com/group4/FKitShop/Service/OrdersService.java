@@ -7,10 +7,12 @@ import com.group4.FKitShop.Mapper.LabMapper;
 import com.group4.FKitShop.Mapper.OrdersMapper;
 import com.group4.FKitShop.Repository.*;
 import com.group4.FKitShop.Request.CheckoutRequest;
+import com.group4.FKitShop.Request.DateRequest;
 import com.group4.FKitShop.Request.OrderLab;
 import com.group4.FKitShop.Request.OrdersRequest;
 import com.group4.FKitShop.Response.CheckoutResponse;
 import com.group4.FKitShop.Response.GetLabResponse;
+import com.group4.FKitShop.Response.RevenueResponse;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -500,4 +502,50 @@ public class OrdersService {
             }
         }
     }
+
+    public List<Object> getMonth(){
+        return ordersRepository.getMonth();
+    }
+
+    public List<Orders> getOrderByMonth(DateRequest request){
+        return ordersRepository.findOrdersByMonth(request.getDate1(), request.getDate2());
+    }
+
+    public List<RevenueResponse> getRevenue(){
+        List<Object[]> objs = ordersRepository.getRevenue();
+        List<RevenueResponse> responses = new ArrayList<>();
+        for (Object[] row : objs) {
+            RevenueResponse revenueResponse = RevenueResponse.builder()
+                    .monthCode((String) row[0])
+                    .totalProductPrice(((Number) row[1]).doubleValue())
+                    .totalShippingPrice(((Number) row[2]).doubleValue())
+                    .totalRevenue(((Number) row[3]).doubleValue())
+                    .build();
+            responses.add(revenueResponse);
+        }
+        List<RevenueResponse> finalResponses = new ArrayList<>();
+        for(int i = 0; i < responses.size(); i++){
+            RevenueResponse revenueResponse = new RevenueResponse();
+            if(i == 0){
+                revenueResponse = responses.get(i);
+                revenueResponse.setDifferenceRevenue(null);
+                revenueResponse.setDifferencePercent(null);
+                revenueResponse.setStatus(0);
+            }else{
+                revenueResponse = responses.get(i);
+                revenueResponse.setDifferenceRevenue(responses.get(i).getTotalRevenue() - responses.get(i-1).getTotalRevenue());
+                revenueResponse.setDifferencePercent(responses.get(i).getTotalRevenue()/responses.get(i-1).getTotalRevenue());
+                if(revenueResponse.getDifferenceRevenue() == 0){
+                    revenueResponse.setStatus(0);
+                }else if(revenueResponse.getDifferenceRevenue() > 0){
+                    revenueResponse.setStatus(1);
+                }else{
+                    revenueResponse.setStatus(-1);
+                }
+            }
+            finalResponses.add(revenueResponse);
+        }
+        return finalResponses;
+    }
+
 }
