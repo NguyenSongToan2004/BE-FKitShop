@@ -58,7 +58,7 @@ public class AuthenticationController {
 
     @PostMapping("/login-google")
     ResponseObject loginAuthentication(@RequestBody LoginGoogleRequest request) {
-        var result = authenticationService.authenticate(request);
+        var result = authenticationService.authenticateGG(request);
         return ResponseObject.builder()
                 .status(1000)
                 .data(result)
