@@ -38,13 +38,25 @@ import javax.crypto.spec.SecretKeySpec;
 public class  SecurityConfig {
 
     private static final String[] PUBLIC_API = {
-            "/fkshop/auth/**",
-            "/fkshop/product/**",
-            "/fkshop/api/storage/**",
-            "/fkshop/tags/**",
-            "/fkshop/categories/**",
-            "/fkshop/tags/**",
-            "/fkshop/blogs/**"
+            "/auth/**",
+            "/product/**",
+            "/api/storage/**",
+            "/tags/**",
+            "/categories/**",
+            "/tags/**",
+            "/blogs/**"
+    };
+
+    private static final String[] ADMIN_API = {
+            "/orders/allOrders"
+    };
+
+    private static final String[] STAFF_API = {
+
+    };
+
+    private static final String[] MANAGER_API = {
+        "/accounts/allAccounts"
     };
     private static final String[] GET_PUBLIC_API = {
             "/submitOrder",
@@ -54,9 +66,7 @@ public class  SecurityConfig {
             "/tags/**",
             "/categories/**"
     };
-    private static final String[] GET_ADMIN_API = {
-            "/orders/allOrders"
-    };
+
 
 
     //    //secretkey
@@ -87,7 +97,7 @@ public class  SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-        // Enable CORS and disable CSRF
+        // disable CORS and CSRF
         httpSecurity
                 .cors().and()
                 .csrf(AbstractHttpConfigurer::disable)
@@ -98,8 +108,8 @@ public class  SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_API).permitAll()
                         .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-                        .requestMatchers("/accounts/allAccounts").hasAnyRole("admin","manager")
-                        .requestMatchers(HttpMethod.GET, GET_ADMIN_API).hasRole("admin")
+                        .requestMatchers(MANAGER_API).hasAnyRole("admin","manager")
+                        .requestMatchers(ADMIN_API).hasRole("admin")
                         .anyRequest().authenticated()
                 )
                 //register authentication provider supporting jwt token
