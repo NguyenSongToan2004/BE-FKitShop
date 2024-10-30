@@ -44,19 +44,49 @@ public class SecurityConfig {
             "/tags/**",
             "/categories/**",
             "/tags/**",
-            "/blogs/**"
+            "/blogs/**",
+            "/accounts/register",
+
+    };
+
+    private static final String[] ACCOUNT_API = {
+            "/accounts/avatar/**",
+            "/accounts/info",
+            "/accounts/password/**",
+            "/accounts/password/confirm",
+            "/accounts/updateinfo/**",
+            //{id}
+            "/accounts/",
+
+
     };
 
     private static final String[] ADMIN_API = {
-            "/orders/allOrders"
+            "/orders/allOrders",
+            "/admin/update/**",
+            "/accounts/allAccounts",
+            "/accounts/createAccount",
+            "/accounts/listAccounts",
+            "/accounts/updateAccount/**",
     };
 
     private static final String[] STAFF_API = {
-
+            "/accounts/customer",
     };
 
     private static final String[] MANAGER_API = {
-            "/accounts/allAccounts"
+            "/accounts/customer",
+            //POST, PUT, DELETE
+            "/categories",
+            "/product/add",
+            "/product/add-images/**",
+            "/product/image/**/**",
+            "/product/images",
+            "/product/report/sales",
+            //PUT, DELETE
+            "/product/**",
+
+
     };
 
 
@@ -97,11 +127,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(PUBLIC_API).permitAll()
-//                        .requestMatchers(MANAGER_API).hasAnyRole("admin","manager")
-//                        .requestMatchers(STAFF_API).hasAnyRole("admin","staff")
+//                        .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
+//                        .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
 //                        .requestMatchers(ADMIN_API).hasRole("admin")
 //                        .anyRequest().authenticated()
                                 .anyRequest().permitAll()
+
+
                 )
                 //register authentication provider supporting jwt token
                 //jwt decoder: decode jwt truyen vao, verify token
