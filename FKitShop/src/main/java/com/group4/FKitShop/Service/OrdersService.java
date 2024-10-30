@@ -11,6 +11,7 @@ import com.group4.FKitShop.Request.DateRequest;
 import com.group4.FKitShop.Request.OrderLab;
 import com.group4.FKitShop.Request.OrdersRequest;
 import com.group4.FKitShop.Response.CheckoutResponse;
+import com.group4.FKitShop.Response.DailyRevenueResponse;
 import com.group4.FKitShop.Response.GetLabResponse;
 import com.group4.FKitShop.Response.RevenueResponse;
 import jakarta.mail.MessagingException;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -156,9 +158,9 @@ public class OrdersService {
         //check if the order is already canceled => cannot change status
         if (orders.getStatus().toLowerCase().equals("cancel"))
             throw new AppException(ErrorCode.CANCEL_ORDER_FAILED);
-        
+
         //cancel order
-        if (status.equals("cancel")){
+        if (status.equals("cancel")) {
             return ordersRepository.save(cancelOrder(orders));
         }
         // Check if the new status is in the allowed sequence and follows the current status
@@ -180,7 +182,7 @@ public class OrdersService {
                 Product product = productRepository.findById(orderDetails.getProductID()).orElseThrow(
                         () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
                 );
-                if (product.getType().equals("kit")){
+                if (product.getType().equals("kit")) {
                     orderDetails.setIsActive(1);
                     //set warranty date up to 30 days
                     Calendar calendar = Calendar.getInstance();
@@ -247,11 +249,11 @@ public class OrdersService {
             scriptTable += "</tr>";
             count++;
         }
-
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String fullAddress = orders.getAddress() + ", " + orders.getWard() + ", " + orders.getDistrict() + ", " + orders.getProvince();
         String body = "<p>Cảm ơn quý khách <strong>" + accounts.getFullName() + "</strong> đã đặt hàng tại FKShop.</p>" +
                 "<p>Đơn hàng <strong>" + orders.getOrdersID() + "</strong> của quý khách đã được tiếp nhận, chúng tôi sẽ xử lý trong khoảng thời gian sớm nhất. Sau đây là thông tin đơn hàng.</p>" +
-                "<h3>Thông tin đơn hàng " + orders.getOrdersID() + " vào ngày " + orders.getOrderDate() + " " + "</h3>" +
+                "<h3>Thông tin đơn hàng " + orders.getOrdersID() + " vào ngày " + dateFormat.format(orders.getOrderDate()) + " " + "</h3>" +
 
                 "<table border='1'>" +
                 "<tr><th>Thông tin khách hàng</th><th>Địa chỉ giao hàng</th></tr>" +
