@@ -513,8 +513,6 @@ public class OrdersService {
         return ordersRepository.findOrdersByMonth(request.getDate1(), request.getDate2());
     }
 
-
-
     public List<RevenueResponse> getRevenue(){
         List<Object[]> objs = ordersRepository.getRevenue();
         List<RevenueResponse> responses = new ArrayList<>();
