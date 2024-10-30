@@ -101,4 +101,10 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
             "ORDER BY \n" +
             "    month_code\n", nativeQuery = true)
     List<Object[]> getRevenue();
+
+    @Query(value = "SELECT DATE(o.orderDate) AS orderDate, SUM(od.price * od.quantity) AS dailyRevenue \n" +
+            "           FROM Orders o JOIN OrderDetails od ON o.ordersID = od.ordersID\n" +
+            "           WHERE MONTH(o.orderDate) = MONTH(CURRENT_DATE) AND YEAR(o.orderDate) = YEAR(CURRENT_DATE) AND o.status = 'delivered'\n" +
+            "           GROUP BY DATE(o.orderDate)", nativeQuery = true)
+    List<Object[]> findDailyRevenueForCurrentMonth();
 }

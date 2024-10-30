@@ -550,4 +550,13 @@ public class OrdersService {
         return finalResponses;
     }
 
+    public List<DailyRevenueResponse> getDailyRevenueForCurrentMonth() {
+        List<Object[]> results = ordersRepository.findDailyRevenueForCurrentMonth();
+        return results.stream()
+                .map(result -> new DailyRevenueResponse(
+                        (java.sql.Date) result[0],
+                        ((BigDecimal) result[1]).doubleValue()  // Chuyển đổi BigDecimal thành Double
+                ))
+                .collect(Collectors.toList());
+    }
 }

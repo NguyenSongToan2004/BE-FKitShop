@@ -35,7 +35,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity(debug = true)
 @EnableMethodSecurity
 @CrossOrigin(origins = "http://localhost:5173")
-public class  SecurityConfig {
+public class SecurityConfig {
 
     private static final String[] PUBLIC_API = {
             "/auth/**",
@@ -56,9 +56,8 @@ public class  SecurityConfig {
     };
 
     private static final String[] MANAGER_API = {
-        "/accounts/allAccounts"
+            "/accounts/allAccounts"
     };
-
 
 
     //    //secretkey
@@ -72,14 +71,13 @@ public class  SecurityConfig {
     AuthEntryPointJwt unauthorizedHandler;
 
 
-
     @Bean
-    AuthTokenFilter authTokenFilter(){
+    AuthTokenFilter authTokenFilter() {
         return new AuthTokenFilter();
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider(){
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(accountsService);
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -118,8 +116,9 @@ public class  SecurityConfig {
         return httpSecurity.build();
 
     }
+
     @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter(){
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
         //customize claim scope to role

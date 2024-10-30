@@ -144,4 +144,12 @@ public class OrdersController {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenue()));
     }
+
+    @GetMapping("/daily-revenue")
+    public ResponseEntity<ResponseObject> getDailyRevenueForCurrentMonth() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get daily revenue successfully !!",
+                        ordersService.getDailyRevenueForCurrentMonth())
+        );
+    }
 }
