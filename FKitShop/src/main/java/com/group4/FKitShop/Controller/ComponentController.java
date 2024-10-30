@@ -29,18 +29,18 @@ public class ComponentController {
     }
 
     @GetMapping("/byProduct/{id}")
-    public List<Component> getComponentByProduct(@PathVariable String id) {
+    public List<ComponentResponse> getComponentByProduct(@PathVariable String id) {
         return componentService.getComponentByProduct(id);
     }
 
-    @PostMapping()
-    public ResponseObject createComponent(@RequestBody @Valid ComponentRequest request) {
-        return ResponseObject.builder()
-                .status(1000)
-                .message("Create component successfully")
-                .data(componentService.createComponent(request))
-                .build();
-    }
+//    @PostMapping()
+//    public ResponseObject createComponent(@RequestBody @Valid ComponentRequest request) {
+//        return ResponseObject.builder()
+//                .status(1000)
+//                .message("Create component successfully")
+//                .data(componentService.createComponent(request))
+//                .build();
+//    }
 
     @PutMapping("/{id}")
     public ResponseObject createComponent(@RequestBody @Valid ComponentRequest request, @PathVariable String id) {

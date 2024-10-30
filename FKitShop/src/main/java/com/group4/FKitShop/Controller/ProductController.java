@@ -1,8 +1,10 @@
 package com.group4.FKitShop.Controller;
 
+import com.amazonaws.Request;
 import com.group4.FKitShop.Entity.CateProduct;
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Entity.ResponseObject;
+import com.group4.FKitShop.Request.ComponentRequest;
 import com.group4.FKitShop.Request.DeleteImageRequest;
 import com.group4.FKitShop.Request.ProductRequest;
 import com.group4.FKitShop.Response.CategoryResponse;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -52,7 +55,8 @@ public class ProductController {
             @RequestParam("dimension") String dimension,
             @RequestParam("type") String type,
             @RequestParam("images") MultipartFile[] image,
-            @RequestParam("categoryID") List<String> categoryID
+            @RequestParam("categoryID") List<String> categoryID,
+            @RequestParam("components") List<String> components
     ) {
         ProductRequest request = ProductRequest.builder()
                 .name(name)
@@ -68,7 +72,7 @@ public class ProductController {
                 .type(type)
                 .categoryID(categoryID)
                 .build();
-        Product product = service.addProduct(request, image);
+        Product product = service.addProduct(request, image, components);
         cateProductService.createCateProduct_Product(request);
         List<CateProduct> cateProducts = cateProductService.getCateProductByProductID(product.getProductID());
 
@@ -106,7 +110,8 @@ public class ProductController {
                                      @RequestParam("material") String material,
                                      @RequestParam("dimension") String dimension,
                                      @RequestParam("type") String type,
-                                     @RequestParam("categoryID") List<String> categoryID
+                                     @RequestParam("categoryID") List<String> categoryID,
+                                     @RequestParam("components") List<String> components
     ) {
         ProductRequest request = ProductRequest.builder()
                 .name(name)
@@ -122,7 +127,7 @@ public class ProductController {
                 .type(type)
                 .categoryID(categoryID)
                 .build();
-        Product product = service.updateProduct(productID, request);
+        Product product = service.updateProduct(productID, request, components);
 
         cateProductService.deleteCateProduct_Product(productID);
         cateProductService.updateCateProduct_Product(productID, request);
