@@ -46,23 +46,43 @@ public class SecurityConfig {
             "/tags/**",
             "/blogs/**",
             "/accounts/register",
-
+            //===================
+            "/accounts/info",
+            "/carts/**",
+            "/delivery/**",
+            "/lab/product/**",
+            "/feedback/**",
     };
 
     private static final String[] ACCOUNT_API = {
             "/accounts/avatar/**",
-            "/accounts/info",
             "/accounts/password/**",
             "/accounts/password/confirm",
             "/accounts/updateinfo/**",
             //{id}
-            "/accounts/",
-
-
+            "/accounts/**",
+            "/accounts/avatar/**",
+            "/accounts/info",
+            "/accounts/password/**",
+            "/orders/details/**",
+            "/orders/find/**",
+            "orders/checkout",
+            "/check-out",
+            "/submitOrder",
+            "/questions/**",
+            "/lab/account/**",
+            "/lab/download",
+            "/lab/get-link-download",
+            "/lab/status-labs/**",
+            "/support/create",
+            "/support/status",
+            "/support/support-accountID/**",
+            "/support/supports/**",
+            "/wishlists/**",
     };
 
     private static final String[] ADMIN_API = {
-            "/orders/allOrders",
+            "/orders/allorders",
             "/admin/update/**",
             "/accounts/allAccounts",
             "/accounts/createAccount",
@@ -72,6 +92,7 @@ public class SecurityConfig {
 
     private static final String[] STAFF_API = {
             "/accounts/customer",
+            "/orders/**",
     };
 
     private static final String[] MANAGER_API = {
@@ -85,8 +106,20 @@ public class SecurityConfig {
             "/product/report/sales",
             //PUT, DELETE
             "/product/**",
-
-
+            //POST
+            "/tags", "/blogs",
+            //PUT, DELETE
+            "/blogs/**",
+            "/lab-guide/**",
+            "/lab/labs",
+            "/lab/pdf/create/**",
+            "/lab/upload-img",
+            "/lab/upload-lab/**",
+            //PUT, DELETE
+            "/lab/**",
+            "/support/status",
+            "/support/support-date",
+            "/components/**"
     };
 
 
@@ -127,14 +160,18 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(PUBLIC_API).permitAll()
+//                        .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
+//                        .requestMatchers(ADMIN_API).hasRole("admin")
 //                        .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
 //                        .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
-//                        .requestMatchers(ADMIN_API).hasRole("admin")
 //                        .anyRequest().authenticated()
                                 .anyRequest().permitAll()
 
 
+
+
                 )
+
                 //register authentication provider supporting jwt token
                 //jwt decoder: decode jwt truyen vao, verify token
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -145,6 +182,7 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return httpSecurity.build();
 
     }
