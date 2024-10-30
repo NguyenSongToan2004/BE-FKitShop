@@ -145,4 +145,19 @@ public class  SecurityConfig {
         return new BCryptPasswordEncoder(10);
     }
 
+    //CORS handling
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        corsConfiguration.addAllowedOrigin("http://localhost:5173");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedHeader("*");
+
+        UrlBasedCorsConfigurationSource url = new UrlBasedCorsConfigurationSource();
+        url.registerCorsConfiguration("/**", corsConfiguration);
+
+        return new CorsFilter(url);
+    }
+
 }
