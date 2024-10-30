@@ -74,4 +74,14 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/logout")
+    ResponseObject logout(@RequestBody LogoutRequest request)
+            throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Logout successfully")
+                .build();
+    }
+
 }
