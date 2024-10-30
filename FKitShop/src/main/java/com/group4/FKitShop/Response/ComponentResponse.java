@@ -10,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ComponentResponse {
-    Product product;
     int componentIndex;
     String componentID;
     String componentName;

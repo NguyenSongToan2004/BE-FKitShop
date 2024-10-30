@@ -2,6 +2,7 @@ package com.group4.FKitShop.Response;
 
 
 import com.group4.FKitShop.Entity.CateProduct;
+import com.group4.FKitShop.Entity.Component;
 import com.group4.FKitShop.Entity.Product;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

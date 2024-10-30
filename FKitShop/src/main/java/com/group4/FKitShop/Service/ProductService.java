@@ -9,10 +9,11 @@ import com.group4.FKitShop.Mapper.ProductMapper;
 import com.group4.FKitShop.Repository.CategoryRepository;
 import com.group4.FKitShop.Repository.ImageRepository;
 import com.group4.FKitShop.Repository.ProductRepository;
+import com.group4.FKitShop.Request.ComponentRequest;
 import com.group4.FKitShop.Request.DeleteImageRequest;
 import com.group4.FKitShop.Request.ProductRequest;
 import com.group4.FKitShop.Response.GetProductResponse;
-import jakarta.transaction.Transactional;
+import com.group4.FKitShop.Response.ProductResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -20,6 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
@@ -27,10 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -48,12 +47,16 @@ public class ProductService {
     private CategoryService categoryService;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ComponentService componentService;
 
-    public Product addProduct(ProductRequest request, MultipartFile[] images) {
+    @Transactional(rollbackFor = AppException.class)
+    public Product addProduct(ProductRequest request, MultipartFile[] images, List<String> componentsList) {
         if (repository.existsByName(request.getName()))
             throw new AppException(ErrorCode.PRODUCT_NAMEDUPLICATED);
+        String productID = generateID();
         Product product = new Product();
-        product.setProductID(generateID());
+        product.setProductID(productID);
         product.setCreateDate(new Date());
         product.setImages(new ArrayList<Image>());
         for (MultipartFile file : images) {
@@ -68,8 +71,12 @@ public class ProductService {
             product.getImages().add(image);
         }
         ProductMapper.INSTANCE.toProduct(request, product);
-
-        return repository.save(product);
+        repository.save(product);
+        ComponentRequest components = ComponentRequest.builder()
+                .components(convertListCompoToMap(componentsList))
+                .build();
+        componentService.createComponent(components, productID, product.getPrice());
+        return product;
     }
 
     public GetProductResponse getProduct(String id) {
@@ -94,21 +101,38 @@ public class ProductService {
                 .createDate(product.getCreateDate())
                 .status(product.getStatus())
                 .categories(categories)
+                .components(componentService.getComponentByProduct(product.getProductID()))
                 .build();
+    }
+
+    private HashMap<String, Integer> convertListCompoToMap(List<String> components) {
+        HashMap<String, Integer> componentsMap = new HashMap<>();
+        for (String component : components) {
+            String[] tokenCompo = component.split(":");
+            String componentID = tokenCompo[0];
+            int quantityCompo = Integer.parseInt(tokenCompo[1]);
+            componentsMap.put(componentID, quantityCompo);
+        }
+        return componentsMap;
     }
 
     public List<Product> getProductsByType(String type) {
         return repository.getProductsByType(type);
     }
 
-    public Product updateProduct(String id, ProductRequest request) {
+    @Transactional(rollbackFor = AppException.class)
+    public Product updateProduct(String id, ProductRequest request, List<String> componentsList) {
 
         Product product = repository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
-
         ProductMapper.INSTANCE.toProduct(request, product);
-        return repository.save(product);
+        repository.save(product);
+        ComponentRequest components = ComponentRequest.builder()
+                .components(convertListCompoToMap(componentsList))
+                .build();
+        componentService.updateComponent(components, product.getProductID());
+        return product;
     }
 
     public String updateImage(MultipartFile image, String productID, int imageID) {

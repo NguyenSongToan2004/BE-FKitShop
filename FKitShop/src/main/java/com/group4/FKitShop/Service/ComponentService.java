@@ -1,6 +1,7 @@
 package com.group4.FKitShop.Service;
 
 import com.group4.FKitShop.Entity.Component;
+import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Repository.ComponentRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +34,6 @@ public class ComponentService {
             componentResponse.setComponentIndex(component.getComponentIndex());
             componentResponse.setComponentID(component.getComponentID());
             componentResponse.setQuantity(component.getQuantity());
-            componentResponse.setProduct(productRepository.findById(component.getProductID())
-                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND)));
             componentResponse.setComponentName(productRepository.findById(component.getComponentID())
                     .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND)).getName());
             componentResponses.add(componentResponse);
@@ -41,34 +41,85 @@ public class ComponentService {
         return componentResponses;
     }
 
-    public List<Component> getComponentByProduct(String id) {
-        return componentRepository.getComponentByProductID(id);
+    public List<ComponentResponse> getComponentByProduct(String id) {
+        List<Component> components = componentRepository.getComponentByProductID(id);
+        List<ComponentResponse> componentResponses = new ArrayList<>();
+        for (Component component : components) {
+            ComponentResponse componentResponse = new ComponentResponse();
+            componentResponse.setComponentIndex(component.getComponentIndex());
+            componentResponse.setComponentID(component.getComponentID());
+            componentResponse.setQuantity(component.getQuantity());
+            componentResponse.setComponentName(productRepository.findById(component.getComponentID())
+                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND)).getName());
+            componentResponses.add(componentResponse);
+        }
+        return componentResponses;
     }
 
 
     // create component
-    public String generateProductID() {
-        int number = 1;
-        String code;
-        do {
-            code = String.format("P%05d", number);
-            number++;
-        } while (productRepository.existsById(code));
-        String id = String.format("P%05d", number - 2);
-        return id;
-    }
+//    public String generateProductID() {
+//        int number = 1;
+//        String code;
+//        do {
+//            code = String.format("P%05d", number);
+//            number++;
+//        } while (productRepository.existsById(code));
+//        String id = String.format("P%05d", number - 2);
+//        return id;
+//    }
 
-    public List<Component> createComponent(ComponentRequest request) {
-        String id = generateProductID();
+//    public String generateComponentID() {
+//        int number = 1;
+//        String code;
+//        do {
+//            code = String.format("CP%05d", number);
+//            number++;
+//        } while (productRepository.existsById(code));
+//        String id = String.format("P%05d", number - 2);
+//        return id;
+//    }
 
+//    public List<Component> createComponent(ComponentRequest request, String productID, double totalPrice) {
+//        AtomicReference<Double> totalComPrice = new AtomicReference<>((double) 0);
+//        List<Component> components = new ArrayList<>();
+//        request.getComponents().forEach((componentID, quantity) -> {
+//            Product product = productRepository.findById(productID).orElseThrow(
+//                    () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+//            totalComPrice.set(totalPrice + product.getPrice() * quantity);
+//            Component component = new Component();
+//            component.setComponentID(componentID);
+//            component.setQuantity(quantity);
+//            component.setProductID(productID);
+//            components.add(component);
+//        });
+//        System.out.println("totalComPrice : " + totalComPrice.get());
+//        System.out.println("totalPrice : " + totalPrice);
+//        if (totalComPrice.get() > totalPrice)
+//            throw new AppException(ErrorCode.PRODUCT_KIT_INVALID_PRICE);
+//        return componentRepository.saveAll(components);
+//    }
+
+    public List<Component> createComponent(ComponentRequest request, String productID, double totalPrice) {
+        AtomicReference<Double> totalComPrice = new AtomicReference<>((double) 0);
         List<Component> components = new ArrayList<>();
         request.getComponents().forEach((componentID, quantity) -> {
+            Product product = productRepository.findById(componentID).orElseThrow(
+                    () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
+            System.out.println("productID : " + product.getProductID());
+            System.out.println("quantity : " + quantity);
+            totalComPrice.set(totalComPrice.get() + product.getPrice() * quantity);
+            System.out.println("price : " + totalComPrice.get() + "/n==================");
             Component component = new Component();
             component.setComponentID(componentID);
             component.setQuantity(quantity);
-            component.setProductID(id);
+            component.setProductID(productID);
             components.add(component);
         });
+        System.out.println("totalComPrice : " + totalComPrice.get());
+        System.out.println("totalPrice : " + totalPrice);
+        if (totalComPrice.get() > totalPrice)
+            throw new AppException(ErrorCode.PRODUCT_KIT_INVALID_PRICE);
         return componentRepository.saveAll(components);
     }
 
@@ -81,15 +132,18 @@ public class ComponentService {
                 }
             }
         });
-        List<Component> components = new ArrayList<>();
-        request.getComponents().forEach((componentID, quantity) -> {
-            Component component = new Component();
-            component.setComponentID(componentID);
-            component.setQuantity(quantity);
-            component.setProductID(productID);
-            components.add(component);
-        });
-        return componentRepository.saveAll(components);
+//        List<Component> components = new ArrayList<>();
+//        request.getComponents().forEach((componentID, quantity) -> {
+//            Component component = new Component();
+//            component.setComponentID(componentID);
+//            component.setQuantity(quantity);
+//            component.setProductID(productID);
+//            components.add(component);
+//        });
+        Product product = productRepository.findById(productID).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
+        );
+        return createComponent(request, productID, product.getPrice());
     }
 
     public boolean deleteComponent(int id) {

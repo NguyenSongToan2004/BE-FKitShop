@@ -38,4 +38,5 @@ public class GetProductResponse {
     Date createDate;
     List<Image> images;
     List<Category> categories;
+    List<ComponentResponse> components;
 }

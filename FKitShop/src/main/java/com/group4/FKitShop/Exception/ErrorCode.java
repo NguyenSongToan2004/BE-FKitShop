@@ -34,6 +34,7 @@ public enum ErrorCode {
     PRODUCT_NAMEDUPLICATED(1016, "This product name has already been taken!!"),
     PRODUCT_NOTFOUND(1017, "This product does not exist!!"),
     PRODUCT_UNAVAILABLE(1018, "This product is out of stock"),
+    PRODUCT_KIT_INVALID_PRICE(1019, "The product price must be greater than components price !!"),
 
     // File Errors
     UPLOAD_FILE_FAILED(1019, "Failed to upload this file!!"),
