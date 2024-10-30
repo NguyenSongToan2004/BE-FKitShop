@@ -49,6 +49,7 @@ public class ProductService {
     private CategoryRepository categoryRepository;
     @Autowired
     private ComponentService componentService;
+    private ProductRepository productRepository;
 
     @Transactional(rollbackFor = AppException.class)
     public Product addProduct(ProductRequest request, MultipartFile[] images, List<String> componentsList) {
@@ -381,5 +382,9 @@ public class ProductService {
 
     public List<Product> getByName(String name) {
         return repository.getByName("%" + name + "%");
+    }
+
+    public List<Object> getProductWithSoldQuantity() {
+        return productRepository.getHotProduct();
     }
 }

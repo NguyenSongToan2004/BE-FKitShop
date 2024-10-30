@@ -198,4 +198,12 @@ public class AccountsController {
                 .build();
     }
 
+
+    @GetMapping("/customer")
+    public ResponseEntity<ResponseObject> getCustomerData() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Customer Data Successfully !!" , accountsService.getCustomerData())
+        );
+    }
+
 }

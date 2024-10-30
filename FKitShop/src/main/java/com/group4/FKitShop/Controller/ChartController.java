@@ -23,4 +23,5 @@ public class ChartController {
                 new ResponseObject(1000, "Get Data Product Successfully !!" , chartService.getProductData())
         );
     }
+
 }
