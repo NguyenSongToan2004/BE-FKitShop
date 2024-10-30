@@ -42,10 +42,10 @@ public interface AccountsRepository extends JpaRepository<Accounts, String> {
 //            "ORDER BY COUNT(ordersID) DESC", nativeQuery = true)
 //    HashMap<String, Integer> getCustomerWithOrders();
 
-    @Query(value = "SELECT accountID, COUNT(ordersID) AS totalOrders " +
-            "FROM Orders " +
-            "GROUP BY accountID " +
-            "ORDER BY COUNT(ordersID) DESC", nativeQuery = true)
-    List<Object> getCustomerWithOrders();
+    @Query(value = "SELECT  o.accountID, a.fullName, COUNT(o.ordersID) AS totalOrders \n" +
+            "            FROM Orders o join Accounts a on o.accountID = a.accountID\n" +
+            "            GROUP BY o.accountID, a.fullName\n" +
+            "            ORDER BY COUNT(o.ordersID) DESC", nativeQuery = true)
+    List<Object[]> getCustomerWithOrders();
 
 }

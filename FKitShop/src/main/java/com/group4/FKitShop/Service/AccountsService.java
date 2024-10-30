@@ -8,6 +8,7 @@ import com.group4.FKitShop.Repository.AccountsRepository;
 import com.group4.FKitShop.Request.*;
 import com.group4.FKitShop.Mapper.AccountsMapper;
 import com.group4.FKitShop.Response.AccountsResponse;
+import com.group4.FKitShop.Response.CustomerDataResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,10 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -93,7 +92,7 @@ public class AccountsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         //load account
         Accounts account = accountsRepository.findByemail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: "+username));
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + username));
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         grantedAuthorities.add(new SimpleGrantedAuthority(account.getRole()));
         return new org.springframework.security.core.userdetails.User(
@@ -296,7 +295,13 @@ public class AccountsService implements UserDetailsService {
     }
 
     public List<Object> getCustomerData() {
-        return accountsRepository.getCustomerWithOrders();
+        List<Object[]> list = accountsRepository.getCustomerWithOrders();
+        return list.stream().map(result -> new CustomerDataResponse(
+                        result[0].toString(),
+                        result[1].toString(),
+                        Integer.parseInt(result[2].toString())
+                )
+        ).collect(Collectors.toList());
     }
 
 }
