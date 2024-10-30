@@ -21,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -273,6 +275,11 @@ public class AccountsService {
             throw new AppException(ErrorCode.UPLOAD_FILE_FAILED);
         }
     }
+
+    public List<Object> getCustomerData() {
+        return accountsRepository.getCustomerWithOrders();
+    }
+
 
 
 }

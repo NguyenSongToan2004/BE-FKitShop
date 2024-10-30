@@ -2,7 +2,6 @@ package com.group4.FKitShop.Service;
 
 import com.group4.FKitShop.Entity.Product;
 import com.group4.FKitShop.Repository.ProductRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +13,7 @@ import java.util.Map;
 public class ChartService {
     @Autowired
     private ProductRepository productRepository;
+    
 
     public Map<String,Object> getProductData() {
         List<Product> products = productRepository.findAll();
@@ -28,4 +28,6 @@ public class ChartService {
         chartData.put("data",dataValues);
         return chartData;
     }
+
+
 }

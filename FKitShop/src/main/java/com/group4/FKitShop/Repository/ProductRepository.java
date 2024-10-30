@@ -87,4 +87,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     List<Product> getByName(@Param("name") String name);
 
     List<Product> getProductsByType(String type);
+
+    @Query(value = "SELECT productID, SUM(quantity) AS totalSold\n" +
+            "FROM OrderDetails\n" +
+            "GROUP BY productID\n" +
+            "ORDER BY totalSold DESC;", nativeQuery = true)
+    List<Object> getHotProduct();
 }

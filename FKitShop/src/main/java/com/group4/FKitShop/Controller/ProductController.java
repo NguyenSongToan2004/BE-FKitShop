@@ -34,6 +34,8 @@ public class ProductController {
     CateProductService cateProductService;
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    private ProductService productService;
 
     // create product & cateProduct relation tuong ung
     @PostMapping("/add")
@@ -233,6 +235,13 @@ public class ProductController {
     ResponseEntity<ResponseObject> getByName(@PathVariable("name") String name) throws IOException {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get Product By Name", service.getByName(name))
+        );
+    }
+
+    @GetMapping("/hotproduct")
+    public ResponseEntity<ResponseObject> getSoldQuantity() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Product Data Successfully !!" , productService.getProductWithSoldQuantity())
         );
     }
 }

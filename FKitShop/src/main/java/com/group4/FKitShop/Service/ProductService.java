@@ -48,6 +48,8 @@ public class ProductService {
     private CategoryService categoryService;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     public Product addProduct(ProductRequest request, MultipartFile[] images) {
         if (repository.existsByName(request.getName()))
@@ -357,5 +359,9 @@ public class ProductService {
 
     public List<Product> getByName(String name) {
         return repository.getByName("%" + name + "%");
+    }
+
+    public List<Object> getProductWithSoldQuantity() {
+        return productRepository.getHotProduct();
     }
 }
