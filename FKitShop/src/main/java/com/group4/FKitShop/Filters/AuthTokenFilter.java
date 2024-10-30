@@ -35,6 +35,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final String[] PUBLIC_API = {
             "/fkshop/auth/**",
+            "/fkshop/auth/login-google",
             "/fkshop/product/**",
             "/fkshop/api/storage/**",
             "/fkshop/tags/**",

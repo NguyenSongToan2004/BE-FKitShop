@@ -58,14 +58,6 @@ public class  SecurityConfig {
     private static final String[] MANAGER_API = {
         "/accounts/allAccounts"
     };
-    private static final String[] GET_PUBLIC_API = {
-            "/submitOrder",
-            "/product/**",
-            "/carts/view/{accountID}",
-            "/carts/viewCart",
-            "/tags/**",
-            "/categories/**"
-    };
 
 
 
@@ -106,11 +98,12 @@ public class  SecurityConfig {
                 // and doesn't use an old session with different roles
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_API).permitAll()
-                        .requestMatchers(HttpMethod.GET, GET_PUBLIC_API).permitAll()
-                        .requestMatchers(MANAGER_API).hasAnyRole("admin","manager")
-                        .requestMatchers(ADMIN_API).hasRole("admin")
-                        .anyRequest().authenticated()
+//                        .requestMatchers(PUBLIC_API).permitAll()
+//                        .requestMatchers(MANAGER_API).hasAnyRole("admin","manager")
+//                        .requestMatchers(STAFF_API).hasAnyRole("admin","staff")
+//                        .requestMatchers(ADMIN_API).hasRole("admin")
+//                        .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 //register authentication provider supporting jwt token
                 //jwt decoder: decode jwt truyen vao, verify token
