@@ -100,7 +100,7 @@ public class OrdersController {
                 .build();
     }
 
-    @GetMapping("details/{ordersID}")
+    @GetMapping("/details/{ordersID}")
     public ResponseObject getOrderDetailsByOrdersID(@PathVariable String ordersID) {
         return ResponseObject.builder()
                 .status(1000)
@@ -125,4 +125,5 @@ public class OrdersController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(ordersService.getOrderReportFile(time));
     }
+
 }

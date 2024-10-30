@@ -58,7 +58,7 @@ public class AuthenticationController {
 
     @PostMapping("/login-google")
     ResponseObject loginAuthentication(@RequestBody LoginGoogleRequest request) {
-        var result = authenticationService.authenticate(request);
+        var result = authenticationService.authenticateGG(request);
         return ResponseObject.builder()
                 .status(1000)
                 .data(result)
@@ -71,6 +71,16 @@ public class AuthenticationController {
         var result = authenticationService.introspect(request);
         return ResponseObject.builder()
                 .data(result)
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ResponseObject logout(@RequestBody LogoutRequest request)
+            throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ResponseObject.builder()
+                .status(1000)
+                .message("Logout successfully")
                 .build();
     }
 

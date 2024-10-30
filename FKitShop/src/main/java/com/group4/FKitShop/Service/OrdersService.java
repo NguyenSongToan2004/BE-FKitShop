@@ -7,10 +7,13 @@ import com.group4.FKitShop.Mapper.LabMapper;
 import com.group4.FKitShop.Mapper.OrdersMapper;
 import com.group4.FKitShop.Repository.*;
 import com.group4.FKitShop.Request.CheckoutRequest;
+import com.group4.FKitShop.Request.DateRequest;
 import com.group4.FKitShop.Request.OrderLab;
 import com.group4.FKitShop.Request.OrdersRequest;
 import com.group4.FKitShop.Response.CheckoutResponse;
+import com.group4.FKitShop.Response.DailyRevenueResponse;
 import com.group4.FKitShop.Response.GetLabResponse;
+import com.group4.FKitShop.Response.RevenueResponse;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -34,6 +37,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -154,9 +158,9 @@ public class OrdersService {
         //check if the order is already canceled => cannot change status
         if (orders.getStatus().toLowerCase().equals("cancel"))
             throw new AppException(ErrorCode.CANCEL_ORDER_FAILED);
-        
+
         //cancel order
-        if (status.equals("cancel")){
+        if (status.equals("cancel")) {
             return ordersRepository.save(cancelOrder(orders));
         }
         // Check if the new status is in the allowed sequence and follows the current status
@@ -178,7 +182,7 @@ public class OrdersService {
                 Product product = productRepository.findById(orderDetails.getProductID()).orElseThrow(
                         () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
                 );
-                if (product.getType().equals("kit")){
+                if (product.getType().equals("kit")) {
                     orderDetails.setIsActive(1);
                     //set warranty date up to 30 days
                     Calendar calendar = Calendar.getInstance();
@@ -245,11 +249,11 @@ public class OrdersService {
             scriptTable += "</tr>";
             count++;
         }
-
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String fullAddress = orders.getAddress() + ", " + orders.getWard() + ", " + orders.getDistrict() + ", " + orders.getProvince();
         String body = "<p>Cảm ơn quý khách <strong>" + accounts.getFullName() + "</strong> đã đặt hàng tại FKShop.</p>" +
                 "<p>Đơn hàng <strong>" + orders.getOrdersID() + "</strong> của quý khách đã được tiếp nhận, chúng tôi sẽ xử lý trong khoảng thời gian sớm nhất. Sau đây là thông tin đơn hàng.</p>" +
-                "<h3>Thông tin đơn hàng " + orders.getOrdersID() + " vào ngày " + orders.getOrderDate() + " " + "</h3>" +
+                "<h3>Thông tin đơn hàng " + orders.getOrdersID() + " vào ngày " + dateFormat.format(orders.getOrderDate()) + " " + "</h3>" +
 
                 "<table border='1'>" +
                 "<tr><th>Thông tin khách hàng</th><th>Địa chỉ giao hàng</th></tr>" +
@@ -500,4 +504,52 @@ public class OrdersService {
             }
         }
     }
+
+    public List<Object> getMonth(){
+        return ordersRepository.getMonth();
+    }
+
+    public List<Orders> getOrderByMonth(DateRequest request){
+        return ordersRepository.findOrdersByMonth(request.getDate1(), request.getDate2());
+    }
+
+
+
+    public List<RevenueResponse> getRevenue(){
+        List<Object[]> objs = ordersRepository.getRevenue();
+        List<RevenueResponse> responses = new ArrayList<>();
+        for (Object[] row : objs) {
+            RevenueResponse revenueResponse = RevenueResponse.builder()
+                    .monthCode((String) row[0])
+                    .totalProductPrice(((Number) row[1]).doubleValue())
+                    .totalShippingPrice(((Number) row[2]).doubleValue())
+                    .totalRevenue(((Number) row[3]).doubleValue())
+                    .build();
+            responses.add(revenueResponse);
+        }
+        List<RevenueResponse> finalResponses = new ArrayList<>();
+        for(int i = 0; i < responses.size(); i++){
+            RevenueResponse revenueResponse = new RevenueResponse();
+            if(i == 0){
+                revenueResponse = responses.get(i);
+                revenueResponse.setDifferenceRevenue(null);
+                revenueResponse.setDifferencePercent(null);
+                revenueResponse.setStatus(0);
+            }else{
+                revenueResponse = responses.get(i);
+                revenueResponse.setDifferenceRevenue(responses.get(i).getTotalRevenue() - responses.get(i-1).getTotalRevenue());
+                revenueResponse.setDifferencePercent(responses.get(i).getTotalRevenue()/responses.get(i-1).getTotalRevenue());
+                if(revenueResponse.getDifferenceRevenue() == 0){
+                    revenueResponse.setStatus(0);
+                }else if(revenueResponse.getDifferenceRevenue() > 0){
+                    revenueResponse.setStatus(1);
+                }else{
+                    revenueResponse.setStatus(-1);
+                }
+            }
+            finalResponses.add(revenueResponse);
+        }
+        return finalResponses;
+    }
+
 }

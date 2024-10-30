@@ -111,7 +111,7 @@ public class ProductController {
                                      @RequestParam("dimension") String dimension,
                                      @RequestParam("type") String type,
                                      @RequestParam("categoryID") List<String> categoryID,
-                                     @RequestParam("components") List<String> components
+                                     @RequestParam(value = "components", required = false) List<String> components
     ) {
         ProductRequest request = ProductRequest.builder()
                 .name(name)
