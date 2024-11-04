@@ -58,7 +58,7 @@ public class QuestionService {
 
     public List<QuestionResponse> getQuestionByAccountID(String id){
         List<QuestionResponse> responses = new ArrayList<>();
-        List<Question> questions = questionRepository.getQuestionByAccountID(id);
+        List<Question> questions = questionRepository.findByAccountID(id);
         for (Question question : questions) {
             QuestionResponse questionResponse = questionMapper.toQuestionResponse(question);
             String customerName = (accountsService.getAccountByID(question.getAccountID())
@@ -73,7 +73,7 @@ public class QuestionService {
 
     public List<QuestionResponse> getQuestionByLabID(String id){
         List<QuestionResponse> responses = new ArrayList<>();
-        List<Question> questions = questionRepository.getQuestionByLabID(id);
+        List<Question> questions = questionRepository.findByLabID(id);
         for (Question question : questions) {
             QuestionResponse questionResponse = questionMapper.toQuestionResponse(question);
             String customerName = (accountsService.getAccountByID(question.getAccountID())
@@ -88,7 +88,7 @@ public class QuestionService {
 
     public List<QuestionResponse> getQuestionByAccountAndLab(String account, String lab){
         List<QuestionResponse> responses = new ArrayList<>();
-        List<Question> questions = questionRepository.getQuesByAccountAndLab(account, lab);
+        List<Question> questions = questionRepository.checkExisted(account, lab);
         for (Question question : questions) {
             QuestionResponse questionResponse = questionMapper.toQuestionResponse(question);
             String customerName = (accountsService.getAccountByID(question.getAccountID())

@@ -132,14 +132,6 @@ public class ComponentService {
                 }
             }
         });
-//        List<Component> components = new ArrayList<>();
-//        request.getComponents().forEach((componentID, quantity) -> {
-//            Component component = new Component();
-//            component.setComponentID(componentID);
-//            component.setQuantity(quantity);
-//            component.setProductID(productID);
-//            components.add(component);
-//        });
         Product product = productRepository.findById(productID).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );

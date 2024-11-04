@@ -65,7 +65,7 @@ public class TagService {
 
     // get tag by blogID
     public List<TagResponse> getTagByBlog(String id){
-        List<Tag> tags = tagRepository.getTagList(id);
+        List<Tag> tags = tagRepository.getTagByBlogID(id);
         List<TagResponse> tagResponses = new ArrayList<>();
         for (Tag tag : tags) {
             TagResponse tagResponse = new TagResponse();

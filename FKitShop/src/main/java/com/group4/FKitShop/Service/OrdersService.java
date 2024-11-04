@@ -536,7 +536,7 @@ public class OrdersService {
             }else{
                 revenueResponse = responses.get(i);
                 revenueResponse.setDifferenceRevenue(responses.get(i).getTotalRevenue() - responses.get(i-1).getTotalRevenue());
-                revenueResponse.setDifferencePercent(responses.get(i).getTotalRevenue()/responses.get(i-1).getTotalRevenue());
+                revenueResponse.setDifferencePercent((responses.get(i).getDifferenceRevenue()*100)/responses.get(i-1).getTotalRevenue());
                 if(revenueResponse.getDifferenceRevenue() == 0){
                     revenueResponse.setStatus(0);
                 }else if(revenueResponse.getDifferenceRevenue() > 0){

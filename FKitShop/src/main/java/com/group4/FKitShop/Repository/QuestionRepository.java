@@ -12,19 +12,13 @@ import java.util.List;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
-    // get question by accountid
-    @Query(value = "select * from Question\n" +
-            "    where accountID = :id", nativeQuery = true)
-    List<Question> getQuestionByAccountID(@Param("id") String id);
+    List<Question> findByAccountID(String id);
 
-    // get question by labid
-    @Query(value = "select * from Question\n" +
-            "    where labID = :id", nativeQuery = true)
-    List<Question> getQuestionByLabID(@Param("id") String id);
+    List<Question> findByLabID(String id);
 
     // get question by accountid and labid
     @Query(value = "select * from Question where accountID = :accountID and labID = :labID", nativeQuery = true)
-    List<Question> getQuesByAccountAndLab(@Param("accountID") String accountID, @Param("labID") String labID);
+    List<Question> checkExisted(@Param("accountID") String accountID, @Param("labID") String labID);
 
     // get question by status
     @Query(value = "select * from Question\n" +

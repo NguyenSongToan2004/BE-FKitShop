@@ -26,7 +26,7 @@ public interface TagRepository extends JpaRepository<Tag, Integer> {
             "join BlogTag bt on bt.tagID = t.tagID\n" +
             "join Blog b on b.blogID = bt.blogID\n" +
             "where b.blogID = :id", nativeQuery = true)
-    List<Tag> getTagList(@Param("id") String id);
+    List<Tag> getTagByBlogID(@Param("id") String id);
 
     // get active tag (active tag has status = 1)
     @Query(value = "SELECT * FROM Tag\n" +

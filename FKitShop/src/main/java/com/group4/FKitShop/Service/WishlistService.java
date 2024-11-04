@@ -63,7 +63,7 @@ public class WishlistService {
 
     public List<WishlistResponse> getWishlistByAccountID(String id){
         List<WishlistResponse> responses = new ArrayList<>();
-        List<Wishlist> wishlists = wishlistRepository.getWishlistByAccountID(id);
+        List<Wishlist> wishlists = wishlistRepository.findByAccountID(id);
         for (Wishlist wishlist : wishlists) {
             WishlistResponse wishlistResponse = new WishlistResponse();
             String customerName = (accountsService.getAccountByID(wishlist.getAccountID())
@@ -80,7 +80,7 @@ public class WishlistService {
 
     public List<WishlistResponse> getWishlistByProductID(String id){
         List<WishlistResponse> responses = new ArrayList<>();
-        List<Wishlist> wishlists = wishlistRepository.getWishlistByProductID(id);
+        List<Wishlist> wishlists = wishlistRepository.findByProductID(id);
         for (Wishlist wishlist : wishlists) {
             WishlistResponse wishlistResponse = new WishlistResponse();
             String customerName = (accountsService.getAccountByID(wishlist.getAccountID())
