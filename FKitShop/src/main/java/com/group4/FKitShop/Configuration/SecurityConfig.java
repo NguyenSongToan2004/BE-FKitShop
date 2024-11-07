@@ -106,6 +106,10 @@ public class SecurityConfig {
             "/product/report/sales",
             //PUT, DELETE
             "/product/**",
+            //tới đây
+
+
+
             //POST
             "/tags", "/blogs",
             //PUT, DELETE
@@ -159,17 +163,13 @@ public class SecurityConfig {
                 // and doesn't use an old session with different roles
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(PUBLIC_API).permitAll()
-//                        .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
-//                        .requestMatchers(ADMIN_API).hasRole("admin")
-//                        .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
-//                        .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
-//                        .anyRequest().authenticated()
-                                .anyRequest().permitAll()
-
-
-
-
+                        .requestMatchers(PUBLIC_API).permitAll()
+                        .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
+                        .requestMatchers(ADMIN_API).hasRole("admin")
+                        .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
+                        .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
+                        .anyRequest().authenticated()
+//                                .anyRequest().permitAll()
                 )
 
                 //register authentication provider supporting jwt token

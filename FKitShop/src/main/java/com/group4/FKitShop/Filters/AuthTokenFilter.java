@@ -24,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,16 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private AuthenticationService authenticationService;
+    private AntPathMatcher pathMatcher = new AntPathMatcher();
+
+    private final Map<String, String> apiRolePermission = new HashMap<>() {
+        {
+            put("/fkshop/accounts/allAccounts", "admin");
+            //put("/fkshop/admin/update/**", "admin");
+
+        }
+    };
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -75,6 +86,23 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     log.info(authentication.toString());
+
+                    //get the role required from the api
+                    String requiredRole = apiRolePermission.get(request.getRequestURI());
+
+                    log.info(requiredRole);
+//                    if (requiredRole != null && !authorities.contains(new SimpleGrantedAuthority("ROlE_" + requiredRole))) {
+//                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//                        response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
+//                                "error", "Forbidden",
+//                                "message", "You do not have permission to access this resource",
+//                                "status", HttpServletResponse.SC_FORBIDDEN
+//                        )));
+//                        return;
+//                    }
+
+
                 }
                 // Proceed with the next filter
                 filterChain.doFilter(request, response);
@@ -114,7 +142,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
 
-
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
 
@@ -131,7 +158,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     new IntrospectRequest(token)
             ).isValid();
         } catch (Exception e) {
-            log .error("JWT validation error: {}", e.getMessage());
+            log.error("JWT validation error: {}", e.getMessage());
             return false;
         }
     }
