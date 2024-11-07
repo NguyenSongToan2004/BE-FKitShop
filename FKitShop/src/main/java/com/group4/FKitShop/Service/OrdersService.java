@@ -6,10 +6,7 @@ import com.group4.FKitShop.Exception.ErrorCode;
 import com.group4.FKitShop.Mapper.LabMapper;
 import com.group4.FKitShop.Mapper.OrdersMapper;
 import com.group4.FKitShop.Repository.*;
-import com.group4.FKitShop.Request.CheckoutRequest;
-import com.group4.FKitShop.Request.DateRequest;
-import com.group4.FKitShop.Request.OrderLab;
-import com.group4.FKitShop.Request.OrdersRequest;
+import com.group4.FKitShop.Request.*;
 import com.group4.FKitShop.Response.CheckoutResponse;
 import com.group4.FKitShop.Response.DailyRevenueResponse;
 import com.group4.FKitShop.Response.GetLabResponse;
@@ -505,43 +502,43 @@ public class OrdersService {
         }
     }
 
-    public List<Object> getMonth(){
+    public List<Object> getMonth() {
         return ordersRepository.getMonth();
     }
 
-    public List<Orders> getOrderByMonth(DateRequest request){
+    public List<Orders> getOrderByMonth(DateRequest request) {
         return ordersRepository.findOrdersByMonth(request.getDate1(), request.getDate2());
     }
 
-    public List<RevenueResponse> getRevenue(){
-        List<Object[]> objs = ordersRepository.getRevenue();
+    public List<RevenueResponse> getRevenue(RevenueYearRequest request) {
+        List<Object[]> objs = ordersRepository.getRevenue(request.getYear());
         List<RevenueResponse> responses = new ArrayList<>();
         for (Object[] row : objs) {
             RevenueResponse revenueResponse = RevenueResponse.builder()
-                    .monthCode((String) row[0])
-                    .totalProductPrice(((Number) row[1]).doubleValue())
-                    .totalShippingPrice(((Number) row[2]).doubleValue())
-                    .totalRevenue(((Number) row[3]).doubleValue())
+                    .code((String) row[0])
+                    .totalProductPrice(((BigDecimal) row[1]))
+                    .totalShippingPrice(((BigDecimal) row[2]))
+                    .totalRevenue(((BigDecimal) row[3]))
                     .build();
             responses.add(revenueResponse);
         }
         List<RevenueResponse> finalResponses = new ArrayList<>();
-        for(int i = 0; i < responses.size(); i++){
+        for (int i = 0; i < responses.size(); i++) {
             RevenueResponse revenueResponse = new RevenueResponse();
-            if(i == 0){
+            if (i == 0) {
                 revenueResponse = responses.get(i);
                 revenueResponse.setDifferenceRevenue(null);
                 revenueResponse.setDifferencePercent(null);
                 revenueResponse.setStatus(0);
-            }else{
+            } else {
                 revenueResponse = responses.get(i);
-                revenueResponse.setDifferenceRevenue(responses.get(i).getTotalRevenue() - responses.get(i-1).getTotalRevenue());
-                revenueResponse.setDifferencePercent((responses.get(i).getDifferenceRevenue()*100)/responses.get(i-1).getTotalRevenue());
-                if(revenueResponse.getDifferenceRevenue() == 0){
+                revenueResponse.setDifferenceRevenue((responses.get(i).getTotalRevenue()).subtract(responses.get(i - 1).getTotalRevenue()));
+                revenueResponse.setDifferencePercent((responses.get(i).getDifferenceRevenue().doubleValue()*100)/ responses.get(i - 1).getTotalRevenue().doubleValue());
+                if (revenueResponse.getDifferenceRevenue().doubleValue() == 0) {
                     revenueResponse.setStatus(0);
-                }else if(revenueResponse.getDifferenceRevenue() > 0){
+                } else if (revenueResponse.getDifferenceRevenue().doubleValue() > 0) {
                     revenueResponse.setStatus(1);
-                }else{
+                } else {
                     revenueResponse.setStatus(-1);
                 }
             }
@@ -559,4 +556,43 @@ public class OrdersService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public List<RevenueResponse> getDailyRevenue(DateRequest request) {
+        String[] dateParts = request.getDate1().split("-");
+        List<Object[]> dailyRevenue = ordersRepository.getDailyRevenueByMonth(dateParts[0], dateParts[1]);
+        List<RevenueResponse> responses = new ArrayList<>();
+        for (Object[] row : dailyRevenue) {
+            RevenueResponse revenueResponse = RevenueResponse.builder()
+                    .code((String) row[0])
+                    .totalProductPrice(((BigDecimal) row[1]))
+                    .totalShippingPrice(((BigDecimal) row[2]))
+                    .totalRevenue(((BigDecimal) row[3]))
+                    .build();
+            responses.add(revenueResponse);
+        }
+        List<RevenueResponse> finalResponses = new ArrayList<>();
+        for (int i = 0; i < responses.size(); i++) {
+            RevenueResponse revenueResponse = new RevenueResponse();
+            if (i == 0) {
+                revenueResponse = responses.get(i);
+                revenueResponse.setDifferenceRevenue(null);
+                revenueResponse.setDifferencePercent(null);
+                revenueResponse.setStatus(0);
+            } else {
+                revenueResponse = responses.get(i);
+                revenueResponse.setDifferenceRevenue((responses.get(i).getTotalRevenue()).subtract(responses.get(i - 1).getTotalRevenue()));
+                revenueResponse.setDifferencePercent((responses.get(i).getDifferenceRevenue().doubleValue())*100/ responses.get(i - 1).getTotalRevenue().doubleValue());
+                if (revenueResponse.getDifferenceRevenue().doubleValue() == 0) {
+                    revenueResponse.setStatus(0);
+                } else if (revenueResponse.getDifferenceRevenue().doubleValue() > 0) {
+                    revenueResponse.setStatus(1);
+                } else {
+                    revenueResponse.setStatus(-1);
+                }
+            }
+            finalResponses.add(revenueResponse);
+        }
+        return finalResponses;
+    }
+    
 }

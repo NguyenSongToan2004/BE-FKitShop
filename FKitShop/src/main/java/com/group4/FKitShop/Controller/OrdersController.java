@@ -5,10 +5,7 @@ import com.group4.FKitShop.Entity.Orders;
 import com.group4.FKitShop.Entity.ResponseObject;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
-import com.group4.FKitShop.Request.CheckoutRequest;
-import com.group4.FKitShop.Request.DateRequest;
-import com.group4.FKitShop.Request.OrderDetailsRequest;
-import com.group4.FKitShop.Request.OrdersRequest;
+import com.group4.FKitShop.Request.*;
 import com.group4.FKitShop.Response.CheckoutResponse;
 import com.group4.FKitShop.Service.OrderDetailsService;
 import com.group4.FKitShop.Service.OrderStatusService;
@@ -140,9 +137,9 @@ public class OrdersController {
     }
 
     @GetMapping("/revenue")
-    public ResponseEntity<ResponseObject> getRevenue() {
+    public ResponseEntity<ResponseObject> getRevenue(@RequestBody @Valid RevenueYearRequest request) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenue()));
+                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenue(request)));
     }
 
     @GetMapping("/daily-revenue")
@@ -151,5 +148,11 @@ public class OrdersController {
                 new ResponseObject(1000, "Get daily revenue successfully !!",
                         ordersService.getDailyRevenueForCurrentMonth())
         );
+    }
+
+    @GetMapping("/dailyrevenue")
+    public ResponseEntity<ResponseObject> getDailyRevenue(@RequestBody @Valid DateRequest request) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getDailyRevenue(request)));
     }
 }

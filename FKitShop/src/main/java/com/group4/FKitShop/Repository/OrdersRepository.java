@@ -95,16 +95,48 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
             "FROM \n" +
             "    Orders\n" +
             "WHERE \n" +
-            "    orderDate >= '2024-01-01' AND orderDate <= '2024-12-31'\n" +
+            "    orderDate >= CONCAT(:year, '-01-01') AND orderDate <= CONCAT(:year, '-12-31')\n" +
             "GROUP BY \n" +
             "    month_code\n" +
             "ORDER BY \n" +
             "    month_code\n", nativeQuery = true)
-    List<Object[]> getRevenue();
+    List<Object[]> getRevenue(@Param("year") String year);
 
     @Query(value = "SELECT DATE(o.orderDate) AS orderDate, SUM(od.price * od.quantity) AS dailyRevenue \n" +
             "           FROM Orders o JOIN OrderDetails od ON o.ordersID = od.ordersID\n" +
             "           WHERE MONTH(o.orderDate) = MONTH(CURRENT_DATE) AND YEAR(o.orderDate) = YEAR(CURRENT_DATE) AND o.status = 'delivered'\n" +
             "           GROUP BY DATE(o.orderDate)", nativeQuery = true)
     List<Object[]> findDailyRevenueForCurrentMonth();
+
+
+    @Query(value = "  WITH all_dates AS (\n" +
+            "                SELECT \n" +
+            "                    DATE_ADD(DATE(CONCAT(:year, '-', :month, '-01')), INTERVAL daynum DAY) AS date\n" +
+            "                FROM (\n" +
+            "                    SELECT 0 AS daynum UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 \n" +
+            "                    UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 \n" +
+            "                    UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 \n" +
+            "                    UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 \n" +
+            "                    UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 \n" +
+            "                    UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 \n" +
+            "                    UNION ALL SELECT 24 UNION ALL SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 \n" +
+            "                    UNION ALL SELECT 28 UNION ALL SELECT 29 UNION ALL SELECT 30 UNION ALL SELECT 31\n" +
+            "                ) AS days\n" +
+            "                WHERE DATE_ADD(DATE(CONCAT(:year, '-', :month, '-01')), INTERVAL daynum DAY) <= LAST_DAY(CONCAT(:year, '-', :month, '-01'))\n" +
+            "            )\n" +
+            "            SELECT \n" +
+            "                DATE_FORMAT(all_dates.date, '%Y-%m-%d') AS day_code,\n" +
+            "                IFNULL(SUM(o.totalPrice), 0) AS total_productPrice,\n" +
+            "                IFNULL(SUM(o.shippingPrice), 0) AS total_ship,\n" +
+            "                IFNULL(SUM(o.totalPrice), 0) + IFNULL(SUM(o.shippingPrice), 0) AS total_revenue\n" +
+            "            FROM \n" +
+            "                all_dates\n" +
+            "            LEFT JOIN \n" +
+            "                Orders o ON all_dates.date = o.orderDate\n" +
+            "            GROUP BY \n" +
+            "                day_code\n" +
+            "            ORDER BY \n" +
+            "                day_code", nativeQuery = true)
+    List<Object[]> getDailyRevenueByMonth(@Param("year") String year, @Param("month") String month);
+
 }
