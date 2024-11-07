@@ -51,9 +51,12 @@ public class SecurityConfig {
             "/product/by-id/{id}",
             "/product/type/{type}",
             "/api/storage/**",
-            "/tags/**",
+            "/tags",
+            "/tags/{tagID}",
+            "/tags/active",
+            "/tags/byBlogID/{blogID}",
+            "/tags/byName/{name}",
             "/categories/**",
-            "/tags/**",
             "/blogs/**",
             "/accounts/register",
             //===================
@@ -118,9 +121,8 @@ public class SecurityConfig {
             //GET
             "/product/report/sales",
             //PUT, DELETE
-            //"/product/{productID}",
             //POST
-            "/tags", "/blogs",
+            "/blogs",
             //PUT, DELETE
             "/blogs/**",
             "/lab-guide/**",
@@ -176,8 +178,11 @@ public class SecurityConfig {
                                 .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
                                 .requestMatchers(ADMIN_API).hasRole("admin")
                                 .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.PUT,"/product/{productID}").hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.DELETE,"/product/{productID}").hasAnyRole("admin", "manager")
+                                .requestMatchers(HttpMethod.PUT, "/product/{productID}", "/tags/{tagID}")
+                                                        .hasAnyRole("admin", "manager")
+                                .requestMatchers(HttpMethod.DELETE, "/product/{productID}", "/tags/{tagID}")
+                                                        .hasAnyRole("admin", "manager")
+                                .requestMatchers(HttpMethod.POST, "/tags").hasAnyRole("admin", "manager")
                                 .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
