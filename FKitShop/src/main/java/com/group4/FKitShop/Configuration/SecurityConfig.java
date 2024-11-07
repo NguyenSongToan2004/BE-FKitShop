@@ -56,7 +56,12 @@ public class SecurityConfig {
             "/tags/active",
             "/tags/byBlogID/{blogID}",
             "/tags/byName/{name}",
-            "/categories/**",
+            "/categories",
+            "/categories/{categoryID}",
+            "/categories/byProductID/{productID}",
+            "/categories/byTagID/{tagID}",
+            "/categories/byName/{name}",
+            "/categories/active",
             "/blogs/**",
             "/accounts/register",
             //===================
@@ -110,8 +115,6 @@ public class SecurityConfig {
 
     private static final String[] MANAGER_API = {
             "/accounts/customer",
-            //POST, PUT, DELETE
-            "/categories",
             "/product/add",
             //PUT
             "/product/add-images/{productID}",
@@ -178,11 +181,12 @@ public class SecurityConfig {
                                 .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
                                 .requestMatchers(ADMIN_API).hasRole("admin")
                                 .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.PUT, "/product/{productID}", "/tags/{tagID}")
+                                .requestMatchers(HttpMethod.PUT, "/product/{productID}", "/tags/{tagID}", "/categories/{categoryID}")
                                                         .hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.DELETE, "/product/{productID}", "/tags/{tagID}")
+                                .requestMatchers(HttpMethod.DELETE, "/product/{productID}", "/tags/{tagID}", "/categories/{categoryID}")
                                                         .hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.POST, "/tags").hasAnyRole("admin", "manager")
+                                .requestMatchers(HttpMethod.POST, "/tags", "/categories")
+                                                        .hasAnyRole("admin", "manager")
                                 .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()

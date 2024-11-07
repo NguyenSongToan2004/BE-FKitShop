@@ -106,7 +106,6 @@ public class CategoryController {
 
     // delete category
     @PreAuthorize("hasRole('admin') or hasRole('manager')")
-    @Transactional
     @DeleteMapping("/{categoryID}")
     ResponseEntity <ResponseObject> deleteCategory(@PathVariable String categoryID){
         //cateProductService.deleteCateProduct_Category(categoryID);
