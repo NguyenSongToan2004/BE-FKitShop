@@ -73,10 +73,12 @@ public class ProductService {
         }
         ProductMapper.INSTANCE.toProduct(request, product);
         repository.save(product);
-        ComponentRequest components = ComponentRequest.builder()
-                .components(convertListCompoToMap(componentsList))
-                .build();
-        componentService.createComponent(components, productID, product.getPrice());
+        if (request.getType().equals("item") && componentsList != null) {
+            ComponentRequest components = ComponentRequest.builder()
+                    .components(convertListCompoToMap(componentsList))
+                    .build();
+            componentService.createComponent(components, productID, product.getPrice());
+        }
         return product;
     }
 
@@ -127,12 +129,15 @@ public class ProductService {
         Product product = repository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
+
         ProductMapper.INSTANCE.toProduct(request, product);
         repository.save(product);
-        ComponentRequest components = ComponentRequest.builder()
-                .components(convertListCompoToMap(componentsList))
-                .build();
-        componentService.updateComponent(components, product.getProductID());
+        if (request.getType().equals("item") && componentsList != null) {
+            ComponentRequest components = ComponentRequest.builder()
+                    .components(convertListCompoToMap(componentsList))
+                    .build();
+            componentService.updateComponent(components, product.getProductID());
+        }
         return product;
     }
 
