@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class RevenueYearRequest {
+public class RevenueRequest {
     String year;
+    String month;
 }
