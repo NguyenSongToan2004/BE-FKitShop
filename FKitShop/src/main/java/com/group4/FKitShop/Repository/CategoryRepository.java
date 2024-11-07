@@ -23,11 +23,7 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
             "where st.productID = :id ", nativeQuery = true)
     List<Category> getCategoryList(@Param("id") String id);
 
-    // get category by tagid
-    @Query(value = "select * \n" +
-            "from Category\n" +
-            "where tagID = :id", nativeQuery = true)
-    List<Category> getCategoryByTagID(@Param("id") int id);
+    List<Category> findByTagID(int id);
 
     // get cate active (active cate has status = 1
     @Query(value = "select * \n" +
@@ -39,7 +35,6 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
     @Query(value = "SELECT * FROM Category\n" +
             "where categoryName like :character", nativeQuery = true)
     List<Category> getCategoryByName(@Param("character") String character);
-
 
     // delete by changing status
     @Modifying

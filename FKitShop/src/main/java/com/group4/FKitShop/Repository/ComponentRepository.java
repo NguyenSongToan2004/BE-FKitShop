@@ -11,8 +11,5 @@ import java.util.List;
 @Repository
 public interface ComponentRepository extends JpaRepository<Component, Integer> {
 
-    @Query(value = "select * \n" +
-            "from Component\n" +
-            "where productID = :id", nativeQuery = true)
-    List<Component> getComponentByProductID(@Param("id") String id);
+    List<Component> findByProductID(String id);
 }

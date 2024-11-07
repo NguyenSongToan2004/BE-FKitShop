@@ -65,7 +65,7 @@ public class CategoryService {
 
     // list cate by tagID
     public List<Category> getCategoryByTag(int id){
-        return categoryRepository.getCategoryByTagID(id);
+        return categoryRepository.findByTagID(id);
     }
 
     public String generateUniqueCode() {

@@ -124,16 +124,11 @@ public class OrdersController {
                 .body(ordersService.getOrderReportFile(time));
     }
 
-    @GetMapping("/months")
-    public ResponseEntity<ResponseObject> getMonth() {
-        return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Months Successfully !!", ordersService.getMonth()));
-    }
 
     @GetMapping("/revenue")
-    public ResponseEntity<ResponseObject> getRevenue(@RequestBody @Valid RevenueRequest request) {
+    public ResponseEntity<ResponseObject> getRevenueByYear(@RequestBody @Valid RevenueRequest request) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenue(request)));
+                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenueByYear(request)));
     }
 
     @GetMapping("/daily-revenue")

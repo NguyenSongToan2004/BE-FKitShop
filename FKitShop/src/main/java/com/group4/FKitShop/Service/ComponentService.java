@@ -42,7 +42,7 @@ public class ComponentService {
     }
 
     public List<ComponentResponse> getComponentByProduct(String id) {
-        List<Component> components = componentRepository.getComponentByProductID(id);
+        List<Component> components = componentRepository.findByProductID(id);
         List<ComponentResponse> componentResponses = new ArrayList<>();
         for (Component component : components) {
             ComponentResponse componentResponse = new ComponentResponse();
@@ -124,7 +124,7 @@ public class ComponentService {
     }
 
     public List<Component> updateComponent(ComponentRequest request, String productID) {
-        List<Component> oldComponents = componentRepository.getComponentByProductID(productID);
+        List<Component> oldComponents = componentRepository.findByProductID(productID);
         request.getComponents().forEach((componentID, quantity) -> {
             for (Component component : oldComponents) {
                 if (component.getComponentID().equals(componentID)) {

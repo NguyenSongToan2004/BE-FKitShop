@@ -496,12 +496,8 @@ public class OrdersService {
         }
     }
 
-    public List<Object> getMonth() {
-        return ordersRepository.getMonth();
-    }
-
-    public List<RevenueResponse> getRevenue(RevenueRequest request) {
-        List<Object[]> objs = ordersRepository.getRevenue(request.getYear());
+    public List<RevenueResponse> getRevenueByYear(RevenueRequest request) {
+        List<Object[]> objs = ordersRepository.getRevenueByYear(request.getYear());
         List<RevenueResponse> responses = new ArrayList<>();
         for (Object[] row : objs) {
             RevenueResponse revenueResponse = RevenueResponse.builder()
