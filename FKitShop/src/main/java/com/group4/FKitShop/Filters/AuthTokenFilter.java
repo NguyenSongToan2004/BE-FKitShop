@@ -54,49 +54,50 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        try {
+        //try {
 
-            String jwt = parseJwt(request);
-
-            if (jwt != null && validateJwtToken(jwt)) {
-                // Get account details from the token
-                AccountsResponse accountsResponse = authenticationService.tokenAccountResponse(jwt);
-                if (accountsResponse != null) {
-                    //// Convert role to GrantedAuthority
-                    List<GrantedAuthority> authorities = new ArrayList<>();
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + accountsResponse.getRole())); // Role from token
-
-                    log.info(authorities.toString());
-
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(accountsResponse,
-                                    null,
-                                    authorities);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.info(authentication.toString());
-                }
-                // Proceed with the next filter
-                filterChain.doFilter(request, response);
-            } else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
-                        "error", "Unauthorized",
-                        "message", "you are my fire",
-                        "status", HttpServletResponse.SC_UNAUTHORIZED
-                )));
-            }
-        } catch (Exception e) {
-            log.error("Cannot set user authentication: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
-                    "error", "Forbidden",
-                    "message", "You are not allowed",
-                    "status", HttpServletResponse.SC_FORBIDDEN
-            )));
-        }
+//            String jwt = parseJwt(request);
+//
+//            if (jwt != null && validateJwtToken(jwt)) {
+//                // Get account details from the token
+//                AccountsResponse accountsResponse = authenticationService.tokenAccountResponse(jwt);
+//                if (accountsResponse != null) {
+//                    //// Convert role to GrantedAuthority
+//                    List<GrantedAuthority> authorities = new ArrayList<>();
+//                    authorities.add(new SimpleGrantedAuthority("ROLE_" + accountsResponse.getRole())); // Role from token
+//
+//                    log.info(authorities.toString());
+//
+//                    UsernamePasswordAuthenticationToken authentication =
+//                            new UsernamePasswordAuthenticationToken(accountsResponse,
+//                                    null,
+//                                    authorities);
+//                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                    SecurityContextHolder.getContext().setAuthentication(authentication);
+//                    log.info(authentication.toString());
+//                }
+//                // Proceed with the next filter
+//                filterChain.doFilter(request, response);
+//            } else {
+//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//                response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
+//                        "error", "Unauthorized",
+//                        "message", "you are my fire",
+//                        "status", HttpServletResponse.SC_UNAUTHORIZED
+//                )));
+//            }
+//        } catch (Exception e) {
+//            log.error("Cannot set user authentication: {}", e.getMessage());
+//            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//            response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
+//                    "error", "Forbidden",
+//                    "message", "You are not allowed",
+//                    "status", HttpServletResponse.SC_FORBIDDEN
+//            )));
+//        }
+        filterChain.doFilter(request, response);
     }
 
     //skip JWT validation for public api

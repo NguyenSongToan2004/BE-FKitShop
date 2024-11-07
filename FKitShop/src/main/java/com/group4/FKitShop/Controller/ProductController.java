@@ -56,7 +56,7 @@ public class ProductController {
             @RequestParam("type") String type,
             @RequestParam("images") MultipartFile[] image,
             @RequestParam("categoryID") List<String> categoryID,
-            @RequestParam("components") List<String> components
+            @RequestParam(value = "components", required = false) List<String> components
     ) {
         ProductRequest request = ProductRequest.builder()
                 .name(name)

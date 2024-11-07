@@ -166,10 +166,6 @@ public class SecurityConfig {
 //                        .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
 //                        .anyRequest().authenticated()
                                 .anyRequest().permitAll()
-
-
-
-
                 )
 
                 //register authentication provider supporting jwt token
