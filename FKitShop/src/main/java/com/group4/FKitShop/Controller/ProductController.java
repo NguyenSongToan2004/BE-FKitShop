@@ -144,6 +144,7 @@ public class ProductController {
     }
 
     // delete product
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @DeleteMapping("/{productID}")
     ResponseEntity<ResponseObject> deleteProduct(@PathVariable String productID) {
         //cateProductService.deleteCateProduct_Product(productID);

@@ -10,6 +10,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -28,6 +29,7 @@ public class SupportingController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/status")
     ResponseEntity<ResponseObject> updateStatus(@RequestBody SupportStatusUpdateRequest request) throws MessagingException, UnsupportedEncodingException {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -35,6 +37,7 @@ public class SupportingController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/support-date")
     ResponseEntity<ResponseObject> updateSupportDate(@RequestBody UpdateSupportDate request) {
         return ResponseEntity.status(HttpStatus.OK).body(

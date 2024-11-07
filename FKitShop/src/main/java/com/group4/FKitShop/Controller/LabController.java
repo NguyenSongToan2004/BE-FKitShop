@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +32,7 @@ public class LabController {
     @Autowired
     private AmazonClient amazonClient;
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping("/addLab")
     ResponseEntity<ResponseObject> addLab(
             @RequestParam("productID") String productID,
@@ -50,6 +52,7 @@ public class LabController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping("/pdf/create/{labID}")
     ResponseEntity<ResponseObject> createFilePDF(@PathVariable("labID") String labID,
                                                  @RequestBody CreateFilePDFRequest request) {
@@ -66,6 +69,7 @@ public class LabController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/{id}")
     ResponseEntity<ResponseObject> updateLab(
             @PathVariable String id,
@@ -82,6 +86,7 @@ public class LabController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @DeleteMapping("/{id}")
     ResponseEntity<ResponseObject> deleteLab(@PathVariable String id) {
         return ResponseEntity.ok(
@@ -89,6 +94,7 @@ public class LabController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/labs")
     ResponseEntity<List<Lab>> getAllLabs() {
         return ResponseEntity.ok(labService.getAllLab());
@@ -102,6 +108,7 @@ public class LabController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping("/upload-lab/{labID}")
     ResponseEntity<ResponseObject> uploadLab(@RequestParam("file") MultipartFile file, @PathVariable("labID") String id) {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -160,6 +167,7 @@ public class LabController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping("/upload-img")
     ResponseEntity<CKEditorResponse> uploadImg(@RequestParam("file") MultipartFile file) {
         return ResponseEntity.status(HttpStatus.OK).body(

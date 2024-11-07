@@ -37,7 +37,17 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private final String[] PUBLIC_API = {
             "/fkshop/auth/**",
             "/fkshop/auth/login-google",
-            "/fkshop/product/**",
+            "/fkshop/product/products",
+            "/fkshop/product/aproducts",
+            "/fkshop/product/latest",
+            "/fkshop/product/{id}",
+            "/fkshop/product/hot",
+            "/fkshop/product/price-asc/{cateID}",
+            "/fkshop/product/price-desc/{cateID}",
+            "/fkshop/product/by-category/{cateID}",
+            "/fkshop/product/by-name/{name}",
+            "/fkshop/product/by-id/{id}",
+            "/fkshop/product/type/{type}",
             "/fkshop/api/storage/**",
             "/fkshop/tags/**",
             "/fkshop/categories/**",
@@ -49,15 +59,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private AuthenticationService authenticationService;
-    private AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    private final Map<String, String> apiRolePermission = new HashMap<>() {
-        {
-            put("/fkshop/accounts/allAccounts", "admin");
-            //put("/fkshop/admin/update/**", "admin");
-
-        }
-    };
 
 
     @Override
@@ -86,23 +88,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     log.info(authentication.toString());
-
-                    //get the role required from the api
-                    String requiredRole = apiRolePermission.get(request.getRequestURI());
-
-                    log.info(requiredRole);
-//                    if (requiredRole != null && !authorities.contains(new SimpleGrantedAuthority("ROlE_" + requiredRole))) {
-//                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//                        response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
-//                                "error", "Forbidden",
-//                                "message", "You do not have permission to access this resource",
-//                                "status", HttpServletResponse.SC_FORBIDDEN
-//                        )));
-//                        return;
-//                    }
-
-
                 }
                 // Proceed with the next filter
                 filterChain.doFilter(request, response);
@@ -121,7 +106,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
                     "error", "Forbidden",
-                    "message", "You are not allowed",
+                    "message", "You need to login",
                     "status", HttpServletResponse.SC_FORBIDDEN
             )));
         }

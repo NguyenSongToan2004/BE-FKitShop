@@ -39,7 +39,17 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_API = {
             "/auth/**",
-            "/product/**",
+            "/product/products",
+            "/product/aproducts",
+            "/product/latest",
+            "/product/{id}",
+            "/product/hot",
+            "/product/price-asc/{cateID}",
+            "/product/price-desc/{cateID}",
+            "/product/by-category/{cateID}",
+            "/product/by-name/{name}",
+            "/product/by-id/{id}",
+            "/product/type/{type}",
             "/api/storage/**",
             "/tags/**",
             "/categories/**",
@@ -100,16 +110,15 @@ public class SecurityConfig {
             //POST, PUT, DELETE
             "/categories",
             "/product/add",
-            "/product/add-images/**",
-            "/product/image/**/**",
+            //PUT
+            "/product/add-images/{productID}",
+            "/product/image/{productID}/{imageID}",
+            //DELETE
             "/product/images",
+            //GET
             "/product/report/sales",
             //PUT, DELETE
-            "/product/**",
-            //tới đây
-
-
-
+            //"/product/{productID}",
             //POST
             "/tags", "/blogs",
             //PUT, DELETE
@@ -163,12 +172,14 @@ public class SecurityConfig {
                 // and doesn't use an old session with different roles
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_API).permitAll()
-                        .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
-                        .requestMatchers(ADMIN_API).hasRole("admin")
-                        .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
-                        .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
-                        .anyRequest().authenticated()
+                                .requestMatchers(PUBLIC_API).permitAll()
+                                .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
+                                .requestMatchers(ADMIN_API).hasRole("admin")
+                                .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
+                                .requestMatchers(HttpMethod.PUT,"/product/{productID}").hasAnyRole("admin", "manager")
+                                .requestMatchers(HttpMethod.DELETE,"/product/{productID}").hasAnyRole("admin", "manager")
+                                .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
+                                .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
                 )
 
