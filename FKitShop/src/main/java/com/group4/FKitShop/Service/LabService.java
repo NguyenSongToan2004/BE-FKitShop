@@ -150,6 +150,7 @@ public class LabService {
     public File downloadFilePDF(DownloadLabRequest request) {
         var fileToDownload = new File(System.getProperty("user.dir") + File.separator +
                 STORAGE_DIRECTORY + File.separator + request.getFileName());
+        System.out.println("file name để download : " + fileToDownload.toString());
         if (request.getFileName().isEmpty())
             throw new NullPointerException("File Named Null!!");
 
@@ -239,6 +240,7 @@ public class LabService {
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
         String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
+        System.out.println("pdfPath : " + pdfPath);
         try (PDDocument document = PDDocument.load(new File(pdfPath))) {
             PDType0Font font = PDType0Font.load(document, new File("Arial Unicode MS Bold.ttf"));
             PDPage page = document.getPage(0);
@@ -278,8 +280,12 @@ public class LabService {
             // Lưu file PDF đã cập nhật
             File pdfDownload = new File("download"); // Đảm bảo rằng đường dẫn tồn tại
             document.save(pdfDownload);
+            System.out.println("pdfdownload : " + pdfDownload.getAbsolutePath());
             return pdfDownload;
         } catch (IOException e) {
+            e.printStackTrace();
+            throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
+        } catch (Exception e) {
             e.printStackTrace();
             throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
         }

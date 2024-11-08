@@ -42,8 +42,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             "/fkshop/categories/**",
             "/fkshop/tags/**",
             "/fkshop/blogs/**",
-
-
     };
 
     @Autowired
@@ -108,9 +106,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         AntPathMatcher matcher = new AntPathMatcher();
         for (String pattern : PUBLIC_API) {
             if (matcher.match(pattern, path)) {
+                log.info("Matched path: {} with pattern: {}", path, pattern);
                 return true;
             }
         }
+        log.info("No matching pattern found for path: {}", path);
         return false;
     }
 

@@ -27,6 +27,7 @@ public class ApplicationConfig {
     @Bean
     ApplicationRunner runner(AccountsRepository accountsRepository) {
         return args -> {
+            System.out.println("Có admin hay ko : " + accountsRepository.findByrole("admin").isEmpty());
             if (accountsRepository.findByrole("admin").isEmpty()) {
                 Accounts accounts = Accounts.builder()
                         .accountID("A00001")

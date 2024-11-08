@@ -124,14 +124,15 @@ public class ComponentService {
     }
 
     public List<Component> updateComponent(ComponentRequest request, String productID) {
-        List<Component> oldComponents = componentRepository.findByProductID(productID);
-        request.getComponents().forEach((componentID, quantity) -> {
-            for (Component component : oldComponents) {
-                if (component.getComponentID().equals(componentID)) {
-                    componentRepository.delete(component);
-                }
-            }
-        });
+        List<Component> oldComponents = componentRepository.getComponentByProductID(productID);
+//        request.getComponents().forEach((componentID, quantity) -> {
+//            for (Component component : oldComponents) {
+//                if (component.getComponentID().equals(componentID)) {
+//                    componentRepository.delete(component);
+//                }
+//            }
+//        });
+        componentRepository.deleteAll(oldComponents);
         Product product = productRepository.findById(productID).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
@@ -141,6 +142,22 @@ public class ComponentService {
     public boolean deleteComponent(int id) {
         componentRepository.deleteById(id);
         return true;
+    }
+
+    public void updateQuantityCompo(String productID, int detailQuantity, String type) {
+        List<Component> compoList = componentRepository.getComponentByProductID(productID);
+        compoList.forEach(compo ->
+                productRepository.findById(compo.getComponentID())
+                        .ifPresent(p -> {
+                            if (type.equals("cancel")) {
+                                p.setQuantity(p.getQuantity() + compo.getQuantity() * detailQuantity);
+                                productRepository.save(p);
+                            } else {
+                                p.setQuantity(p.getQuantity() - compo.getQuantity() * detailQuantity);
+                                productRepository.save(p);
+                            }
+                        })
+        );
     }
 
 }
