@@ -68,8 +68,11 @@ public class SecurityConfig {
             "/blogs/byTagID/{tagID}",
             "/blogs/dateDesc",
             "/blogs/dateAsc",
-            "/accounts/register",
+//            "/lab-guide/guide/{guideID}",
+//            "/lab-guide/guide-by-labID/{guideID}",
+            "/lab-guide/all",
             //===================
+            "/accounts/register",
             "/accounts/info",
             "/carts/**",
             "/delivery/**",
@@ -106,11 +109,11 @@ public class SecurityConfig {
 
     private static final String[] ADMIN_API = {
             "/orders/allorders",
-            "/admin/update/**",
+            "/admin/update/{id}",
             "/accounts/allAccounts",
             "/accounts/createAccount",
             "/accounts/listAccounts",
-            "/accounts/updateAccount/**",
+            "/accounts/updateAccount/{id}",
     };
 
     private static final String[] STAFF_API = {
@@ -129,8 +132,6 @@ public class SecurityConfig {
             //GET
             "/product/report/sales",
             //POST
-            //PUT, DELETE
-            "/lab-guide/**",
             "/lab/labs",
             "/lab/pdf/create/**",
             "/lab/upload-img",
@@ -183,11 +184,11 @@ public class SecurityConfig {
                                 .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
                                 .requestMatchers(ADMIN_API).hasRole("admin")
                                 .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.PUT, "/product/{productID}", "/tags/{tagID}", "/categories/{categoryID}", "/blogs/{blogID}")
+                                .requestMatchers(HttpMethod.PUT, "/product/{productID}", "/tags/{tagID}", "/categories/{categoryID}", "/blogs/{blogID}", "/lab-guide/info/{guideID}")
                                                         .hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.DELETE, "/product/{productID}", "/tags/{tagID}", "/categories/{categoryID}", "/blogs/{blogID}")
+                                .requestMatchers(HttpMethod.DELETE, "/product/{productID}", "/tags/{tagID}", "/categories/{categoryID}", "/blogs/{blogID}", "/lab-guide/{guideID}")
                                                         .hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.POST, "/tags", "/categories", "/blogs")
+                                .requestMatchers(HttpMethod.POST, "/tags", "/categories", "/blogs", "/lab-guide/create")
                                                         .hasAnyRole("admin", "manager")
                                 .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
                                 .anyRequest().authenticated()
