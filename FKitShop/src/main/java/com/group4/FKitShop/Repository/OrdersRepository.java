@@ -87,6 +87,8 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
             "    months\n" +
             "LEFT JOIN \n" +
             "    Orders ON Orders.orderDate BETWEEN months.month_start_date AND months.month_end_date\n" +
+            "AND \n" +
+            "    Orders.status != 'canceled'\n" +
             "GROUP BY \n" +
             "    months.month_code\n" +
             "ORDER BY \n" +
@@ -118,6 +120,8 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
             "                all_dates\n" +
             "            LEFT JOIN \n" +
             "                Orders o ON all_dates.date = o.orderDate\n" +
+            "            AND \n" +
+            "                o.status != 'canceled'\n" +
             "            GROUP BY \n" +
             "                day_code\n" +
             "            ORDER BY \n" +
