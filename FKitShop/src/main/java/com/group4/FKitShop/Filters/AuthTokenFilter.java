@@ -36,7 +36,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final String[] PUBLIC_API = {
             "/fkshop/auth/**",
-            "/fkshop/auth/login-google",
             "/fkshop/product/products",
             "/fkshop/product/aproducts",
             "/fkshop/product/latest",
@@ -48,30 +47,23 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             "/fkshop/product/by-name/{name}",
             "/fkshop/product/by-id/{id}",
             "/fkshop/product/type/{type}",
-            "/fkshop/api/storage/**",
+            "/fkshop/tags",
+            "/fkshop/tags/{tagID}",
+            "/fkshop/tags/active",
+            "/fkshop/tags/byBlogID/{blogID}",
+            "/fkshop/tags/byName/{name}",
             "/fkshop/categories",
             "/fkshop/categories/{categoryID}",
             "/fkshop/categories/byProductID/{productID}",
             "/fkshop/categories/byTagID/{tagID}",
             "/fkshop/categories/byName/{name}",
             "/fkshop/categories/active",
-            "/fkshop/tags",
-            "/fkshop/tags/{tagID}",
-            "/fkshop/tags/active",
-            "/fkshop/tags/byBlogID/{blogID}",
-            "/fkshop/tags/byName/{name}",
             "/fkshop/blogs",
             "/fkshop/blogs/{blogID}",
             "/fkshop/blogs/active",
             "/fkshop/blogs/byTagID/{tagID}",
             "/fkshop/blogs/dateDesc",
             "/fkshop/blogs/dateAsc",
-//            "/fkshop/lab-guide/guide/{guideID}",
-//            "/fkshop/lab-guide/guide-by-labID/{guideID}",
-            "/fkshop/lab-guide/all",
-
-
-
     };
 
     @Autowired

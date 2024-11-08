@@ -21,6 +21,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,7 @@ public class OrdersController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin')")
     @GetMapping("/allorders")
     public ResponseObject allOrders() {
         return ResponseObject.builder()
@@ -91,6 +93,7 @@ public class OrdersController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @PutMapping("/updatestatus/{ordersID}")
     public ResponseObject updateStatus(@PathVariable String ordersID, @RequestParam String status) {
         return ResponseObject.builder()
@@ -127,11 +130,13 @@ public class OrdersController {
                 .body(ordersService.getOrderReportFile(time));
     }
 
+
     @GetMapping("/months")
     public ResponseEntity<ResponseObject> getMonth() {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get Months Successfully !!", ordersService.getMonth()));
     }
+
 
     @GetMapping("/byMonth")
     public ResponseEntity<ResponseObject> getOrderByMonth(@RequestBody @Valid DateRequest request) {
@@ -139,11 +144,13 @@ public class OrdersController {
                 new ResponseObject(1000, "Get Orders Successfully !!", ordersService.getOrderByMonth(request)));
     }
 
+
     @GetMapping("/revenue")
     public ResponseEntity<ResponseObject> getRevenue() {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenue()));
     }
+
 
     @GetMapping("/daily-revenue")
     public ResponseEntity<ResponseObject> getDailyRevenueForCurrentMonth() {

@@ -117,6 +117,7 @@ public class AccountsController {
         );
     }
 
+    @PreAuthorize("hasRole('admin')")
     @DeleteMapping("/{id}")
     ResponseEntity<ResponseObject> deleteAccount(@PathVariable String id) {
         return ResponseEntity.ok(
@@ -172,7 +173,7 @@ public class AccountsController {
                 .build();
     }
 
-    @PreAuthorize("hasRole('admin')")
+
     @PutMapping("/updateAccount/{id}")
     public ResponseEntity<ResponseObject> updateAccount(@RequestBody AccountsRequest request, @PathVariable String id) {
         return ResponseEntity.ok(
@@ -183,6 +184,7 @@ public class AccountsController {
         );
     }
 
+    @PreAuthorize("hasRole('admin')")
     @PutMapping("/admin/update/{id}")
     public ResponseEntity<ResponseObject> updateAccountByAdmin(@RequestBody AccountAdminRequest request, @PathVariable String id) {
         return ResponseEntity.ok(

@@ -50,7 +50,6 @@ public class SecurityConfig {
             "/product/by-name/{name}",
             "/product/by-id/{id}",
             "/product/type/{type}",
-            "/api/storage/**",
             "/tags",
             "/tags/{tagID}",
             "/tags/active",
@@ -68,43 +67,40 @@ public class SecurityConfig {
             "/blogs/byTagID/{tagID}",
             "/blogs/dateDesc",
             "/blogs/dateAsc",
+            "/lab/product/{productID}",
 //            "/lab-guide/guide/{guideID}",
 //            "/lab-guide/guide-by-labID/{guideID}",
             "/lab-guide/all",
-            //===================
             "/accounts/register",
-            "/accounts/info",
-            "/carts/**",
             "/delivery/**",
-            "/lab/product/**",
             "/feedback/**",
     };
 
     private static final String[] ACCOUNT_API = {
-            "/accounts/avatar/**",
-            "/accounts/password/**",
+            "/accounts/avatar/{id}",
+            "/accounts/password/{id}",
             "/accounts/password/confirm",
-            "/accounts/updateinfo/**",
-            //{id}
-            "/accounts/**",
-            "/accounts/avatar/**",
+            "/accounts/updateAccount/{id}",
+            "/accounts/avatar/{id}",
             "/accounts/info",
-            "/accounts/password/**",
-            "/orders/details/**",
-            "/orders/find/**",
+            "/api/storage/**",
+            "/orders/details/{ordersID}",
+            "/orders/find/{accountID}",
             "orders/checkout",
             "/check-out",
             "/submitOrder",
             "/questions/**",
-            "/lab/account/**",
+            //
+            "/lab/account/{accountID}",
             "/lab/download",
             "/lab/get-link-download",
-            "/lab/status-labs/**",
+            "/lab/status-labs/{status}",
             "/support/create",
-            "/support/status",
-            "/support/support-accountID/**",
-            "/support/supports/**",
+            "/support/support-accountID/{accountID}",
+            "/support/support-status/{status}",
+            "/support/supports/{accountID}/{status}",
             "/wishlists/**",
+            "/carts/**"
     };
 
     private static final String[] ADMIN_API = {
@@ -113,12 +109,7 @@ public class SecurityConfig {
             "/accounts/allAccounts",
             "/accounts/createAccount",
             "/accounts/listAccounts",
-            "/accounts/updateAccount/{id}",
-    };
-
-    private static final String[] STAFF_API = {
-            "/accounts/customer",
-            "/orders/**",
+            "/accounts/admin/update/{id}",
     };
 
     private static final String[] MANAGER_POST_API = {
@@ -160,8 +151,11 @@ public class SecurityConfig {
             "/lab/{id}",
             "/components/{id}"
 
-};
-
+    };
+    private static final String[] STAFF_PUT_API = {
+            "/orders/updatestatus/{ordersID}",
+            "/questions/{questionID}"
+    };
 
     //    //secretkey
     @Value("${jwt.signerKey}")
@@ -203,16 +197,18 @@ public class SecurityConfig {
 
                                 .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
 
+                                //admin
                                 .requestMatchers(ADMIN_API).hasRole("admin")
+                                .requestMatchers(HttpMethod.DELETE, "/accounts/{id}").hasRole("admin")
 
                                 //manager
                                 .requestMatchers(HttpMethod.POST, MANAGER_POST_API).hasAnyRole("admin", "manager")
                                 .requestMatchers(HttpMethod.GET, MANAGER_GET_API).hasAnyRole("admin", "manager")
                                 .requestMatchers(HttpMethod.PUT, MANAGER_PUT_API).hasAnyRole("admin", "manager")
                                 .requestMatchers(HttpMethod.DELETE, MANAGER_DELETE_API).hasAnyRole("admin", "manager")
-
-
-                                .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
+                                //staff
+                                .requestMatchers(HttpMethod.PUT, STAFF_PUT_API).hasAnyRole("admin", "staff")
+                                .requestMatchers(HttpMethod.GET, "/accounts/customer").hasAnyRole("admin", "staff")
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
                 )
