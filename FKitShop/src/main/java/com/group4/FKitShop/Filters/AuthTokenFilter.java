@@ -60,7 +60,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             "/fkshop/tags/active",
             "/fkshop/tags/byBlogID/{blogID}",
             "/fkshop/tags/byName/{name}",
-            "/fkshop/blogs/**",
+            "/fkshop/blogs",
+            "/fkshop/blogs/{blogID}",
+            "/fkshop/blogs/active",
+            "/fkshop/blogs/byTagID/{tagID}",
+            "/fkshop/blogs/dateDesc",
+            "/fkshop/blogs/dateAsc",
+
 
 
     };
