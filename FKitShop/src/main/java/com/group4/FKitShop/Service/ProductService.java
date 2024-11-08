@@ -73,7 +73,7 @@ public class ProductService {
         }
         ProductMapper.INSTANCE.toProduct(request, product);
         repository.save(product);
-        if (request.getType().equals("item") && componentsList != null) {
+        if (request.getType().equals("kit") && componentsList != null) {
             ComponentRequest components = ComponentRequest.builder()
                     .components(convertListCompoToMap(componentsList))
                     .build();
