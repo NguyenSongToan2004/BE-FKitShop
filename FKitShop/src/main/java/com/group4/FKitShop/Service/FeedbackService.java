@@ -63,7 +63,7 @@ public class FeedbackService {
     }
 
     public List<FeedbackResponse> getFeedbackByAccountID(String id){
-        List<Feedback> feedbacks = feedbackRepository.getFeedbackByAccountID(id);
+        List<Feedback> feedbacks = feedbackRepository.findByAccountID(id);
         List<FeedbackResponse> feedbackResponses = new ArrayList<>();
         for (Feedback feedback : feedbacks) {
             FeedbackResponse feedbackResponse = new FeedbackResponse();
@@ -80,7 +80,7 @@ public class FeedbackService {
     }
 
     public List<FeedbackResponse> getFeedbackByProductID(String id){
-        List<Feedback> feedbacks = feedbackRepository.getFeedbackByProductID(id);
+        List<Feedback> feedbacks = feedbackRepository.findByProductID(id);
         List<FeedbackResponse> feedbackResponses = new ArrayList<>();
         for (Feedback feedback : feedbacks) {
             FeedbackResponse feedbackResponse = new FeedbackResponse();

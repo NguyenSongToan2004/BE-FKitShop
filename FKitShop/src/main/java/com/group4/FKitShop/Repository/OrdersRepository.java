@@ -54,11 +54,17 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
 
     Optional<Orders> findBystatus(String status);
 
+    @Query(value = "SELECT DATE(o.orderDate) AS orderDate, SUM(od.price * od.quantity) AS dailyRevenue \n" +
+            "           FROM Orders o JOIN OrderDetails od ON o.ordersID = od.ordersID\n" +
+            "           WHERE MONTH(o.orderDate) = MONTH(CURRENT_DATE) AND YEAR(o.orderDate) = YEAR(CURRENT_DATE) AND o.status = 'delivered'\n" +
+            "           GROUP BY DATE(o.orderDate)", nativeQuery = true)
+    List<Object[]> findDailyRevenueForCurrentMonth();
+
     @Query(value = "WITH months AS (\n" +
             "    SELECT \n" +
-            "        DATE_FORMAT(DATE_ADD('2024-01-01', INTERVAL (n - 1) MONTH), '%Y-%m') AS month_code,\n" +
-            "        DATE_ADD('2024-01-01', INTERVAL (n - 1) MONTH) AS month_start_date,\n" +
-            "        LAST_DAY(DATE_ADD('2024-01-01', INTERVAL (n - 1) MONTH)) AS month_end_date\n" +
+            "        DATE_FORMAT(DATE_ADD(CONCAT(:year, '-01-01'), INTERVAL (n - 1) MONTH), '%Y-%m') AS month_code,\n" +
+            "        DATE_ADD(CONCAT(:year, '-01-01'), INTERVAL (n - 1) MONTH) AS month_start_date,\n" +
+            "        LAST_DAY(DATE_ADD(CONCAT(:year, '-01-01'), INTERVAL (n - 1) MONTH)) AS month_end_date\n" +
             "    FROM \n" +
             "        (SELECT @row := @row + 1 AS n FROM \n" +
             "            (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 \n" +
@@ -70,43 +76,22 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
             "            (SELECT @row := 0) AS r\n" +
             "        ) AS numbers\n" +
             "    WHERE \n" +
-            "        DATE_ADD('2024-01-01', INTERVAL (n - 1) MONTH) <= '2024-12-31'\n" +
+            "        DATE_ADD(CONCAT(:year, '-01-01'), INTERVAL (n - 1) MONTH) <= CONCAT(:year, '-12-31')\n" +
             ")\n" +
             "SELECT \n" +
-            "    month_code,\n" +
-            "    month_start_date,\n" +
-            "    month_end_date\n" +
+            "    months.month_code,\n" +
+            "    COALESCE(SUM(Orders.totalPrice), 0) AS total_productPrice,\n" +
+            "    COALESCE(SUM(Orders.shippingPrice), 0) AS total_ship,\n" +
+            "    COALESCE(SUM(Orders.totalPrice) + SUM(Orders.shippingPrice), 0) AS total_revenue\n" +
             "FROM \n" +
             "    months\n" +
-            "ORDER BY \n" +
-            "    month_start_date;", nativeQuery = true)
-    List<Object> getMonth();
-
-    @Query(value = "SELECT *\n" +
-            "FROM Orders\n" +
-            "WHERE orderDate BETWEEN :dateStart AND :dateEnd", nativeQuery = true)
-    List<Orders> findOrdersByMonth(@Param("dateStart") String dateStart, @Param("dateEnd") String dateEnd);
-
-    @Query(value = "SELECT \n" +
-            "    DATE_FORMAT(orderDate, '%Y-%m') AS month_code,\n" +
-            "    SUM(totalPrice) AS total_productPrice,\n" +
-            "    SUM(shippingPrice) AS total_ship,\n" +
-            "    SUM(totalPrice)  + SUM(shippingPrice) AS total_revenue\n" +
-            "FROM \n" +
-            "    Orders\n" +
-            "WHERE \n" +
-            "    orderDate >= CONCAT(:year, '-01-01') AND orderDate <= CONCAT(:year, '-12-31')\n" +
+            "LEFT JOIN \n" +
+            "    Orders ON Orders.orderDate BETWEEN months.month_start_date AND months.month_end_date\n" +
             "GROUP BY \n" +
-            "    month_code\n" +
+            "    months.month_code\n" +
             "ORDER BY \n" +
-            "    month_code\n", nativeQuery = true)
-    List<Object[]> getRevenue(@Param("year") String year);
-
-    @Query(value = "SELECT DATE(o.orderDate) AS orderDate, SUM(od.price * od.quantity) AS dailyRevenue \n" +
-            "           FROM Orders o JOIN OrderDetails od ON o.ordersID = od.ordersID\n" +
-            "           WHERE MONTH(o.orderDate) = MONTH(CURRENT_DATE) AND YEAR(o.orderDate) = YEAR(CURRENT_DATE) AND o.status = 'delivered'\n" +
-            "           GROUP BY DATE(o.orderDate)", nativeQuery = true)
-    List<Object[]> findDailyRevenueForCurrentMonth();
+            "    months.month_code;", nativeQuery = true)
+    List<Object[]> getRevenueByYear(@Param("year") String year);
 
 
     @Query(value = "  WITH all_dates AS (\n" +

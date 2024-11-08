@@ -3,13 +3,11 @@ package com.group4.FKitShop.Service;
 import com.group4.FKitShop.Entity.*;
 import com.group4.FKitShop.Exception.AppException;
 import com.group4.FKitShop.Exception.ErrorCode;
-import com.group4.FKitShop.Mapper.LabMapper;
 import com.group4.FKitShop.Mapper.OrdersMapper;
 import com.group4.FKitShop.Repository.*;
 import com.group4.FKitShop.Request.*;
 import com.group4.FKitShop.Response.CheckoutResponse;
 import com.group4.FKitShop.Response.DailyRevenueResponse;
-import com.group4.FKitShop.Response.GetLabResponse;
 import com.group4.FKitShop.Response.RevenueResponse;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -22,13 +20,10 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -40,7 +35,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -505,16 +499,8 @@ public class OrdersService {
         }
     }
 
-    public List<Object> getMonth() {
-        return ordersRepository.getMonth();
-    }
-
-    public List<Orders> getOrderByMonth(DateRequest request) {
-        return ordersRepository.findOrdersByMonth(request.getDate1(), request.getDate2());
-    }
-
-    public List<RevenueResponse> getRevenue(RevenueYearRequest request) {
-        List<Object[]> objs = ordersRepository.getRevenue(request.getYear());
+    public List<RevenueResponse> getRevenueByYear(String year) {
+        List<Object[]> objs = ordersRepository.getRevenueByYear(year);
         List<RevenueResponse> responses = new ArrayList<>();
         for (Object[] row : objs) {
             RevenueResponse revenueResponse = RevenueResponse.builder()
@@ -560,9 +546,9 @@ public class OrdersService {
                 .collect(Collectors.toList());
     }
 
-    public List<RevenueResponse> getDailyRevenue(DateRequest request) {
-        String[] dateParts = request.getDate1().split("-");
-        List<Object[]> dailyRevenue = ordersRepository.getDailyRevenueByMonth(dateParts[0], dateParts[1]);
+    public List<RevenueResponse> getDailyRevenue(String year, String month) {
+        //String[] dateParts = request.getDate1().split("-");
+        List<Object[]> dailyRevenue = ordersRepository.getDailyRevenueByMonth(year, month);
         List<RevenueResponse> responses = new ArrayList<>();
         for (Object[] row : dailyRevenue) {
             RevenueResponse revenueResponse = RevenueResponse.builder()
@@ -597,5 +583,4 @@ public class OrdersService {
         }
         return finalResponses;
     }
-
 }

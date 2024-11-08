@@ -124,22 +124,11 @@ public class OrdersController {
                 .body(ordersService.getOrderReportFile(time));
     }
 
-    @GetMapping("/months")
-    public ResponseEntity<ResponseObject> getMonth() {
-        return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Months Successfully !!", ordersService.getMonth()));
-    }
-
-    @GetMapping("/byMonth")
-    public ResponseEntity<ResponseObject> getOrderByMonth(@RequestBody @Valid DateRequest request) {
-        return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Orders Successfully !!", ordersService.getOrderByMonth(request)));
-    }
 
     @GetMapping("/revenue")
-    public ResponseEntity<ResponseObject> getRevenue(@RequestBody @Valid RevenueYearRequest request) {
+    public ResponseEntity<ResponseObject> getRevenueByYear(@RequestParam("year") String year) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenue(request)));
+                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenueByYear(year)));
     }
 
     @GetMapping("/daily-revenue")
@@ -151,8 +140,9 @@ public class OrdersController {
     }
 
     @GetMapping("/dailyrevenue")
-    public ResponseEntity<ResponseObject> getDailyRevenue(@RequestBody @Valid DateRequest request) {
+    public ResponseEntity<ResponseObject> getDailyRevenue(@RequestParam("year") String year,
+                                                          @RequestParam("month") String month) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getDailyRevenue(request)));
+                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getDailyRevenue(year, month)));
     }
 }
