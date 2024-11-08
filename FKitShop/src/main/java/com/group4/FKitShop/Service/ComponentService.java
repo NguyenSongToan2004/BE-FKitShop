@@ -124,7 +124,7 @@ public class ComponentService {
     }
 
     public List<Component> updateComponent(ComponentRequest request, String productID) {
-        List<Component> oldComponents = componentRepository.getComponentByProductID(productID);
+        List<Component> oldComponents = componentRepository.findByProductID(productID);
 //        request.getComponents().forEach((componentID, quantity) -> {
 //            for (Component component : oldComponents) {
 //                if (component.getComponentID().equals(componentID)) {
@@ -145,7 +145,7 @@ public class ComponentService {
     }
 
     public void updateQuantityCompo(String productID, int detailQuantity, String type) {
-        List<Component> compoList = componentRepository.getComponentByProductID(productID);
+        List<Component> compoList = componentRepository.findByProductID(productID);
         compoList.forEach(compo ->
                 productRepository.findById(compo.getComponentID())
                         .ifPresent(p -> {
