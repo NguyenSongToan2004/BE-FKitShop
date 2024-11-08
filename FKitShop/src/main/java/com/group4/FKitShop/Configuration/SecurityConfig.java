@@ -121,11 +121,46 @@ public class SecurityConfig {
             "/orders/**",
     };
 
-    private static final String[] MANAGER_API = {
+    private static final String[] MANAGER_POST_API = {
+            "/tags",
+            "/categories",
+            "/product/add",
+            "/product/add-images/{productID}",
+            "/product/image/{productID}/{imageID}",
+            "/blogs",
+            "/lab-guide/create",
+            "/lab/labs",
+            "/lab/pdf/create/{labID}",
+            "/lab/upload-img",
+            "/lab/upload-lab/{labID}"
+    };
+    private static final String[] MANAGER_GET_API = {
+            "/accounts/customer",
+            "/product/report/sales",
+            "lab/labs"
+    };
+    private static final String[] MANAGER_PUT_API = {
+            "/product/{productID}",
+            "/tags/{tagID}",
+            "/categories/{categoryID}",
+            "/blogs/{blogID}",
+            "/lab-guide/info/{guideID}",
+            "/lab/{id}",
             "/support/status",
             "/support/support-date",
-            "/components/**"
+            "/components/{id}"
     };
+    private static final String[] MANAGER_DELETE_API = {
+            "/product/{productID}",
+            "/product/images",
+            "/tags/{tagID}",
+            "/categories/{categoryID}",
+            "/blogs/{blogID}",
+            "/lab-guide/{guideID}",
+            "/lab/{id}",
+            "/components/{id}"
+
+};
 
 
     //    //secretkey
@@ -170,42 +205,12 @@ public class SecurityConfig {
 
                                 .requestMatchers(ADMIN_API).hasRole("admin")
 
-                                .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
+                                //manager
+                                .requestMatchers(HttpMethod.POST, MANAGER_POST_API).hasAnyRole("admin", "manager")
+                                .requestMatchers(HttpMethod.GET, MANAGER_GET_API).hasAnyRole("admin", "manager")
+                                .requestMatchers(HttpMethod.PUT, MANAGER_PUT_API).hasAnyRole("admin", "manager")
+                                .requestMatchers(HttpMethod.DELETE, MANAGER_DELETE_API).hasAnyRole("admin", "manager")
 
-                                .requestMatchers(HttpMethod.GET,
-                                        "/accounts/customer",
-                                        "/product/report/sales",
-                                        "lab/labs").hasAnyRole("admin", "manager")
-
-                                .requestMatchers(HttpMethod.PUT,
-                                        "/product/{productID}",
-                                        "/tags/{tagID}",
-                                        "/categories/{categoryID}",
-                                        "/blogs/{blogID}",
-                                        "/lab-guide/info/{guideID}",
-                                        "/lab/{id}").hasAnyRole("admin", "manager")
-
-                                .requestMatchers(HttpMethod.DELETE,
-                                        "/product/{productID}",
-                                        "/product/images",
-                                        "/tags/{tagID}",
-                                        "/categories/{categoryID}",
-                                        "/blogs/{blogID}",
-                                        "/lab-guide/{guideID}",
-                                        "/lab/{id}").hasAnyRole("admin", "manager")
-
-                                .requestMatchers(HttpMethod.POST,
-                                        "/tags",
-                                        "/categories",
-                                        "/product/add",
-                                        "/product/add-images/{productID}",
-                                        "/product/image/{productID}/{imageID}",
-                                        "/blogs",
-                                        "/lab-guide/create",
-                                        "/lab/labs",
-                                        "/lab/pdf/create/{labID}",
-                                        "/lab/upload-img",
-                                        "/lab/upload-lab/{labID}").hasAnyRole("admin", "manager")
 
                                 .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
                                 .anyRequest().authenticated()
