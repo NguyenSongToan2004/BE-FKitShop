@@ -126,9 +126,9 @@ public class OrdersController {
 
 
     @GetMapping("/revenue")
-    public ResponseEntity<ResponseObject> getRevenueByYear(@RequestBody @Valid RevenueRequest request) {
+    public ResponseEntity<ResponseObject> getRevenueByYear(@RequestParam("year") String year) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenueByYear(request)));
+                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenueByYear(year)));
     }
 
     @GetMapping("/daily-revenue")
@@ -140,8 +140,9 @@ public class OrdersController {
     }
 
     @GetMapping("/dailyrevenue")
-    public ResponseEntity<ResponseObject> getDailyRevenue(@RequestBody @Valid RevenueRequest request) {
+    public ResponseEntity<ResponseObject> getDailyRevenue(@RequestParam("year") String year,
+                                                          @RequestParam("month") String month) {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getDailyRevenue(request)));
+                new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getDailyRevenue(year, month)));
     }
 }

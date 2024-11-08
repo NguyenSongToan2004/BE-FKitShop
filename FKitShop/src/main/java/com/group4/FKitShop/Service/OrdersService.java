@@ -496,8 +496,8 @@ public class OrdersService {
         }
     }
 
-    public List<RevenueResponse> getRevenueByYear(RevenueRequest request) {
-        List<Object[]> objs = ordersRepository.getRevenueByYear(request.getYear());
+    public List<RevenueResponse> getRevenueByYear(String year) {
+        List<Object[]> objs = ordersRepository.getRevenueByYear(year);
         List<RevenueResponse> responses = new ArrayList<>();
         for (Object[] row : objs) {
             RevenueResponse revenueResponse = RevenueResponse.builder()
@@ -543,9 +543,9 @@ public class OrdersService {
                 .collect(Collectors.toList());
     }
 
-    public List<RevenueResponse> getDailyRevenue(RevenueRequest request) {
+    public List<RevenueResponse> getDailyRevenue(String year, String month) {
         //String[] dateParts = request.getDate1().split("-");
-        List<Object[]> dailyRevenue = ordersRepository.getDailyRevenueByMonth(request.getYear(), request.getMonth());
+        List<Object[]> dailyRevenue = ordersRepository.getDailyRevenueByMonth(year, month);
         List<RevenueResponse> responses = new ArrayList<>();
         for (Object[] row : dailyRevenue) {
             RevenueResponse revenueResponse = RevenueResponse.builder()
