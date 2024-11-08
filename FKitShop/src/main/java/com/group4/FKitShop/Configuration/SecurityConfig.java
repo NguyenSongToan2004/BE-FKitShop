@@ -122,22 +122,6 @@ public class SecurityConfig {
     };
 
     private static final String[] MANAGER_API = {
-            "/accounts/customer",
-            "/product/add",
-            //PUT
-            "/product/add-images/{productID}",
-            "/product/image/{productID}/{imageID}",
-            //DELETE
-            "/product/images",
-            //GET
-            "/product/report/sales",
-            //POST
-            "/lab/labs",
-            "/lab/pdf/create/**",
-            "/lab/upload-img",
-            "/lab/upload-lab/**",
-            //PUT, DELETE
-            "/lab/**",
             "/support/status",
             "/support/support-date",
             "/components/**"
@@ -181,15 +165,48 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(PUBLIC_API).permitAll()
+
                                 .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
+
                                 .requestMatchers(ADMIN_API).hasRole("admin")
+
                                 .requestMatchers(MANAGER_API).hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.PUT, "/product/{productID}", "/tags/{tagID}", "/categories/{categoryID}", "/blogs/{blogID}", "/lab-guide/info/{guideID}")
-                                                        .hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.DELETE, "/product/{productID}", "/tags/{tagID}", "/categories/{categoryID}", "/blogs/{blogID}", "/lab-guide/{guideID}")
-                                                        .hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.POST, "/tags", "/categories", "/blogs", "/lab-guide/create")
-                                                        .hasAnyRole("admin", "manager")
+
+                                .requestMatchers(HttpMethod.GET,
+                                        "/accounts/customer",
+                                        "/product/report/sales",
+                                        "lab/labs").hasAnyRole("admin", "manager")
+
+                                .requestMatchers(HttpMethod.PUT,
+                                        "/product/{productID}",
+                                        "/tags/{tagID}",
+                                        "/categories/{categoryID}",
+                                        "/blogs/{blogID}",
+                                        "/lab-guide/info/{guideID}",
+                                        "/lab/{id}").hasAnyRole("admin", "manager")
+
+                                .requestMatchers(HttpMethod.DELETE,
+                                        "/product/{productID}",
+                                        "/product/images",
+                                        "/tags/{tagID}",
+                                        "/categories/{categoryID}",
+                                        "/blogs/{blogID}",
+                                        "/lab-guide/{guideID}",
+                                        "/lab/{id}").hasAnyRole("admin", "manager")
+
+                                .requestMatchers(HttpMethod.POST,
+                                        "/tags",
+                                        "/categories",
+                                        "/product/add",
+                                        "/product/add-images/{productID}",
+                                        "/product/image/{productID}/{imageID}",
+                                        "/blogs",
+                                        "/lab-guide/create",
+                                        "/lab/labs",
+                                        "/lab/pdf/create/{labID}",
+                                        "/lab/upload-img",
+                                        "/lab/upload-lab/{labID}").hasAnyRole("admin", "manager")
+
                                 .requestMatchers(STAFF_API).hasAnyRole("admin", "staff")
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
