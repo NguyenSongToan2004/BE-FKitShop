@@ -51,7 +51,7 @@ public class OrdersController {
                 .build();
     }
 
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/allorders")
     public ResponseObject allOrders() {
         return ResponseObject.builder()
@@ -121,6 +121,7 @@ public class OrdersController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin')")
     @GetMapping("/report/{time}")
     public ResponseEntity<byte[]> getReport(OutputStream outputStream, @PathVariable("time") String time)
             throws IOException {

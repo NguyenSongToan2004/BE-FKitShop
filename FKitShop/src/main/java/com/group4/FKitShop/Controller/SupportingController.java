@@ -29,7 +29,7 @@ public class SupportingController {
         );
     }
 
-    @PreAuthorize("hasRole('admin') or hasRole('manager')")
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @PutMapping("/status")
     ResponseEntity<ResponseObject> updateStatus(@RequestBody SupportStatusUpdateRequest request) throws MessagingException, UnsupportedEncodingException {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -37,7 +37,7 @@ public class SupportingController {
         );
     }
 
-    @PreAuthorize("hasRole('admin') or hasRole('manager')")
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @PutMapping("/support-date")
     ResponseEntity<ResponseObject> updateSupportDate(@RequestBody UpdateSupportDate request) {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -45,6 +45,7 @@ public class SupportingController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @GetMapping("/all-supports")
     ResponseEntity<ResponseObject> getAllSupports() {
        return ResponseEntity.ok(
@@ -73,6 +74,7 @@ public class SupportingController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @PutMapping("/update-expected")
     ResponseEntity<ResponseObject> updateExpected(@RequestBody UpdateExpectedDateRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(

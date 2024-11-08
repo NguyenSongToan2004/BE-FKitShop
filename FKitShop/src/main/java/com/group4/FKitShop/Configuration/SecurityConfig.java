@@ -85,12 +85,11 @@ public class SecurityConfig {
             "orders/checkout",
             "/check-out",
             "/submitOrder",
-            "/questions/**",
-            //
             "/lab/account/{accountID}",
             "/lab/download",
             "/lab/get-link-download",
             "/lab/status-labs/{status}",
+            "/questions/byAccountID/{accountID}",
             "/support/create",
             "/support/support-accountID/{accountID}",
             "/support/support-status/{status}",
@@ -101,7 +100,7 @@ public class SecurityConfig {
     };
 
     private static final String[] ADMIN_API = {
-            "/orders/allorders",
+            "/orders/report/{time}",
             "/admin/update/{id}",
             "/accounts/allAccounts",
             "/accounts/createAccount",
@@ -124,6 +123,7 @@ public class SecurityConfig {
     };
     private static final String[] MANAGER_GET_API = {
             "/accounts/customer",
+            "/orders/allorders",
             "/product/report/sales",
             "lab/labs",
             "/lab-guide/guide/{guideID}",
@@ -137,8 +137,6 @@ public class SecurityConfig {
             "/blogs/{blogID}",
             "/lab-guide/info/{guideID}",
             "/lab/{id}",
-            "/support/status",
-            "/support/support-date",
             "/components/{id}"
     };
     private static final String[] MANAGER_DELETE_API = {
@@ -152,8 +150,20 @@ public class SecurityConfig {
             "/components/{id}"
 
     };
+    private static final String[] STAFF_GET_API = {
+            "/accounts/customer",
+            "/questions",
+            "/questions/{questionID}",
+            "/questions/byLabID/{labID}",
+            "/questions/byStatus/{status}",
+            "/support/all-support",
+
+    };
     private static final String[] STAFF_PUT_API = {
             "/orders/updatestatus/{ordersID}",
+            "/support/status",
+            "/support/support-date",
+            "/support/update-expected",
             "/questions/{questionID}"
     };
 
@@ -195,8 +205,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(PUBLIC_API).permitAll()
 
+                                //user
                                 .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
-
+                                .requestMatchers(HttpMethod.POST, "/questions").hasAnyRole("user", "admin", "staff", "manager")
                                 //admin
                                 .requestMatchers(ADMIN_API).hasRole("admin")
                                 .requestMatchers(HttpMethod.DELETE, "/accounts/{id}").hasRole("admin")
@@ -208,9 +219,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, MANAGER_DELETE_API).hasAnyRole("admin", "manager")
                                 //staff
                                 .requestMatchers(HttpMethod.PUT, STAFF_PUT_API).hasAnyRole("admin", "staff")
-                                .requestMatchers(HttpMethod.GET, "/accounts/customer").hasAnyRole("admin", "staff")
+                                .requestMatchers(HttpMethod.GET, STAFF_GET_API).hasAnyRole("admin", "staff")
+                                .requestMatchers(HttpMethod.DELETE, "/questions/{questionID}").hasAnyRole("admin", "staff")
                                 .anyRequest().authenticated()
-//                                .anyRequest().permitAll()
                 )
 
                 //register authentication provider supporting jwt token
