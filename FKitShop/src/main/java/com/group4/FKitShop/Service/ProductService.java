@@ -82,7 +82,7 @@ public class ProductService {
         return product;
     }
 
-    public GetProductResponse getProduct(String id) {
+    public  GetProductResponse getProduct(String id) {
         Product product = repository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
         );
@@ -133,7 +133,7 @@ public class ProductService {
 
         ProductMapper.INSTANCE.toProduct(request, product);
         repository.save(product);
-        if (request.getType().equals("item") && componentsList != null) {
+        if (request.getType().equals("kit") && componentsList != null) {
             ComponentRequest components = ComponentRequest.builder()
                     .components(convertListCompoToMap(componentsList))
                     .build();
