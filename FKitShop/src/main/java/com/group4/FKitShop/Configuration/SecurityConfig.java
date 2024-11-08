@@ -144,6 +144,7 @@ public class SecurityConfig {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(accountsService);
         authProvider.setPasswordEncoder(passwordEncoder());
+        System.out.println("auth provider : " + authProvider.toString());
         return authProvider;
     }
 

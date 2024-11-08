@@ -63,6 +63,8 @@ public class OrdersService {
     CartRepository cartRepository;
     AccountsRepository accountsRepository;
     LabRepository labRepository;
+    ComponentService componentService;
+    private final ComponentRepository componentRepository;
 
     public CheckoutResponse checkOut(CheckoutRequest request) {
         try {
@@ -80,7 +82,7 @@ public class OrdersService {
             List<OrderDetails> details = orderDetailsService.createOrderDetails(request.getOrderDetailsRequest(), ordersID);
             //update totalPrice in order
             //including shipping price
-            double totalPrice = updateStockAndTotalPrice(details, orders.getShippingPrice());
+            double totalPrice = updateStockAndTotalPrice(details, orders.getShippingPrice(), "normal");
             //update totalprice
             orders = updateTotalPrice(totalPrice, orders.getOrdersID());
             sendOrderEmail(orders, details);
@@ -195,6 +197,7 @@ public class OrdersService {
         orders.setStatus(status.toLowerCase());
         // tao order status
         orderStatusService.createOrderStatus(orders.getOrdersID(), orders.getStatus());
+        orders.setShipDate(new java.sql.Date(System.currentTimeMillis()));
         return ordersRepository.save(orders);
     }
 
@@ -283,17 +286,17 @@ public class OrdersService {
         mailSender.send(message);
     }
 
-    private double updateStockAndTotalPrice(List<OrderDetails> details, double shippingPrice) {
+    private double updateStockAndTotalPrice(List<OrderDetails> details, double shippingPrice, String type) {
         double totalPrice = 0;
         for (OrderDetails detail : details) {
             Product product = productRepository.findById(detail.getProductID()).orElseThrow(
                     () -> new RuntimeException("Product not found")
             );
-            if (product.getQuantity() < detail.getQuantity()) {
-                throw new AppException(ErrorCode.PRODUCT_UNAVAILABLE);
-            }
-            product.setQuantity(product.getQuantity() - detail.getQuantity());
+//            product.setQuantity(product.getQuantity() - detail.getQuantity());
             product.setUnitOnOrder(product.getUnitOnOrder() + detail.getQuantity());
+            if (product.getType().equals("kit")) {
+                componentService.updateQuantityCompo(product.getProductID(), detail.getQuantity(), type);
+            }
             totalPrice += detail.getPrice();
             productRepository.save(product);
         }
@@ -533,7 +536,7 @@ public class OrdersService {
             } else {
                 revenueResponse = responses.get(i);
                 revenueResponse.setDifferenceRevenue((responses.get(i).getTotalRevenue()).subtract(responses.get(i - 1).getTotalRevenue()));
-                revenueResponse.setDifferencePercent((responses.get(i).getDifferenceRevenue().doubleValue()*100)/ responses.get(i - 1).getTotalRevenue().doubleValue());
+                revenueResponse.setDifferencePercent((responses.get(i).getDifferenceRevenue().doubleValue() * 100) / responses.get(i - 1).getTotalRevenue().doubleValue());
                 if (revenueResponse.getDifferenceRevenue().doubleValue() == 0) {
                     revenueResponse.setStatus(0);
                 } else if (revenueResponse.getDifferenceRevenue().doubleValue() > 0) {
@@ -581,7 +584,7 @@ public class OrdersService {
             } else {
                 revenueResponse = responses.get(i);
                 revenueResponse.setDifferenceRevenue((responses.get(i).getTotalRevenue()).subtract(responses.get(i - 1).getTotalRevenue()));
-                revenueResponse.setDifferencePercent((responses.get(i).getDifferenceRevenue().doubleValue())*100/ responses.get(i - 1).getTotalRevenue().doubleValue());
+                revenueResponse.setDifferencePercent((responses.get(i).getDifferenceRevenue().doubleValue()) * 100 / responses.get(i - 1).getTotalRevenue().doubleValue());
                 if (revenueResponse.getDifferenceRevenue().doubleValue() == 0) {
                     revenueResponse.setStatus(0);
                 } else if (revenueResponse.getDifferenceRevenue().doubleValue() > 0) {
@@ -594,5 +597,5 @@ public class OrdersService {
         }
         return finalResponses;
     }
-    
+
 }

@@ -116,6 +116,7 @@ public class ProductService {
             int quantityCompo = Integer.parseInt(tokenCompo[1]);
             componentsMap.put(componentID, quantityCompo);
         }
+        System.out.println("components map : " + componentsMap.size());
         return componentsMap;
     }
 

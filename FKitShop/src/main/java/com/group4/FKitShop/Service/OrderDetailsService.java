@@ -25,6 +25,7 @@ import java.util.Map;
 public class OrderDetailsService {
     OrderDetailsRepository orderDetailsRepository;
     ProductRepository productRepository;
+    ComponentService componentService;
 
 
     public String generateUniqueCode() {
@@ -76,13 +77,14 @@ public class OrderDetailsService {
         return orderDetailsRepository.findAllByordersID(orderID);
     }
 
-    public void updatePQuantityWhenCancel(String ordersID){
+    public void updatePQuantityWhenCancel(String ordersID) {
         List<OrderDetails> orderDetails = orderDetailsRepository.findAllByordersID(ordersID);
         for (OrderDetails orderDetail : orderDetails) {
             Product product = productRepository.findById(orderDetail.getProductID())
                     .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
             int orderDetailQuantity = orderDetail.getQuantity();
             product.setQuantity(product.getQuantity() + orderDetailQuantity);
+            componentService.updateQuantityCompo(product.getProductID(), orderDetail.getQuantity(), "cancel");
             productRepository.save(product);
         }
     }
