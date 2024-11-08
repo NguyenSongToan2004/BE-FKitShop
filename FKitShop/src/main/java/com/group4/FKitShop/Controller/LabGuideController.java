@@ -39,6 +39,7 @@ public class LabGuideController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/guide/{guideID}")
     public ResponseEntity<ResponseObject> getGuideByID(@PathVariable int guideID) {
         return ResponseEntity.ok(
@@ -46,6 +47,7 @@ public class LabGuideController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/guide-by-labID/{labID}")
     public ResponseEntity<ResponseObject> getLabGuidesByLabID(@PathVariable String labID ) {
         return ResponseEntity.ok(
@@ -53,6 +55,7 @@ public class LabGuideController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/all")
     public ResponseEntity<ResponseObject> getAll() {
         return ResponseEntity.ok(

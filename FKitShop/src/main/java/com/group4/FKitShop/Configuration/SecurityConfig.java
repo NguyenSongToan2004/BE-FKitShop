@@ -68,12 +68,8 @@ public class SecurityConfig {
             "/blogs/dateDesc",
             "/blogs/dateAsc",
             "/lab/product/{productID}",
-//            "/lab-guide/guide/{guideID}",
-//            "/lab-guide/guide-by-labID/{guideID}",
-            "/lab-guide/all",
             "/accounts/register",
             "/delivery/**",
-            "/feedback/**",
     };
 
     private static final String[] ACCOUNT_API = {
@@ -100,7 +96,8 @@ public class SecurityConfig {
             "/support/support-status/{status}",
             "/support/supports/{accountID}/{status}",
             "/wishlists/**",
-            "/carts/**"
+            "/carts/**",
+            "/feedback/**",
     };
 
     private static final String[] ADMIN_API = {
@@ -128,7 +125,10 @@ public class SecurityConfig {
     private static final String[] MANAGER_GET_API = {
             "/accounts/customer",
             "/product/report/sales",
-            "lab/labs"
+            "lab/labs",
+            "/lab-guide/guide/{guideID}",
+            "/lab-guide/guide-by-labID/{guideID}",
+            "/lab-guide/all",
     };
     private static final String[] MANAGER_PUT_API = {
             "/product/{productID}",
@@ -147,8 +147,8 @@ public class SecurityConfig {
             "/tags/{tagID}",
             "/categories/{categoryID}",
             "/blogs/{blogID}",
-            "/lab-guide/{guideID}",
             "/lab/{id}",
+            "/lab-guide/{guideID}",
             "/components/{id}"
 
     };
