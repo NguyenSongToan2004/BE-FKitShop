@@ -48,7 +48,7 @@ public class OrdersController {
                 .build();
     }
 
-    @PreAuthorize("hasRole('admin') or hasRole('manager') or hasRole('staff')")
+    @PreAuthorize("hasAnyRole('admin', 'staff') or hasRole('manager')")
     @GetMapping("/allorders")
     public ResponseObject allOrders() {
         return ResponseObject.builder()
@@ -128,13 +128,14 @@ public class OrdersController {
                 .body(ordersService.getOrderReportFile(time));
     }
 
+    @PreAuthorize("hasAnyRole('admin', 'staff') or hasRole('manager')")
     @GetMapping("/revenue")
     public ResponseEntity<ResponseObject> getRevenueByYear(@RequestParam("year") String year) {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenueByYear(year)));
     }
 
-
+    @PreAuthorize("hasAnyRole('admin', 'staff') or hasRole('manager')")
     @GetMapping("/daily-revenue")
     public ResponseEntity<ResponseObject> getDailyRevenueForCurrentMonth() {
         return ResponseEntity.ok(
@@ -143,6 +144,7 @@ public class OrdersController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('admin', 'staff') or hasRole('manager')")
     @GetMapping("/dailyrevenue")
     public ResponseEntity<ResponseObject> getDailyRevenue(@RequestParam("year") String year,
                                                           @RequestParam("month") String month) {

@@ -123,7 +123,7 @@ public class SecurityConfig {
     };
     private static final String[] MANAGER_GET_API = {
             "/accounts/customer",
-            "/orders/allorders",
+//            "/orders/allorders",
             "/product/report/sales",
             "lab/labs",
             "/lab-guide/guide/{guideID}",
@@ -152,12 +152,12 @@ public class SecurityConfig {
     };
     private static final String[] STAFF_GET_API = {
             "/accounts/customer",
+//            "/orders/allorders",
             "/questions",
             "/questions/{questionID}",
             "/questions/byLabID/{labID}",
             "/questions/byStatus/{status}",
             "/support/all-support",
-            "/orders/allorders"
 
     };
     private static final String[] STAFF_PUT_API = {
@@ -205,25 +205,26 @@ public class SecurityConfig {
                 // and doesn't use an old session with different roles
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(PUBLIC_API).permitAll()
+                        .requestMatchers(PUBLIC_API).permitAll()
 
-                                //user
-                                .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
-                                .requestMatchers(HttpMethod.POST, "/questions").hasAnyRole("user", "admin", "staff", "manager")
-                                //admin
-                                .requestMatchers(ADMIN_API).hasRole("admin")
-                                .requestMatchers(HttpMethod.DELETE, "/accounts/{id}").hasRole("admin")
+                        //user
+                        .requestMatchers(ACCOUNT_API).hasAnyRole("user", "admin", "staff", "manager")
+                        .requestMatchers(HttpMethod.POST, "/questions").hasAnyRole("user", "admin", "staff", "manager")
+                        //admin
+                        .requestMatchers(ADMIN_API).hasRole("admin")
+                        .requestMatchers(HttpMethod.DELETE, "/accounts/{id}").hasRole("admin")
 
-                                //manager
-                                .requestMatchers(HttpMethod.POST, MANAGER_POST_API).hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.GET, MANAGER_GET_API).hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.PUT, MANAGER_PUT_API).hasAnyRole("admin", "manager")
-                                .requestMatchers(HttpMethod.DELETE, MANAGER_DELETE_API).hasAnyRole("admin", "manager")
-                                //staff
-                                .requestMatchers(HttpMethod.PUT, STAFF_PUT_API).hasAnyRole("admin", "staff")
-                                .requestMatchers(HttpMethod.GET, STAFF_GET_API).hasAnyRole("admin", "staff")
-                                .requestMatchers(HttpMethod.DELETE, "/questions/{questionID}").hasAnyRole("admin", "staff")
-                                .anyRequest().authenticated()
+                        //manager
+                        .requestMatchers(HttpMethod.POST, MANAGER_POST_API).hasAnyRole("admin", "manager")
+                        .requestMatchers(HttpMethod.GET, MANAGER_GET_API).hasAnyRole("admin", "manager")
+                        .requestMatchers(HttpMethod.PUT, MANAGER_PUT_API).hasAnyRole("admin", "manager")
+                        .requestMatchers(HttpMethod.DELETE, MANAGER_DELETE_API).hasAnyRole("admin", "manager")
+                        //staff
+                        .requestMatchers(HttpMethod.GET, STAFF_GET_API).hasAnyRole("admin", "staff")
+                        .requestMatchers(HttpMethod.PUT, STAFF_PUT_API).hasAnyRole("admin", "staff")
+                        .requestMatchers(HttpMethod.DELETE, "/questions/{questionID}").hasAnyRole("admin", "staff")
+                        .requestMatchers(HttpMethod.GET, "/orders/allorders").hasAnyRole("admin", "manager", "staff")
+                        .anyRequest().authenticated()
                 )
 
                 //register authentication provider supporting jwt token
