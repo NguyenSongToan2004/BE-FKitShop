@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,6 +64,7 @@ public class TagController {
     }
 
     // create tag
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping()
     public ResponseObject createTag(@RequestBody @Valid TagRequest request ) {
         return ResponseObject.builder()
@@ -73,6 +75,7 @@ public class TagController {
       }
 
     // update tag by ID
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/{tagID}")
     public ResponseObject updateTag(@RequestBody @Valid TagRequest request, @PathVariable int tagID) {
         return ResponseObject.builder()
@@ -83,6 +86,7 @@ public class TagController {
     }
 
     // delete tag by ID
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @DeleteMapping("/{tagID}")
     ResponseEntity<ResponseObject> deleteTag(@PathVariable int tagID){
         return ResponseEntity.ok(

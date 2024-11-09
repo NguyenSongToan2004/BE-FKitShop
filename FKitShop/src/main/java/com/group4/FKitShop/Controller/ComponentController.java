@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class ComponentController {
 //                .build();
 //    }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/{id}")
     public ResponseObject createComponent(@RequestBody @Valid ComponentRequest request, @PathVariable String id) {
         return ResponseObject.builder()
@@ -51,6 +53,7 @@ public class ComponentController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @DeleteMapping("/{id}")
     ResponseEntity<ResponseObject> deleteTag(@PathVariable int id){
         return ResponseEntity.ok(

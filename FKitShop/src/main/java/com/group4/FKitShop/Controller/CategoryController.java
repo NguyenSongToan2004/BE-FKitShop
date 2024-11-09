@@ -13,6 +13,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -74,6 +76,7 @@ public class CategoryController {
     }
 
     // create cate & create cateProduct relationship tuong ung
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping()
     public ResponseObject createCategory(@RequestBody @Valid CategoryRequest request) {
         //Category cate = categoryService.createCategory(request);
@@ -86,6 +89,7 @@ public class CategoryController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/{categoryID}")
     public  ResponseObject updateCategory(@RequestBody @Valid CategoryRequest request, @PathVariable String categoryID) {
         //cateProductService.deleteCateProduct_Category(categoryID);
@@ -101,6 +105,7 @@ public class CategoryController {
     }
 
     // delete category
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @DeleteMapping("/{categoryID}")
     ResponseEntity <ResponseObject> deleteCategory(@PathVariable String categoryID){
         //cateProductService.deleteCateProduct_Category(categoryID);

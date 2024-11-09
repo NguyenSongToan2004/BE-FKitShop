@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,7 @@ public class ProductController {
     private ProductService productService;
 
     // create product & cateProduct relation tuong ung
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping("/add")
     public ResponseObject addProduct(
             @RequestParam("name") String name,
@@ -97,6 +99,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/{productID}")
     public ResponseObject getProduct(@PathVariable String productID,
                                      @RequestParam("name") String name,
@@ -141,6 +144,7 @@ public class ProductController {
     }
 
     // delete product
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @DeleteMapping("/{productID}")
     ResponseEntity<ResponseObject> deleteProduct(@PathVariable String productID) {
         //cateProductService.deleteCateProduct_Product(productID);
@@ -149,6 +153,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @DeleteMapping("/images")
     ResponseEntity<ResponseObject> deleteImages(@RequestBody DeleteImageRequest request) {
         return ResponseEntity.ok(
@@ -157,6 +162,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/image/{productID}/{imageID}")
     ResponseEntity<ResponseObject> updateImage(@RequestParam("image") MultipartFile image, @PathVariable String productID, @PathVariable int imageID) {
         return ResponseEntity.ok(
@@ -214,6 +220,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/add-images/{productID}")
     ResponseEntity<ResponseObject> addImages(@RequestParam("images") MultipartFile[] images, @PathVariable("productID") String productID) {
         return ResponseEntity.ok(
@@ -228,6 +235,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/report/sales")
     ResponseEntity<byte[]> getSalesReport(OutputStream outputStream) throws IOException {
         return ResponseEntity.ok()

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,6 +72,7 @@ public class BlogController {
     }
 
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping()
     public ResponseObject createBlog(
             @RequestParam("blogName") String blogName,
@@ -100,6 +102,7 @@ public class BlogController {
 
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/{blogID}")
     public ResponseObject updateBlog(@PathVariable String blogID,
                                      @RequestParam("blogName") String blogName,
@@ -129,6 +132,7 @@ public class BlogController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @DeleteMapping("/{blogID}")
     public ResponseObject deleteBlog(@PathVariable String blogID) {
         // blogTagService.deleteBlogTag_Blog(blogID);

@@ -18,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,6 +48,7 @@ public class OrdersController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/allorders")
     public ResponseObject allOrders() {
         return ResponseObject.builder()
@@ -88,6 +90,7 @@ public class OrdersController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @PutMapping("/updatestatus/{ordersID}")
     public ResponseObject updateStatus(@PathVariable String ordersID, @RequestParam String status) {
         return ResponseObject.builder()
@@ -115,6 +118,7 @@ public class OrdersController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin')")
     @GetMapping("/report/{time}")
     public ResponseEntity<byte[]> getReport(OutputStream outputStream, @PathVariable("time") String time)
             throws IOException {
@@ -125,11 +129,26 @@ public class OrdersController {
     }
 
 
+    @GetMapping("/months")
+    public ResponseEntity<ResponseObject> getMonth() {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Months Successfully !!", ordersService.getMonth()));
+    }
+
+
+    @GetMapping("/byMonth")
+    public ResponseEntity<ResponseObject> getOrderByMonth(@RequestBody @Valid DateRequest request) {
+        return ResponseEntity.ok(
+                new ResponseObject(1000, "Get Orders Successfully !!", ordersService.getOrderByMonth(request)));
+    }
+
+
     @GetMapping("/revenue")
     public ResponseEntity<ResponseObject> getRevenueByYear(@RequestParam("year") String year) {
         return ResponseEntity.ok(
                 new ResponseObject(1000, "Get Revenue Successfully !!", ordersService.getRevenueByYear(year)));
     }
+
 
     @GetMapping("/daily-revenue")
     public ResponseEntity<ResponseObject> getDailyRevenueForCurrentMonth() {

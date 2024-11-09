@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +41,7 @@ public class AccountsController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin')")
     @GetMapping("/allAccounts")
     public ResponseObject allAccounts() {
         return ResponseObject.builder()
@@ -115,6 +117,7 @@ public class AccountsController {
         );
     }
 
+    @PreAuthorize("hasRole('admin')")
     @DeleteMapping("/{id}")
     ResponseEntity<ResponseObject> deleteAccount(@PathVariable String id) {
         return ResponseEntity.ok(
@@ -137,6 +140,7 @@ public class AccountsController {
         );
     }
 
+    @PreAuthorize("hasRole('admin')")
     @GetMapping("/listAccounts")
     ResponseEntity<ResponseObject> getActiveAccounts() {
         return ResponseEntity.ok(
@@ -159,6 +163,7 @@ public class AccountsController {
         );
     }
 
+    @PreAuthorize("hasRole('admin')")
     @PostMapping("/createAccount")
     public ResponseObject createAccount(@RequestBody @Valid AccountsRequest request) {
         return ResponseObject.builder()
@@ -167,6 +172,7 @@ public class AccountsController {
                 .data(accountsService.createAccount(request))
                 .build();
     }
+
 
     @PutMapping("/updateAccount/{id}")
     public ResponseEntity<ResponseObject> updateAccount(@RequestBody AccountsRequest request, @PathVariable String id) {
@@ -178,6 +184,7 @@ public class AccountsController {
         );
     }
 
+    @PreAuthorize("hasRole('admin')")
     @PutMapping("/admin/update/{id}")
     public ResponseEntity<ResponseObject> updateAccountByAdmin(@RequestBody AccountAdminRequest request, @PathVariable String id) {
         return ResponseEntity.ok(
@@ -199,6 +206,7 @@ public class AccountsController {
     }
 
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/customer")
     public ResponseEntity<ResponseObject> getCustomerData() {
         return ResponseEntity.ok(

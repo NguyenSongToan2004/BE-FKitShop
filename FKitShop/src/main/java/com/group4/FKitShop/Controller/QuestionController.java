@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class QuestionController {
     QuestionService questionService;
 
     // get all question
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @GetMapping()
     public List<QuestionResponse> allQuestions() {
         return questionService.allQuestions();
@@ -29,6 +31,7 @@ public class QuestionController {
 
 
     // get question by ID
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @GetMapping("/{questionID}")
     ResponseEntity<ResponseObject> getQuestionByID(@PathVariable int questionID) {
         return ResponseEntity.ok(
@@ -37,6 +40,7 @@ public class QuestionController {
     }
 
     // get list question by labID
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @GetMapping("/byLabID/{labID}")
     ResponseEntity<ResponseObject> getQuestionByLabID(@PathVariable String labID) {
         return ResponseEntity.ok(
@@ -53,6 +57,7 @@ public class QuestionController {
     }
 
     // get list question by status
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @GetMapping("/byStatus/{st}")
     ResponseEntity<ResponseObject> getQuestionByStatus(@PathVariable int st) {
         return ResponseEntity.ok(
@@ -70,6 +75,7 @@ public class QuestionController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @PutMapping("/{questionID}")
     public ResponseObject updateQuestion(@RequestBody QuestionRequest request, @PathVariable int questionID) {
         return ResponseObject.builder()
@@ -80,6 +86,7 @@ public class QuestionController {
     }
 
     // delete feedback
+    @PreAuthorize("hasRole('admin') or hasRole('staff')")
     @DeleteMapping("/{questionID}")
     public ResponseObject deleteQuestion(@PathVariable int questionID) {
         questionService.deleteQuestion(questionID);

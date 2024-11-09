@@ -7,6 +7,7 @@ import com.group4.FKitShop.Service.LabGuideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +31,7 @@ public class LabGuideController {
 ////        );
 ////    }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping("/create")
     public ResponseEntity<ResponseObject> createLabGuide(@RequestBody LabGuideRequest labGuideRequest) {
         return ResponseEntity.ok(
@@ -37,6 +39,7 @@ public class LabGuideController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/guide/{guideID}")
     public ResponseEntity<ResponseObject> getGuideByID(@PathVariable int guideID) {
         return ResponseEntity.ok(
@@ -44,6 +47,7 @@ public class LabGuideController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/guide-by-labID/{labID}")
     public ResponseEntity<ResponseObject> getLabGuidesByLabID(@PathVariable String labID ) {
         return ResponseEntity.ok(
@@ -51,6 +55,7 @@ public class LabGuideController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @GetMapping("/all")
     public ResponseEntity<ResponseObject> getAll() {
         return ResponseEntity.ok(
@@ -58,6 +63,7 @@ public class LabGuideController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PutMapping("/info/{guideID}")
     public ResponseEntity<ResponseObject> updateInfoLabGuide(@PathVariable int guideID, @RequestBody LabGuideRequest request) {
         return ResponseEntity.ok(
@@ -65,6 +71,7 @@ public class LabGuideController {
         );
     }
 
+    @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @DeleteMapping("/{guideID}")
     public ResponseEntity<ResponseObject> deleteLabGuide(@PathVariable int guideID) {
         return ResponseEntity.ok(

@@ -24,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,67 +36,89 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final String[] PUBLIC_API = {
             "/fkshop/auth/**",
-            "/fkshop/auth/login-google",
-            "/fkshop/product/**",
-            "/fkshop/api/storage/**",
-            "/fkshop/tags/**",
-            "/fkshop/categories/**",
-            "/fkshop/tags/**",
-            "/fkshop/blogs/**",
+            "/fkshop/product/products",
+            "/fkshop/product/aproducts",
+            "/fkshop/product/latest",
+            "/fkshop/product/{id}",
+            "/fkshop/product/hot",
+            "/fkshop/product/price-asc/{cateID}",
+            "/fkshop/product/price-desc/{cateID}",
+            "/fkshop/product/by-category/{cateID}",
+            "/fkshop/product/by-name/{name}",
+            "/fkshop/product/by-id/{id}",
+            "/fkshop/product/type/{type}",
+            "/fkshop/tags",
+            "/fkshop/tags/{tagID}",
+            "/fkshop/tags/active",
+            "/fkshop/tags/byBlogID/{blogID}",
+            "/fkshop/tags/byName/{name}",
+            "/fkshop/categories",
+            "/fkshop/categories/{categoryID}",
+            "/fkshop/categories/byProductID/{productID}",
+            "/fkshop/categories/byTagID/{tagID}",
+            "/fkshop/categories/byName/{name}",
+            "/fkshop/categories/active",
+            "/fkshop/blogs",
+            "/fkshop/blogs/{blogID}",
+            "/fkshop/blogs/active",
+            "/fkshop/blogs/byTagID/{tagID}",
+            "/fkshop/blogs/dateDesc",
+            "/fkshop/blogs/dateAsc",
     };
 
     @Autowired
     private AuthenticationService authenticationService;
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        //try {
+        try {
 
-//            String jwt = parseJwt(request);
-//
-//            if (jwt != null && validateJwtToken(jwt)) {
-//                // Get account details from the token
-//                AccountsResponse accountsResponse = authenticationService.tokenAccountResponse(jwt);
-//                if (accountsResponse != null) {
-//                    //// Convert role to GrantedAuthority
-//                    List<GrantedAuthority> authorities = new ArrayList<>();
-//                    authorities.add(new SimpleGrantedAuthority("ROLE_" + accountsResponse.getRole())); // Role from token
-//
-//                    log.info(authorities.toString());
-//
-//                    UsernamePasswordAuthenticationToken authentication =
-//                            new UsernamePasswordAuthenticationToken(accountsResponse,
-//                                    null,
-//                                    authorities);
-//                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                    SecurityContextHolder.getContext().setAuthentication(authentication);
-//                    log.info(authentication.toString());
-//                }
-//                // Proceed with the next filter
-//                filterChain.doFilter(request, response);
-//            } else {
-//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//                response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
-//                        "error", "Unauthorized",
-//                        "message", "you are my fire",
-//                        "status", HttpServletResponse.SC_UNAUTHORIZED
-//                )));
-//            }
-//        } catch (Exception e) {
-//            log.error("Cannot set user authentication: {}", e.getMessage());
-//            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-//            response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
-//                    "error", "Forbidden",
-//                    "message", "You are not allowed",
-//                    "status", HttpServletResponse.SC_FORBIDDEN
-//            )));
-//        }
-        filterChain.doFilter(request, response);
+            String jwt = parseJwt(request);
+
+            if (jwt != null && validateJwtToken(jwt)) {
+                // Get account details from the token
+                AccountsResponse accountsResponse = authenticationService.tokenAccountResponse(jwt);
+                if (accountsResponse != null) {
+                    //// Convert role to GrantedAuthority
+                    List<GrantedAuthority> authorities = new ArrayList<>();
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + accountsResponse.getRole())); // Role from token
+
+                    log.info(authorities.toString());
+
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(accountsResponse,
+                                    null,
+                                    authorities);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.info(authentication.toString());
+                }
+                // Proceed with the next filter
+                filterChain.doFilter(request, response);
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
+                        "error", "Unauthorized",
+                        "message", "you are my fire",
+                        "status", HttpServletResponse.SC_UNAUTHORIZED
+                )));
+            }
+        } catch (Exception e) {
+            log.error("Cannot set user authentication: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
+                    "error", "Forbidden",
+                    "message", "You need to login",
+                    "status", HttpServletResponse.SC_FORBIDDEN
+            )));
+        }
     }
 
     //skip JWT validation for public api
@@ -115,7 +138,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
 
-
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
 
@@ -132,7 +154,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     new IntrospectRequest(token)
             ).isValid();
         } catch (Exception e) {
-            log .error("JWT validation error: {}", e.getMessage());
+            log.error("JWT validation error: {}", e.getMessage());
             return false;
         }
     }
