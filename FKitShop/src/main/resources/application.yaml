@@ -9,9 +9,9 @@ upload:
     lab-guide: lab-guides
 spring:
   datasource:
-    url: "jdbc:mysql://localhost:3360/FKShop"
+    url: "jdbc:mysql://root:StBZxYnsvEALqMdUCwVEhOwwifIlCcXj@autorack.proxy.rlwy.net:18106/railway"
     username: root
-    password: 12345
+    password: StBZxYnsvEALqMdUCwVEhOwwifIlCcXj
   jpa:
     hibernate:
       naming:
