@@ -48,7 +48,7 @@ public class OrdersController {
                 .build();
     }
 
-    @PreAuthorize("hasRole('admin') or hasRole('manager')")
+    @PreAuthorize("hasRole('admin') or hasRole('manager') or hasRole('staff')")
     @GetMapping("/allorders")
     public ResponseObject allOrders() {
         return ResponseObject.builder()
@@ -127,21 +127,6 @@ public class OrdersController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(ordersService.getOrderReportFile(time));
     }
-
-
-    @GetMapping("/months")
-    public ResponseEntity<ResponseObject> getMonth() {
-        return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Months Successfully !!", ordersService.getMonth()));
-    }
-
-
-    @GetMapping("/byMonth")
-    public ResponseEntity<ResponseObject> getOrderByMonth(@RequestBody @Valid DateRequest request) {
-        return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Orders Successfully !!", ordersService.getOrderByMonth(request)));
-    }
-
 
     @GetMapping("/revenue")
     public ResponseEntity<ResponseObject> getRevenueByYear(@RequestParam("year") String year) {

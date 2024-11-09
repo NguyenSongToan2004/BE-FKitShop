@@ -157,6 +157,7 @@ public class SecurityConfig {
             "/questions/byLabID/{labID}",
             "/questions/byStatus/{status}",
             "/support/all-support",
+            "/orders/allorders"
 
     };
     private static final String[] STAFF_PUT_API = {
