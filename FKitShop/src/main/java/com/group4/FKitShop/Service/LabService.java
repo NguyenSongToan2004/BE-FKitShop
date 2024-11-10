@@ -93,7 +93,7 @@ public class LabService {
         return labRepository.findByProductID(productID);
     }
 
-    private static final String STORAGE_DIRECTORY =  File.separator + "app" + File.separator + "uploads" + File.separator + "lab";
+    private static final String STORAGE_DIRECTORY = "uploads" + File.separator + "lab";
 
     public String saveLabPDF(MultipartFile fileToSave) {
         if (fileToSave.isEmpty()) {
@@ -149,14 +149,14 @@ public class LabService {
     }
 
 //    public File downloadFilePDF(DownloadLabRequest request) {
-//        var fileToDownload = new File(STORAGE_DIRECTORY + File.separator + request.getFileName());
+//        var fileToDownload = new File(System.getProperty("user.dir") + File.separator +
+//                STORAGE_DIRECTORY + File.separator + request.getFileName());
 //        System.out.println("file name để download : " + fileToDownload.toString());
 //        if (request.getFileName().isEmpty())
 //            throw new NullPointerException("File Named Null!!");
-//        if (!fileToDownload.exists()) {
-//            System.out.println("File nay ko ton tai : " + fileToDownload.getAbsolutePath().toString());
+//
+//        if (!fileToDownload.exists())
 //            throw new NullPointerException("File Does Not Exist!!");
-//        }
 //        if (!Objects.equals(fileToDownload.getParentFile().toString(), System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
 //            throw new SecurityException("Unsupported Filename !!");
 //        return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductID());
@@ -225,7 +225,7 @@ public class LabService {
         htmlScript.append("<hr/>");
         labGuideRepository.updateLabGuide(labID, labGuideIDs);
         System.out.println(htmlScript.toString());
-        lab.setFileNamePDF(generatePdfFromHtml(htmlScript.toString(), lab.getName()));
+        lab.setFileNamePDF(generatePdfFromHtml(htmlScript.toString(), lab.getName(), "lab"));
         return labRepository.save(lab);
     }
 
@@ -236,71 +236,6 @@ public class LabService {
         }
         return false;
     }
-
-//    private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
-//        Orders orders = ordersRepository.findById(orderID).orElseThrow(
-//                () -> new AppException(ErrorCode.ORDERS_NOTFOUND)
-//        );
-//        Accounts accounts = accountsRepository.findById(orders.getAccountID()).orElseThrow(
-//                () -> new AppException(ErrorCode.USER_NOT_EXIST)
-//        );
-//        Lab lab = labRepository.findById(labID).orElseThrow(
-//                () -> new AppException(ErrorCode.LAB_NOTFOUND)
-//        );
-//        Product product = productRepository.findById(productID).orElseThrow(
-//                () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)
-//        );
-//        String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
-//        System.out.println("pdfPath : " + pdfPath);
-//        try (PDDocument document = PDDocument.load(new File(pdfPath))) {
-//            PDType0Font font = PDType0Font.load(document, new File("Arial Unicode MS Bold.ttf"));
-//            PDPage page = document.getPage(0);
-//
-//            // Tạo ContentStream để thêm nội dung vào trang
-//            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
-//                contentStream.setFont(font, 12); // Đặt font và cỡ chữ
-//
-//                // Bắt đầu ghi văn bản vào trang
-//                //contentStream.beginText();
-//                contentStream.setLeading(20); // Đặt khoảng cách giữa các dòng
-//
-//                // Đặt vị trí để thêm văn bản ở đầu trang
-//                //contentStream.newLineAtOffset(50, page.getMediaBox().getHeight() - 50); // Vị trí bắt đầu (50 điểm từ bên trái và 50 điểm từ trên cùng)
-//
-//                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-//
-//                float textWidth = 500; // Chiều rộng tối đa cho văn bản
-//                float startY = page.getMediaBox().getHeight() - 50; // Vị trí Y bắt đầu
-//                int countBreak;
-//                countBreak = drawTextWithLineBreaks(contentStream, "OrderID: " + orders.getOrdersID() + "                    ShipDate: " + formatter.format(orders.getShipDate()),
-//                        50, startY, font, 12, textWidth);
-//                System.out.println("count break 1 : " + countBreak);
-//                countBreak = drawTextWithLineBreaks(contentStream, "Customer Name: " + accounts.getFullName(),
-//                        50, startY - 25 - countBreak * 25, font, 12, textWidth);
-//                System.out.println("count break 2 : " + countBreak);
-//                countBreak = drawTextWithLineBreaks(contentStream, "Kit STEM: " + product.getName() + "                 Lab Name: " + lab.getName(),
-//                        50, startY - 50 - countBreak * 25, font, 12, textWidth);
-//                System.out.println("count break 3 : " + countBreak);
-//                countBreak = drawTextWithLineBreaks(contentStream, "Level: " + lab.getLevel(),
-//                        50, startY - 75 - countBreak * 25, font, 12, textWidth);
-//                System.out.println("count break 4 : " + countBreak);
-//                // Kết thúc việc ghi văn bản
-//                // contentStream.endText();
-//            }
-//
-//            // Lưu file PDF đã cập nhật
-//            File pdfDownload = new File("download"); // Đảm bảo rằng đường dẫn tồn tại
-//            document.save(pdfDownload);
-//            System.out.println("pdfdownload : " + pdfDownload.getAbsolutePath());
-//            return pdfDownload;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
-//        }
-//    }
 
     private File writeInfoToFile(File file, String accountID, String orderID, String labID, String productID) {
         Orders orders = ordersRepository.findById(orderID).orElseThrow(
@@ -402,23 +337,49 @@ public class LabService {
         return countBreak;
     }
 
-    private String generatePdfFromHtml(String htmlContent, String name) {
+//    private String generatePdfFromHtml(String htmlContent, String name) {
+//        String fileNamePDF = name + ".pdf";
+//        try {
+//            // Chuyển đổi HTML thành PDF
+//            // HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY + File.separator + fileNamePDF)));
+//            File filePDF = new File("");
+//            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(
+//                    amazonClient.uploadFile());
+//            System.out.println("PDF đã được tạo thành công tại: " + STORAGE_DIRECTORY + File.separator + fileNamePDF);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return fileNamePDF;
+//    }
+
+    private String generatePdfFromHtml(String htmlContent, String name, String folderName) {
         String fileNamePDF = name + ".pdf";
+        File filePDF = null;
+
         try {
-            // Chuyển đổi HTML thành PDF
-            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY + File.separator + fileNamePDF)));
-            File checkExist = new File( STORAGE_DIRECTORY + File.separator + fileNamePDF);
-            if (checkExist.exists()) {
-                System.out.printf("Tao file thanh cong : " + checkExist.getAbsolutePath().toString());
-            } else {
-                System.out.printf("Tao file khong thanh cong !!!!");
+            File tempDir = new File("/tmp");
+            if (!tempDir.exists()) {
+                tempDir.mkdirs();  // Tạo thư mục nếu chưa tồn tại
             }
-            // System.out.println("PDF đã được tạo thành công tại: " + System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileNamePDF);
+
+            // Tạo file PDF tạm thời
+            filePDF = new File("/tmp/" + fileNamePDF); // Lưu tạm thời trên server (hoặc có thể thay đổi đường dẫn)
+            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(filePDF));
+
+            // Đưa file lên AWS S3 và xóa file gốc
+            String url = amazonClient.uploadFile(filePDF, folderName);
+
+            // Xóa file PDF tạm thời sau khi upload lên S3
+            if (filePDF.exists()) {
+                filePDF.delete();
+            }
+
+            System.out.println("PDF đã được tạo và tải lên S3 thành công: " + url);
+            return fileNamePDF;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
+            throw new AppException(ErrorCode.LAB_UPLOAD_FAILED);
         }
-        return fileNamePDF;
     }
 
     private String generateID() {
