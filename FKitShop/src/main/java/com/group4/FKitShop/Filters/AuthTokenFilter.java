@@ -88,7 +88,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     List<GrantedAuthority> authorities = new ArrayList<>();
                     authorities.add(new SimpleGrantedAuthority("ROLE_" + accountsResponse.getRole())); // Role from token
 
-                    log.info(authorities.toString());
+                    // log.info(authorities.toString());
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(accountsResponse,
@@ -96,7 +96,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     authorities);
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.info(authentication.toString());
+                    // log.info(authentication.toString());
                 }
                 // Proceed with the next filter
                 filterChain.doFilter(request, response);
@@ -110,7 +110,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 )));
             }
         } catch (Exception e) {
-            log.error("Cannot set user authentication: {}", e.getMessage());
+            // log.error("Cannot set user authentication: {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
@@ -125,15 +125,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        log.info("Checking path in shouldNotFilter: {}", path);  // Log the request path
+        // log.info("Checking path in shouldNotFilter: {}", path);  // Log the request path
         AntPathMatcher matcher = new AntPathMatcher();
         for (String pattern : PUBLIC_API) {
             if (matcher.match(pattern, path)) {
-                log.info("Matched path: {} with pattern: {}", path, pattern);
+                // log.info("Matched path: {} with pattern: {}", path, pattern);
                 return true;
             }
         }
-        log.info("No matching pattern found for path: {}", path);
+        // log.info("No matching pattern found for path: {}", path);
         return false;
     }
 
@@ -154,7 +154,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     new IntrospectRequest(token)
             ).isValid();
         } catch (Exception e) {
-            log.error("JWT validation error: {}", e.getMessage());
+            // log.error("JWT validation error: {}", e.getMessage());
             return false;
         }
     }
