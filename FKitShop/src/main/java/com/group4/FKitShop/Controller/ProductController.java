@@ -44,7 +44,7 @@ public class ProductController {
     // create product & cateProduct relation tuong ung
     @PreAuthorize("hasRole('admin') or hasRole('manager')")
     @PostMapping("/add")
-    public ResponseObject addProduct(
+    public ResponseEntity<ResponseObject> addProduct(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("publisher") String publisher,
@@ -78,11 +78,13 @@ public class ProductController {
         cateProductService.createCateProduct_Product(request);
         List<CateProduct> cateProducts = cateProductService.getCateProductByProductID(product.getProductID());
 
-        return ResponseObject.builder()
-                .status(1000)
-                .message("Create product successfully")
-                .data(new ProductResponse(product, cateProducts))
-                .build();
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .status(1000)
+                        .message("Create product successfully")
+                        .data(new ProductResponse(product, cateProducts))
+                        .build()
+        );
     }
 
     @GetMapping("/{id}")
@@ -254,7 +256,7 @@ public class ProductController {
     @GetMapping("/hotproduct")
     public ResponseEntity<ResponseObject> getSoldQuantity() {
         return ResponseEntity.ok(
-                new ResponseObject(1000, "Get Product Data Successfully !!" , productService.getProductWithSoldQuantity())
+                new ResponseObject(1000, "Get Product Data Successfully !!", productService.getProductWithSoldQuantity())
         );
     }
 }

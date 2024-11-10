@@ -106,18 +106,13 @@ public class ComponentService {
         request.getComponents().forEach((componentID, quantity) -> {
             Product product = productRepository.findById(componentID).orElseThrow(
                     () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
-            System.out.println("productID : " + product.getProductID());
-            System.out.println("quantity : " + quantity);
             totalComPrice.set(totalComPrice.get() + product.getPrice() * quantity);
-            System.out.println("price : " + totalComPrice.get() + "/n==================");
             Component component = new Component();
             component.setComponentID(componentID);
             component.setQuantity(quantity);
             component.setProductID(productID);
             components.add(component);
         });
-        System.out.println("totalComPrice : " + totalComPrice.get());
-        System.out.println("totalPrice : " + totalPrice);
         if (totalComPrice.get() > totalPrice)
             throw new AppException(ErrorCode.PRODUCT_KIT_INVALID_PRICE);
         return componentRepository.saveAll(components);

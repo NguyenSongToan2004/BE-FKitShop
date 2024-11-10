@@ -53,33 +53,45 @@ public class ProductService {
 
     @Transactional(rollbackFor = AppException.class)
     public Product addProduct(ProductRequest request, MultipartFile[] images, List<String> componentsList) {
-        if (repository.existsByName(request.getName()))
-            throw new AppException(ErrorCode.PRODUCT_NAMEDUPLICATED);
-        String productID = generateID();
-        Product product = new Product();
-        product.setProductID(productID);
-        product.setCreateDate(new Date());
-        product.setImages(new ArrayList<Image>());
-        for (MultipartFile file : images) {
-            Image image = new Image();
-            image.setName(file.getOriginalFilename());
-            String imgUrl = existFileName(file.getOriginalFilename());
-            if (imgUrl != null)
-                image.setUrl(imgUrl);
-            else
-                image.setUrl(amazonClient.uploadFile((MultipartFile) file, uploadDirectory));
-            image.setProduct(product);
-            product.getImages().add(image);
+        try {
+            if (repository.existsByName(request.getName()))
+                throw new AppException(ErrorCode.PRODUCT_NAMEDUPLICATED);
+            String productID = generateID();
+            Product product = new Product();
+            product.setProductID(productID);
+            product.setCreateDate(new Date());
+            product.setImages(new ArrayList<Image>());
+            for (MultipartFile file : images) {
+                Image image = new Image();
+                image.setName(file.getOriginalFilename());
+                String imgUrl = existFileName(file.getOriginalFilename());
+                if (imgUrl != null)
+                    image.setUrl(imgUrl);
+                else{
+                    try {
+                        image.setUrl(amazonClient.uploadFile((MultipartFile) file, uploadDirectory));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                image.setProduct(product);
+                product.getImages().add(image);
+            }
+            ProductMapper.INSTANCE.toProduct(request, product);
+            repository.save(product);
+            if (request.getType().equals("kit") && componentsList != null) {
+                ComponentRequest components = ComponentRequest.builder()
+                        .components(convertListCompoToMap(componentsList))
+                        .build();
+                componentService.createComponent(components, productID, product.getPrice());
+            }
+            System.out.printf("Tới đây chưa ??");
+            return product;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        ProductMapper.INSTANCE.toProduct(request, product);
-        repository.save(product);
-        if (request.getType().equals("kit") && componentsList != null) {
-            ComponentRequest components = ComponentRequest.builder()
-                    .components(convertListCompoToMap(componentsList))
-                    .build();
-            componentService.createComponent(components, productID, product.getPrice());
-        }
-        return product;
     }
 
     public  GetProductResponse getProduct(String id) {

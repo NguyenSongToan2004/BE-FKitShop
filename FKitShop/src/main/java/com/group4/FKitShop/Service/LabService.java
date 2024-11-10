@@ -153,7 +153,6 @@ public class LabService {
         System.out.println("file name để download : " + fileToDownload.toString());
         if (request.getFileName().isEmpty())
             throw new NullPointerException("File Named Null!!");
-
         if (!fileToDownload.exists())
             throw new NullPointerException("File Does Not Exist!!");
         if (!Objects.equals(fileToDownload.getParentFile().toString(), System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
@@ -329,7 +328,7 @@ public class LabService {
         String fileNamePDF = name + ".pdf";
         try {
             // Chuyển đổi HTML thành PDF
-            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY + File.separator + fileNamePDF)));
+            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File( System.getProperty("user.dir")+ STORAGE_DIRECTORY + File.separator + fileNamePDF)));
 
             System.out.println("PDF đã được tạo thành công tại: " + STORAGE_DIRECTORY + File.separator + fileNamePDF);
         } catch (Exception e) {
