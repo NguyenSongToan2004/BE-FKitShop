@@ -148,8 +148,7 @@ public class LabService {
     }
 
     public File downloadFilePDF(DownloadLabRequest request) {
-        var fileToDownload = new File(System.getProperty("user.dir") + File.separator +
-                STORAGE_DIRECTORY + File.separator + request.getFileName());
+        var fileToDownload = new File(STORAGE_DIRECTORY + File.separator + request.getFileName());
         System.out.println("file name để download : " + fileToDownload.toString());
         if (request.getFileName().isEmpty())
             throw new NullPointerException("File Named Null!!");
@@ -330,8 +329,8 @@ public class LabService {
         String fileNamePDF = name + ".pdf";
         try {
             // Chuyển đổi HTML thành PDF
-            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileNamePDF)));
-            File checkExist = new File(System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileNamePDF);
+            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY + File.separator + fileNamePDF)));
+            File checkExist = new File( STORAGE_DIRECTORY + File.separator + fileNamePDF);
             if (checkExist.exists()) {
                 System.out.printf("Tao file thanh cong : " + checkExist.getAbsolutePath().toString());
             } else {
