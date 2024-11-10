@@ -6,11 +6,12 @@ COPY /FKitShop/uploads uploads
 RUN mvn clean package -DskipTests
 
 RUN mkdir -p /app/uploads/lab && chmod -R 777 /app/uploads
+RUN ls -l /app/uploads/lab
 
 # Kiểm tra nội dung thư mục target
 RUN ls -l /app/target
 RUN ls -l /app/uploads
-RUN ls -l /app/uploads/lab
+
 
 # Run Stage
 FROM openjdk:17-jdk-slim
