@@ -41,7 +41,6 @@ public class LabService {
     OrderDetailsRepository orderDetailsRepository;
     ProductRepository productRepository;
     LabGuideRepository labGuideRepository;
-    AmazonClient amazonClient;
 
     public Lab addLabRequest(LabRequest request, MultipartFile file) {
         if (labRepository.existsByName(request.getName()))
@@ -148,27 +147,17 @@ public class LabService {
         return fileToSave.getOriginalFilename();
     }
 
-//    public File downloadFilePDF(DownloadLabRequest request) {
-//        var fileToDownload = new File(System.getProperty("user.dir") + File.separator +
-//                STORAGE_DIRECTORY + File.separator + request.getFileName());
-//        System.out.println("file name để download : " + fileToDownload.toString());
-//        if (request.getFileName().isEmpty())
-//            throw new NullPointerException("File Named Null!!");
-//
-//        if (!fileToDownload.exists())
-//            throw new NullPointerException("File Does Not Exist!!");
-//        if (!Objects.equals(fileToDownload.getParentFile().toString(), System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
-//            throw new SecurityException("Unsupported Filename !!");
-//        return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductID());
-//    }
-
     public File downloadFilePDF(DownloadLabRequest request) {
-        var fileToDownload = amazonClient.downloadFileFromS3(request.getFileName());  // Tải file từ S3
+        var fileToDownload = new File(System.getProperty("user.dir") + File.separator +
+                STORAGE_DIRECTORY + File.separator + request.getFileName());
+        System.out.println("file name để download : " + fileToDownload.toString());
+        if (request.getFileName().isEmpty())
+            throw new NullPointerException("File Named Null!!");
 
-        if (fileToDownload == null || !fileToDownload.exists()) {
+        if (!fileToDownload.exists())
             throw new NullPointerException("File Does Not Exist!!");
-        }
-
+        if (!Objects.equals(fileToDownload.getParentFile().toString(), System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
+            throw new SecurityException("Unsupported Filename !!");
         return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductID());
     }
 
@@ -225,7 +214,7 @@ public class LabService {
         htmlScript.append("<hr/>");
         labGuideRepository.updateLabGuide(labID, labGuideIDs);
         System.out.println(htmlScript.toString());
-        lab.setFileNamePDF(generatePdfFromHtml(htmlScript.toString(), lab.getName(), "lab"));
+        lab.setFileNamePDF(generatePdfFromHtml(htmlScript.toString(), lab.getName()));
         return labRepository.save(lab);
     }
 
@@ -253,7 +242,6 @@ public class LabService {
         String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
         System.out.println("pdfPath : " + pdfPath);
         try (PDDocument document = PDDocument.load(new File(pdfPath))) {
-            System.out.println("tới đây ko z");
             PDType0Font font = PDType0Font.load(document, new File("Arial Unicode MS Bold.ttf"));
             PDPage page = document.getPage(0);
 
@@ -337,49 +325,17 @@ public class LabService {
         return countBreak;
     }
 
-//    private String generatePdfFromHtml(String htmlContent, String name) {
-//        String fileNamePDF = name + ".pdf";
-//        try {
-//            // Chuyển đổi HTML thành PDF
-//            // HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY + File.separator + fileNamePDF)));
-//            File filePDF = new File("");
-//            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(
-//                    amazonClient.uploadFile());
-//            System.out.println("PDF đã được tạo thành công tại: " + STORAGE_DIRECTORY + File.separator + fileNamePDF);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return fileNamePDF;
-//    }
-
-    private String generatePdfFromHtml(String htmlContent, String name, String folderName) {
+    private String generatePdfFromHtml(String htmlContent, String name) {
         String fileNamePDF = name + ".pdf";
-        File filePDF = null;
-
         try {
-            File tempDir = new File("/tmp");
-            if (!tempDir.exists()) {
-                tempDir.mkdirs();  // Tạo thư mục nếu chưa tồn tại
-            }
+            // Chuyển đổi HTML thành PDF
+            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(STORAGE_DIRECTORY + File.separator + fileNamePDF)));
 
-            // Tạo file PDF tạm thời
-            filePDF = new File("/tmp/" + fileNamePDF); // Lưu tạm thời trên server (hoặc có thể thay đổi đường dẫn)
-            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(filePDF));
-
-            // Đưa file lên AWS S3 và xóa file gốc
-            String url = amazonClient.uploadFile(filePDF, folderName);
-
-            // Xóa file PDF tạm thời sau khi upload lên S3
-            if (filePDF.exists()) {
-                filePDF.delete();
-            }
-
-            System.out.println("PDF đã được tạo và tải lên S3 thành công: " + url);
-            return fileNamePDF;
+            System.out.println("PDF đã được tạo thành công tại: " + STORAGE_DIRECTORY + File.separator + fileNamePDF);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new AppException(ErrorCode.LAB_UPLOAD_FAILED);
         }
+        return fileNamePDF;
     }
 
     private String generateID() {
