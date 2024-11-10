@@ -92,7 +92,7 @@ public class LabService {
         return labRepository.findByProductID(productID);
     }
 
-    private static final String STORAGE_DIRECTORY = "uploads" + File.separator + "lab";
+    private static final String STORAGE_DIRECTORY =  File.separator + "app" + File.separator + "uploads" + File.separator + "lab";
 
     public String saveLabPDF(MultipartFile fileToSave) {
         if (fileToSave.isEmpty()) {
