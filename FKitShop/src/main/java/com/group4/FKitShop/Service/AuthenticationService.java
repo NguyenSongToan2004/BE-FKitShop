@@ -114,7 +114,7 @@ public class AuthenticationService {
 
             // Verify the signature using the secret key
             if (jwsObject.verify(new MACVerifier(SIGNER_KEY.getBytes(StandardCharsets.UTF_8)))) {
-                log.info("tokenResponse: Token signature is valid");
+                // log.info("tokenResponse: Token signature is valid");
 
                 // Extract the payload
                 JWTClaimsSet claimsSet = JWTClaimsSet.parse(jwsObject.getPayload().toJSONObject());

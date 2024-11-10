@@ -161,35 +161,110 @@ public class LabService {
         return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductID());
     }
 
+    public File downloadFilePDF(String fileName) {
+        var fileToDownload = new File(System.getProperty("user.dir") + File.separator +
+                STORAGE_DIRECTORY + File.separator + fileName);
+        System.out.println("file name để download : " + fileToDownload.toString());
+        if (fileName.isEmpty())
+            throw new NullPointerException("File Named Null!!");
+
+        if (!fileToDownload.exists())
+            throw new NullPointerException("File Does Not Exist!!");
+        if (!Objects.equals(fileToDownload.getParentFile().toString(), System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
+            throw new SecurityException("Unsupported Filename !!");
+        return fileToDownload;
+    }
+
+//    public GetLabByAccountIDResponse getLabByAccountID(String accountID) {
+//        Accounts accounts = accountsRepository.findById(accountID).orElseThrow(
+//                () -> new AppException(ErrorCode.USER_NOT_EXIST)
+//        );
+//        String maxOrderID = "";
+//        Set<OrderLab> setOrderLab = new HashSet<>();
+//        List<Orders> ordersList = ordersRepository.findOrdersByAccountID(accountID);
+//        for (Orders orders : ordersList) {
+//            List<OrderDetails> orderDetailsList = orderDetailsRepository.findActiveOrderDetails(orders.getOrdersID(), 1);
+//            for (OrderDetails orderDetails : orderDetailsList) {
+//                List<Lab> listLabTmp = labRepository.findByProductID(orderDetails.getProductID());
+//                for (Lab labTmp : listLabTmp) {
+//                    if (isLabExist(labTmp.getLabID(), setOrderLab))
+//                        continue;
+//                    Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
+//                            () -> new AppException(ErrorCode.USER_NOT_EXIST)
+//                    );
+//                    GetLabResponse labResponse = new GetLabResponse();
+//                    LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
+//                    labResponse.setProductName(p.getName());
+//                    OrderLab orderLab = new OrderLab(orders.getOrdersID(), labResponse);
+//                    setOrderLab.add(orderLab);
+//                }
+//            }
+//        }
+//        return GetLabByAccountIDResponse.builder()
+//                .accountID(accountID)
+//                .orderLabs(setOrderLab)
+//                .build();
+//    }
+
     public GetLabByAccountIDResponse getLabByAccountID(String accountID) {
         Accounts accounts = accountsRepository.findById(accountID).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
+
         Set<OrderLab> setOrderLab = new HashSet<>();
+        Map<String, OrderLab> labMap = new HashMap<>(); // Key: labID, Value: OrderLab (bao gồm labID và orderID)
+
         List<Orders> ordersList = ordersRepository.findOrdersByAccountID(accountID);
         for (Orders orders : ordersList) {
             List<OrderDetails> orderDetailsList = orderDetailsRepository.findActiveOrderDetails(orders.getOrdersID(), 1);
             for (OrderDetails orderDetails : orderDetailsList) {
                 List<Lab> listLabTmp = labRepository.findByProductID(orderDetails.getProductID());
                 for (Lab labTmp : listLabTmp) {
-                    if (isLabExist(labTmp.getLabID(), setOrderLab))
-                        continue;
-                    Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
-                            () -> new AppException(ErrorCode.USER_NOT_EXIST)
-                    );
-                    GetLabResponse labResponse = new GetLabResponse();
-                    LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
-                    labResponse.setProductName(p.getName());
-                    OrderLab orderLab = new OrderLab(orders.getOrdersID(), labResponse);
-                    setOrderLab.add(orderLab);
+                    // Kiểm tra xem labID đã tồn tại trong map chưa
+                    if (labMap.containsKey(labTmp.getLabID())) {
+                        // Nếu labID đã tồn tại, so sánh orderID để chọn đơn hàng có orderID lớn hơn
+                        OrderLab existingOrderLab = labMap.get(labTmp.getLabID());
+                        String orderId1 = orders.getOrdersID();  // Ví dụ: "O12345"
+                        String orderId2 = existingOrderLab.getOrderID();  // Ví dụ: "O67890"
+
+// Cắt bỏ "O" và chuyển thành số
+                        Long numericOrderId1 = Long.valueOf(orderId1.substring(1));
+                        Long numericOrderId2 = Long.valueOf(orderId2.substring(1));
+                        if (numericOrderId1 < numericOrderId2) {
+                            // Cập nhật bài lab nếu orderID hiện tại lớn hơn
+                            Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
+                                    () -> new AppException(ErrorCode.USER_NOT_EXIST)
+                            );
+                            GetLabResponse labResponse = new GetLabResponse();
+                            LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
+                            labResponse.setProductName(p.getName());
+                            OrderLab updatedOrderLab = new OrderLab(orders.getOrdersID(), labResponse);
+                            labMap.put(labTmp.getLabID(), updatedOrderLab); // Cập nhật trong map
+                        }
+                    } else {
+                        // Nếu chưa tồn tại, thêm mới vào map
+                        Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
+                                () -> new AppException(ErrorCode.USER_NOT_EXIST)
+                        );
+                        GetLabResponse labResponse = new GetLabResponse();
+                        LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
+                        labResponse.setProductName(p.getName());
+                        OrderLab orderLab = new OrderLab(orders.getOrdersID(), labResponse);
+                        labMap.put(labTmp.getLabID(), orderLab); // Thêm mới vào map
+                    }
                 }
             }
         }
+
+        // Chuyển từ Map thành Set
+        setOrderLab.addAll(labMap.values());
+
         return GetLabByAccountIDResponse.builder()
                 .accountID(accountID)
                 .orderLabs(setOrderLab)
                 .build();
     }
+
 
     public Lab createFilePDF(String labID, CreateFilePDFRequest request) {
         Lab lab = labRepository.findById(labID).orElseThrow(
@@ -261,7 +336,8 @@ public class LabService {
                 float textWidth = 500; // Chiều rộng tối đa cho văn bản
                 float startY = page.getMediaBox().getHeight() - 50; // Vị trí Y bắt đầu
                 int countBreak;
-                countBreak = drawTextWithLineBreaks(contentStream, "OrderID: " + orders.getOrdersID() + "                    ShipDate: " + formatter.format(orders.getShipDate()),
+                System.out.println("order id " + orders.getOrdersID());
+                countBreak = drawTextWithLineBreaks(contentStream, "OrderID: " + orders.getOrdersID() + "                    ShipDate: " + (orders.getShipDate() != null ?  formatter.format(orders.getShipDate()) : null),
                         50, startY, font, 12, textWidth);
                 System.out.println("count break 1 : " + countBreak);
                 countBreak = drawTextWithLineBreaks(contentStream, "Customer Name: " + accounts.getFullName(),

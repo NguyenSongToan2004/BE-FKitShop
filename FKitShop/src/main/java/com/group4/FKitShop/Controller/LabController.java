@@ -156,6 +156,24 @@ public class LabController {
         }
     }
 
+    @GetMapping("/download-admin")
+    ResponseEntity<Resource> downloadLabAdmin(@RequestParam("fileName") String fileName) {
+        System.out.println("tới download rồi !!");
+        try {
+            var fileToDownload = labService.downloadFilePDF(fileName);
+            System.out.println("File path : " + fileToDownload.toString());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+                            fileToDownload.getName() + "\"")
+                    .contentLength(fileToDownload.length())
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(new FileSystemResource(fileToDownload));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
+        }
+    }
+
     @GetMapping("/account/{accountID}")
     ResponseEntity<ResponseObject> getLabByAccountID(@PathVariable String accountID) {
         return ResponseEntity.ok(
