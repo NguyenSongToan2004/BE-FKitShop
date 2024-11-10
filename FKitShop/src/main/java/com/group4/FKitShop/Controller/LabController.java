@@ -141,19 +141,14 @@ public class LabController {
                                          @RequestParam("fileName") String fileName) {
         System.out.println("tới download rồi !!");
         DownloadLabRequest request = new DownloadLabRequest(accountID, orderID, labID, productID, fileName);
-        try {
-            var fileToDownload = labService.downloadFilePDF(request);
-            System.out.println("File path : " + fileToDownload.toString());
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
-                            request.getFileName() + "\"")
-                    .contentLength(fileToDownload.length())
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(new FileSystemResource(fileToDownload));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
-        }
+        var fileToDownload = labService.downloadFilePDF(request);
+        System.out.println("File path : " + fileToDownload.toString());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+                        request.getFileName() + "\"")
+                .contentLength(fileToDownload.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(new FileSystemResource(fileToDownload));
     }
 
     @GetMapping("/account/{accountID}")

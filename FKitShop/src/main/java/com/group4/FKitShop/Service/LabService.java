@@ -153,8 +153,10 @@ public class LabService {
         System.out.println("file name để download : " + fileToDownload.toString());
         if (request.getFileName().isEmpty())
             throw new NullPointerException("File Named Null!!");
-        if (!fileToDownload.exists())
+        if (!fileToDownload.exists()) {
+            System.out.println("File nay ko ton tai : " + fileToDownload.getAbsolutePath().toString());
             throw new NullPointerException("File Does Not Exist!!");
+        }
         if (!Objects.equals(fileToDownload.getParentFile().toString(), System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY))
             throw new SecurityException("Unsupported Filename !!");
         return writeInfoToFile(fileToDownload, request.getAccountID(), request.getOrderID(), request.getLabID(), request.getProductID());
@@ -328,9 +330,14 @@ public class LabService {
         String fileNamePDF = name + ".pdf";
         try {
             // Chuyển đổi HTML thành PDF
-            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File( System.getProperty("user.dir")+ File.separator + STORAGE_DIRECTORY + File.separator + fileNamePDF)));
-
-            System.out.println("PDF đã được tạo thành công tại: " + STORAGE_DIRECTORY + File.separator + fileNamePDF);
+            HtmlConverter.convertToPdf(htmlContent, new FileOutputStream(new File(System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileNamePDF)));
+            File checkExist = new File(System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileNamePDF);
+            if (checkExist.exists()) {
+                System.out.printf("Tao file thanh cong : " + checkExist.getAbsolutePath().toString());
+            } else {
+                System.out.printf("Tao file khong thanh cong !!!!");
+            }
+            // System.out.println("PDF đã được tạo thành công tại: " + System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileNamePDF);
         } catch (Exception e) {
             e.printStackTrace();
         }
