@@ -153,7 +153,8 @@ public class SupportingService {
 
     public List<AllLabSupport> getAllSupport() {
         List<AllLabSupport> supportingResponses = new ArrayList<>();
-        for (Supporting supporting : supportingRepository.findAll()) {
+        List<Supporting> supportings = supportingRepository.findAll();
+        for (Supporting supporting : supportings) {
             Own own = ownService.getOwn(supporting.getAccount().getAccountID(), supporting.getLab().getLabID());
             AllLabSupport a = AllLabSupport.builder()
                     .accountID(supporting.getAccount().getAccountID())
@@ -165,6 +166,7 @@ public class SupportingService {
                     .build();
             supportingResponses.add(a);
         }
+        supportingResponses.sort((s1, s2) -> s2.getSupporting().getSupportingID().compareTo(s1.getSupporting().getSupportingID()));
         return supportingResponses;
     }
 
@@ -183,6 +185,7 @@ public class SupportingService {
                     .build();
             labSupports.add(l);
         }
+        labSupports.sort((l1, l2) -> l2.getSupporting().getSupportingID().compareTo(l1.getSupporting().getSupportingID()));
         return new LabSupportResponse(accounts.getAccountID(), accounts.getFullName(), labSupports);
     }
 
@@ -202,6 +205,7 @@ public class SupportingService {
                 supportingResponses.add(a);
             }
         }
+        supportingResponses.sort((s1, s2) -> s2.getSupporting().getSupportingID().compareTo(s1.getSupporting().getSupportingID()));
         return supportingResponses;
     }
 

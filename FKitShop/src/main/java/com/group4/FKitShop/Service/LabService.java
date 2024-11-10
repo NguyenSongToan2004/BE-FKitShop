@@ -81,7 +81,9 @@ public class LabService {
     }
 
     public List<Lab> getAllLab() {
-        return labRepository.findAll();
+        List<Lab> labs = labRepository.findAll();
+        labs.sort((l1, l2) -> l2.getLabID().compareTo(l1.getLabID()));
+        return labs;
     }
 
     public List<Lab> getLabByStatus(int status) {
@@ -89,7 +91,9 @@ public class LabService {
     }
 
     public List<Lab> getLabByProductID(String productID) {
-        return labRepository.findByProductID(productID);
+        List<Lab> labs = labRepository.findByProductID(productID);
+        labs.sort((l1, l2) -> l2.getProductID().compareTo(l1.getProductID()));
+        return labs;
     }
 
     private static final String STORAGE_DIRECTORY = "uploads" + File.separator + "lab";
@@ -175,96 +179,36 @@ public class LabService {
         return fileToDownload;
     }
 
-//    public GetLabByAccountIDResponse getLabByAccountID(String accountID) {
-//        Accounts accounts = accountsRepository.findById(accountID).orElseThrow(
-//                () -> new AppException(ErrorCode.USER_NOT_EXIST)
-//        );
-//        String maxOrderID = "";
-//        Set<OrderLab> setOrderLab = new HashSet<>();
-//        List<Orders> ordersList = ordersRepository.findOrdersByAccountID(accountID);
-//        for (Orders orders : ordersList) {
-//            List<OrderDetails> orderDetailsList = orderDetailsRepository.findActiveOrderDetails(orders.getOrdersID(), 1);
-//            for (OrderDetails orderDetails : orderDetailsList) {
-//                List<Lab> listLabTmp = labRepository.findByProductID(orderDetails.getProductID());
-//                for (Lab labTmp : listLabTmp) {
-//                    if (isLabExist(labTmp.getLabID(), setOrderLab))
-//                        continue;
-//                    Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
-//                            () -> new AppException(ErrorCode.USER_NOT_EXIST)
-//                    );
-//                    GetLabResponse labResponse = new GetLabResponse();
-//                    LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
-//                    labResponse.setProductName(p.getName());
-//                    OrderLab orderLab = new OrderLab(orders.getOrdersID(), labResponse);
-//                    setOrderLab.add(orderLab);
-//                }
-//            }
-//        }
-//        return GetLabByAccountIDResponse.builder()
-//                .accountID(accountID)
-//                .orderLabs(setOrderLab)
-//                .build();
-//    }
-
     public GetLabByAccountIDResponse getLabByAccountID(String accountID) {
         Accounts accounts = accountsRepository.findById(accountID).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXIST)
         );
-
+        String maxOrderID = "";
         Set<OrderLab> setOrderLab = new HashSet<>();
-        Map<String, OrderLab> labMap = new HashMap<>(); // Key: labID, Value: OrderLab (bao gồm labID và orderID)
-
         List<Orders> ordersList = ordersRepository.findOrdersByAccountID(accountID);
         for (Orders orders : ordersList) {
             List<OrderDetails> orderDetailsList = orderDetailsRepository.findActiveOrderDetails(orders.getOrdersID(), 1);
             for (OrderDetails orderDetails : orderDetailsList) {
                 List<Lab> listLabTmp = labRepository.findByProductID(orderDetails.getProductID());
                 for (Lab labTmp : listLabTmp) {
-                    // Kiểm tra xem labID đã tồn tại trong map chưa
-                    if (labMap.containsKey(labTmp.getLabID())) {
-                        // Nếu labID đã tồn tại, so sánh orderID để chọn đơn hàng có orderID lớn hơn
-                        OrderLab existingOrderLab = labMap.get(labTmp.getLabID());
-                        String orderId1 = orders.getOrdersID();  // Ví dụ: "O12345"
-                        String orderId2 = existingOrderLab.getOrderID();  // Ví dụ: "O67890"
-
-// Cắt bỏ "O" và chuyển thành số
-                        Long numericOrderId1 = Long.valueOf(orderId1.substring(1));
-                        Long numericOrderId2 = Long.valueOf(orderId2.substring(1));
-                        if (numericOrderId1 < numericOrderId2) {
-                            // Cập nhật bài lab nếu orderID hiện tại lớn hơn
-                            Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
-                                    () -> new AppException(ErrorCode.USER_NOT_EXIST)
-                            );
-                            GetLabResponse labResponse = new GetLabResponse();
-                            LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
-                            labResponse.setProductName(p.getName());
-                            OrderLab updatedOrderLab = new OrderLab(orders.getOrdersID(), labResponse);
-                            labMap.put(labTmp.getLabID(), updatedOrderLab); // Cập nhật trong map
-                        }
-                    } else {
-                        // Nếu chưa tồn tại, thêm mới vào map
-                        Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
-                                () -> new AppException(ErrorCode.USER_NOT_EXIST)
-                        );
-                        GetLabResponse labResponse = new GetLabResponse();
-                        LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
-                        labResponse.setProductName(p.getName());
-                        OrderLab orderLab = new OrderLab(orders.getOrdersID(), labResponse);
-                        labMap.put(labTmp.getLabID(), orderLab); // Thêm mới vào map
-                    }
+                    if (isLabExist(labTmp.getLabID(), setOrderLab, orderDetails.getOrdersID()))
+                        continue;
+                    Product p = productRepository.findById(labTmp.getProductID()).orElseThrow(
+                            () -> new AppException(ErrorCode.USER_NOT_EXIST)
+                    );
+                    GetLabResponse labResponse = new GetLabResponse();
+                    LabMapper.INSTANCE.toLapResponse(labTmp, labResponse);
+                    labResponse.setProductName(p.getName());
+                    OrderLab orderLab = new OrderLab(orders.getOrdersID(), labResponse);
+                    setOrderLab.add(orderLab);
                 }
             }
         }
-
-        // Chuyển từ Map thành Set
-        setOrderLab.addAll(labMap.values());
-
         return GetLabByAccountIDResponse.builder()
                 .accountID(accountID)
                 .orderLabs(setOrderLab)
                 .build();
     }
-
 
     public Lab createFilePDF(String labID, CreateFilePDFRequest request) {
         Lab lab = labRepository.findById(labID).orElseThrow(
@@ -272,7 +216,7 @@ public class LabService {
         );
         String[] token = request.getLabGuideIDs().split(",");
         System.out.println(token.length);
-        StringBuilder htmlScript = new StringBuilder("<h2 style ='margin-top : 200px;'><strong>Lab name</strong> : " + lab.getName() + "</h2>" +
+        StringBuilder htmlScript = new StringBuilder("<h2 style ='margin-top : 300px;'><hr/><strong>Lab name</strong> : " + lab.getName() + "</h2>" +
                 "<h4><strong>Description</strong> : " + lab.getDescription() + "</h4>" +
                 "<h4><strong>Level</strong> : " + lab.getLevel() + "</h4>");
         List<Integer> labGuideIDs = new ArrayList<>();
@@ -288,15 +232,18 @@ public class LabService {
         }
         htmlScript.append("<hr/>");
         labGuideRepository.updateLabGuide(labID, labGuideIDs);
-        System.out.println(htmlScript.toString());
         lab.setFileNamePDF(generatePdfFromHtml(htmlScript.toString(), lab.getName()));
         return labRepository.save(lab);
     }
 
-    private boolean isLabExist(String labID, Set<OrderLab> set) {
+    private boolean isLabExist(String labID, Set<OrderLab> set, String orderID) {
         for (OrderLab orderLab : set) {
-            if (orderLab.getLab().getLabID().equals(labID))
+            if (orderLab.getLab().getLabID().equals(labID)) {
+                if (orderLab.getOrderID().compareTo(orderID) >= 0) {
+                    orderLab.setOrderID(orderID);
+                }
                 return true;
+            }
         }
         return false;
     }
@@ -337,17 +284,23 @@ public class LabService {
                 float startY = page.getMediaBox().getHeight() - 50; // Vị trí Y bắt đầu
                 int countBreak;
                 System.out.println("order id " + orders.getOrdersID());
-                countBreak = drawTextWithLineBreaks(contentStream, "OrderID: " + orders.getOrdersID() + "                    ShipDate: " + (orders.getShipDate() != null ?  formatter.format(orders.getShipDate()) : null),
+                countBreak = drawTextWithLineBreaks(contentStream, "OrderID: " + orders.getOrdersID() + "                    ShipDate: " + (orders.getShipDate() != null ? formatter.format(orders.getShipDate()) : null),
                         50, startY, font, 12, textWidth);
                 System.out.println("count break 1 : " + countBreak);
                 countBreak = drawTextWithLineBreaks(contentStream, "Customer Name: " + accounts.getFullName(),
                         50, startY - 25 - countBreak * 25, font, 12, textWidth);
                 System.out.println("count break 2 : " + countBreak);
-                countBreak = drawTextWithLineBreaks(contentStream, "Kit STEM: " + product.getName() + "                 Lab Name: " + lab.getName(),
+//                countBreak = drawTextWithLineBreaks(contentStream, "Kit STEM: " + product.getName() + "                 Lab Name: " + lab.getName(),
+//                        50, startY - 50 - countBreak * 25, font, 12, textWidth);
+
+                countBreak = drawTextWithLineBreaks(contentStream, "Kit STEM: " + product.getName(),
                         50, startY - 50 - countBreak * 25, font, 12, textWidth);
+
+                countBreak = drawTextWithLineBreaks(contentStream, "Lab Name: " + lab.getName(),
+                        50, startY - 75 - countBreak * 25, font, 12, textWidth);
                 System.out.println("count break 3 : " + countBreak);
                 countBreak = drawTextWithLineBreaks(contentStream, "Level: " + lab.getLevel(),
-                        50, startY - 75 - countBreak * 25, font, 12, textWidth);
+                        50, startY - 100 - countBreak * 25, font, 12, textWidth);
                 System.out.println("count break 4 : " + countBreak);
                 // Kết thúc việc ghi văn bản
                 // contentStream.endText();

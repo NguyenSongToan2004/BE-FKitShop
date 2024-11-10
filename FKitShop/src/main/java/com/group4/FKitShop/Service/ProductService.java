@@ -15,6 +15,7 @@ import com.group4.FKitShop.Request.ProductRequest;
 import com.group4.FKitShop.Response.GetProductResponse;
 import com.group4.FKitShop.Response.ProductResponse;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -196,7 +197,9 @@ public class ProductService {
     }
 
     public List<Product> getAllProduct() {
-        return repository.findAll();
+        List<Product> products = repository.findAll();
+        products.sort((p1,p2) -> p2.getProductID().compareTo(p1.getProductID()));
+        return products;
     }
 
     public List<Product> getLastestProduct() {
@@ -303,15 +306,26 @@ public class ProductService {
         NumberFormat format = NumberFormat.getInstance(new Locale("vi-VN"));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
         int rowIdx = 1;
+        double totalRevenue = 0;
         for (Product product : allProducts) {
             Row row = sheet.createRow(rowIdx++);
             row.createCell(0).setCellValue(product.getProductID());
             row.createCell(1).setCellValue(product.getName());
             row.createCell(2).setCellValue(product.getUnitOnOrder());
             row.createCell(3).setCellValue(format.format(product.getPrice()));
-            row.createCell(4).setCellValue(format.format(product.getPrice() * product.getUnitOnOrder())); // Doanh thu = giá * số lượng bán
+            double revenue = product.getPrice() * product.getUnitOnOrder();
+            row.createCell(4).setCellValue(format.format(revenue)); // Doanh thu = giá * số lượng bán
             row.createCell(5).setCellValue(simpleDateFormat.format(product.getCreateDate()).toString());
+            totalRevenue += revenue;
         }
+
+        sheet.addMergedRegion(new CellRangeAddress(rowIdx, rowIdx, 3, 4));
+        Row row = sheet.createRow(rowIdx++);
+        row.setHeightInPoints(17);
+        Cell cell = row.createCell(3);
+        cell.setCellStyle(rowStyle);
+        cell.setCellValue("Total Revenue : " + format.format(totalRevenue));
+
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);

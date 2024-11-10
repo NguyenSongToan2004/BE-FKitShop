@@ -27,4 +27,5 @@ public interface SupportingRepository extends JpaRepository<Supporting, Integer>
             "order by supportingID desc\n" +
             "limit 1",nativeQuery = true)
     Supporting findSupporting(@Param("accountID") String accountID,@Param("labID") String labID);
+
 }

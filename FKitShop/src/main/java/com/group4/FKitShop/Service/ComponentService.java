@@ -55,69 +55,22 @@ public class ComponentService {
         }
         return componentResponses;
     }
-
-
-    // create component
-//    public String generateProductID() {
-//        int number = 1;
-//        String code;
-//        do {
-//            code = String.format("P%05d", number);
-//            number++;
-//        } while (productRepository.existsById(code));
-//        String id = String.format("P%05d", number - 2);
-//        return id;
-//    }
-
-//    public String generateComponentID() {
-//        int number = 1;
-//        String code;
-//        do {
-//            code = String.format("CP%05d", number);
-//            number++;
-//        } while (productRepository.existsById(code));
-//        String id = String.format("P%05d", number - 2);
-//        return id;
-//    }
-
-//    public List<Component> createComponent(ComponentRequest request, String productID, double totalPrice) {
-//        AtomicReference<Double> totalComPrice = new AtomicReference<>((double) 0);
-//        List<Component> components = new ArrayList<>();
-//        request.getComponents().forEach((componentID, quantity) -> {
-//            Product product = productRepository.findById(productID).orElseThrow(
-//                    () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
-//            totalComPrice.set(totalPrice + product.getPrice() * quantity);
-//            Component component = new Component();
-//            component.setComponentID(componentID);
-//            component.setQuantity(quantity);
-//            component.setProductID(productID);
-//            components.add(component);
-//        });
-//        System.out.println("totalComPrice : " + totalComPrice.get());
-//        System.out.println("totalPrice : " + totalPrice);
-//        if (totalComPrice.get() > totalPrice)
-//            throw new AppException(ErrorCode.PRODUCT_KIT_INVALID_PRICE);
-//        return componentRepository.saveAll(components);
-//    }
-
+    
     public List<Component> createComponent(ComponentRequest request, String productID, double totalPrice) {
         AtomicReference<Double> totalComPrice = new AtomicReference<>((double) 0);
         List<Component> components = new ArrayList<>();
         request.getComponents().forEach((componentID, quantity) -> {
             Product product = productRepository.findById(componentID).orElseThrow(
                     () -> new AppException(ErrorCode.PRODUCT_NOTFOUND));
-            System.out.println("productID : " + product.getProductID());
-            System.out.println("quantity : " + quantity);
             totalComPrice.set(totalComPrice.get() + product.getPrice() * quantity);
-            System.out.println("price : " + totalComPrice.get() + "/n==================");
             Component component = new Component();
             component.setComponentID(componentID);
             component.setQuantity(quantity);
             component.setProductID(productID);
             components.add(component);
         });
-        System.out.println("totalComPrice : " + totalComPrice.get());
-        System.out.println("totalPrice : " + totalPrice);
+//        System.out.println("totalComPrice : " + totalComPrice.get());
+//        System.out.println("totalPrice : " + totalPrice);
         if (totalComPrice.get() > totalPrice)
             throw new AppException(ErrorCode.PRODUCT_KIT_INVALID_PRICE);
         return componentRepository.saveAll(components);
@@ -125,13 +78,6 @@ public class ComponentService {
 
     public List<Component> updateComponent(ComponentRequest request, String productID) {
         List<Component> oldComponents = componentRepository.findByProductID(productID);
-//        request.getComponents().forEach((componentID, quantity) -> {
-//            for (Component component : oldComponents) {
-//                if (component.getComponentID().equals(componentID)) {
-//                    componentRepository.delete(component);
-//                }
-//            }
-//        });
         componentRepository.deleteAll(oldComponents);
         Product product = productRepository.findById(productID).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOTFOUND)

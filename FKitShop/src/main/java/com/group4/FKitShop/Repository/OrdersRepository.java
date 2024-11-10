@@ -17,7 +17,6 @@ import java.util.Optional;
 public interface OrdersRepository extends JpaRepository<Orders, String> {
     List<Orders> findAllByaccountID(String strings);
 
-
 //    @Query(value = "select account.fullName, account.email, account.phoneNumber, product.name as productName,\n" +
 //            "\t\t\t\torders.ordersID, product.price, product.discount ,orderDetails.quantity, \n" +
 //            "\t\t\t\tproduct.price*(1-product.discount/100) as discountPrice,\n" +
