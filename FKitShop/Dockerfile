@@ -5,6 +5,8 @@ COPY /FKitShop/src src
 COPY /FKitShop/uploads uploads
 RUN mvn clean package -DskipTests
 
+RUN mkdir -p /app/uploads/lab && chmod -R 777 /app/uploads
+
 # Kiểm tra nội dung thư mục target
 RUN ls -l /app/target
 RUN ls -l /app/uploads

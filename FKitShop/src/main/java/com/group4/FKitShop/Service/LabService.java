@@ -339,6 +339,7 @@ public class LabService {
             // System.out.println("PDF đã được tạo thành công tại: " + System.getProperty("user.dir") + File.separator + STORAGE_DIRECTORY + File.separator + fileNamePDF);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new AppException(ErrorCode.LAB_DOWNLOAD_FAILED);
         }
         return fileNamePDF;
     }
