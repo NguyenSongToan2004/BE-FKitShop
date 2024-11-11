@@ -105,7 +105,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
                         "error", "Unauthorized",
-                        "message", "you are my fire",
+                        "message", "Unauthorized !!",
                         "status", HttpServletResponse.SC_UNAUTHORIZED
                 )));
             }
