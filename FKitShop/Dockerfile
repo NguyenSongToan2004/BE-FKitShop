@@ -5,6 +5,7 @@ COPY /FKitShop/src src
 COPY /FKitShop/uploads uploads
 RUN mvn clean package -DskipTests
 
+RUN ls -l /app
 RUN ls -l /app/uploads/lab
 
 # Kiểm tra nội dung thư mục target
@@ -16,5 +17,6 @@ RUN ls -l /app/uploads
 FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY --from=build /app/target/FKitShop-0.0.1-SNAPSHOT.jar FKitShop.war
+COPY --from=build /app/uploads/lab /app/uploads/lab
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "FKitShop.war"]
