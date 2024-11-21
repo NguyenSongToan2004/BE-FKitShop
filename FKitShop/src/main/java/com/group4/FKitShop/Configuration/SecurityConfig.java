@@ -129,6 +129,7 @@ public class SecurityConfig {
             "/lab-guide/guide/{guideID}",
             "/lab-guide/guide-by-labID/{guideID}",
             "/lab-guide/all",
+            "lab/download-admin"
     };
     private static final String[] MANAGER_PUT_API = {
             "/product/{productID}",
