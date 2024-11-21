@@ -19,5 +19,6 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY --from=build /app/target/FKitShop-0.0.1-SNAPSHOT.jar FKitShop.war
 COPY --from=build /app/uploads/lab /app/uploads/lab
+COPY --from=build /app/ArialUnicodeMSBold.ttf /app/
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "FKitShop.war"]
