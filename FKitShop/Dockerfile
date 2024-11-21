@@ -3,7 +3,7 @@ WORKDIR /app
 COPY /FKitShop/pom.xml .
 COPY /FKitShop/src src
 COPY /FKitShop/uploads uploads
-COPY "Arial Unicode MS Bold.ttf" /app/
+COPY "ArialUnicodeMSBold.ttf" /app/
 RUN mvn clean package -DskipTests
 
 RUN ls -l /app

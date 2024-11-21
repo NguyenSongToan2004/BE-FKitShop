@@ -264,7 +264,7 @@ public class LabService {
         String pdfPath = STORAGE_DIRECTORY + File.separator + file.getName();
         System.out.println("pdfPath : " + pdfPath);
         try (PDDocument document = PDDocument.load(new File(pdfPath))) {
-            PDType0Font font = PDType0Font.load(document, new File("Arial Unicode MS Bold.ttf"));
+            PDType0Font font = PDType0Font.load(document, new File("ArialUnicodeMSBold.ttf"));
             PDPage page = document.getPage(0);
 
             // Tạo ContentStream để thêm nội dung vào trang
